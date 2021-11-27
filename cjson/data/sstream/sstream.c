@@ -99,7 +99,7 @@ __uint8_t stringstream_realloc(stringstream* const sstream,
       sstream->data = data;
       return REALLOC_FAILURE;
     }
-    memcpy(sstream->data, data, sstream->capacity * sizeof(char));
+    memcpy(sstream->data, data, sstream->length * sizeof(char));
     free(data);
   }
   sstream->capacity = capacity;
