@@ -17,6 +17,8 @@
 #ifndef _DATA_SSTREAM_MODIFIERS_H_
 #define _DATA_SSTREAM_MODIFIERS_H_
 
+#include "data/sstream/sstream.h"
+
 #define NULL_CHAR '\0'
 
 /**
@@ -26,10 +28,20 @@
  *
  * @note This macro is private to the module sstream.
  */
-#define _terminate(sstream)                     \
-  do {                                          \
-    if (sstream.data && sstream.capacity)       \
-      sstream.data[sstream.length] = NULL_CHAR; \
+#define _terminate(sstream)                         \
+  do {                                              \
+    if ((sstream).data && (sstream).capacity)       \
+      (sstream).data[(sstream).length] = NULL_CHAR; \
   } while (0)
+
+/**
+ * @brief Concatenates a newly formatted string onto the existing string in
+ * stringstream instance.
+ *
+ * @param sstream stringstream instance.
+ * @param format Formatted string to concatenate.
+ * @param ... Arguments to substitute the formatted string with.
+ */
+void stringstream_concat(stringstream* const sstream, const char* format, ...);
 
 #endif
