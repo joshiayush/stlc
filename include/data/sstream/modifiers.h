@@ -57,4 +57,15 @@ void stringstream_concat(stringstream* const sstream, const char* format, ...);
 void stringstream_read(stringstream* const sstream, const void* data,
                        const size_t length);
 
+/**
+ * @brief Impedes the position of the terminator character ('\0') by length, or
+ * if the length is greater than the data length of stringstream instance,
+ * places the terminator character ('\0') at beginning.
+ *
+ * @param[in] sstream stringstream instance.
+ * @param[in] length Number of elements to impede the terminator character
+ * ('\0') by.
+ */
+void stringstream_retreat(stringstream* const sstream, const size_t length);
+
 #endif

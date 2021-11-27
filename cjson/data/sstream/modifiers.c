@@ -28,9 +28,9 @@
  * @brief Concatenates a newly formatted string onto the existing string in
  * stringstream instance.
  *
- * @param sstream stringstream instance.
- * @param format Formatted string to concatenate.
- * @param ... Arguments to substitute the formatted string with.
+ * @param[in] sstream stringstream instance.
+ * @param[in] format Formatted string to concatenate.
+ * @param[in] ... Arguments to substitute the formatted string with.
  */
 void stringstream_concat(stringstream* const sstream, const char* format, ...) {
   va_list args;
@@ -67,5 +67,21 @@ void stringstream_read(stringstream* const sstream, const void* data,
   (void)stringstream_realloc(sstream, length);
   memcpy(sstream->data + sstream->length, data, length);
   sstream->length += length;
+  _terminate(*sstream);
+}
+
+/**
+ * @brief Impedes the position of the terminator character ('\0') by length, or
+ * if the length is greater than the data length of stringstream instance,
+ * places the terminator character ('\0') at beginning.
+ *
+ * @param[in] sstream stringstream instance.
+ * @param[in] length Number of elements to impede the terminator character
+ * ('\0') by.
+ */
+void stringstream_retreat(stringstream* const sstream, const size_t length) {
+  if (!sstream->length || !sstream->capacity)
+    return;
+  sstream->length = length >= sstream->length ? 0 : sstream->length - length;
   _terminate(*sstream);
 }
