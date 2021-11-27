@@ -18,6 +18,7 @@
 
 #include <stdarg.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/types.h>
 
 #include "data/sstream/accessors.h"
@@ -50,5 +51,21 @@ void stringstream_concat(stringstream* const sstream, const char* format, ...) {
     va_end(args);
   }
   sstream->length += format_size;
+  _terminate(*sstream);
+}
+
+/**
+ * @brief Concatenates data of known length on to the existing data instance of
+ * stringstream instance.
+ *
+ * @param[in] sstream stringstream instance.
+ * @param[in] data String to concatenate the new data on.
+ * @param[in] length String to concatenate.
+ */
+void stringstream_read(stringstream* const sstream, const void* data,
+                       const size_t length) {
+  (void)stringstream_realloc(sstream, length);
+  memcpy(sstream->data + sstream->length, data, length);
+  sstream->length += length;
   _terminate(*sstream);
 }
