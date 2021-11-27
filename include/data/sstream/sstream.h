@@ -121,6 +121,6 @@ __uint8_t stringstream_realloc(stringstream* const sstream,
  *
  * @param[in] sstream stringstream instance.
  */
-void stringstream_dealloc(stringstream* sstream);
+void stringstream_dealloc(stringstream* const sstream);
 
 #endif
