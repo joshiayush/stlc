@@ -123,4 +123,22 @@ __uint8_t stringstream_realloc(stringstream* const sstream,
  */
 void stringstream_dealloc(stringstream* const sstream);
 
+/**
+ * @brief Returns a iterator to the beginning of the data instance of the
+ * stringstream instance.
+ *
+ * @param[in] sstream stringstream instance.
+ * @return const char* pointer to the beginning of the data instance.
+ */
+const char* begin(const stringstream* const sstream);
+
+/**
+ * @brief Returns a iterator to the end of the data instance of the stringstream
+ * instance.
+ *
+ * @param[in] sstream stringstream instance.
+ * @return const char* pointer to the end of the data instance.
+ */
+const char* end(const stringstream* const sstream);
+
 #endif

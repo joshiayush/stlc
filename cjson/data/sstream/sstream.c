@@ -118,3 +118,26 @@ void stringstream_dealloc(stringstream* const sstream) {
   free(sstream->data);
   sstream->data = (void*)0;
 }
+
+/**
+ * @brief Returns a iterator to the beginning of the data instance of the
+ * stringstream instance.
+ *
+ * @param[in] sstream stringstream instance.
+ * @return const char* pointer to the beginning of the data instance.
+ */
+const char* begin(const stringstream* const sstream) { return sstream->data; }
+
+/**
+ * @brief Returns a iterator to the end of the data instance of the stringstream
+ * instance.
+ *
+ * @param[in] sstream stringstream instance.
+ * @return const char* pointer to the end of the data instance.
+ */
+const char* end(const stringstream* const sstream) {
+  char* ptr = sstream->data;
+  while ((ptr++ + (char)1) != NULL_CHAR)
+    ;
+  return ptr;
+}
