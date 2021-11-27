@@ -23,13 +23,19 @@
 #include "data/sstream/modifiers.h"
 
 /**
- * @brief Function allocates a stringstream instance using the default string
- * size of SSTREAM_DEFAULT_SIZE.
+ * @brief Function allocates a stringstream instance using a
+ * _stringstream_alloc_args struct to populate the string length argument with a
+ * default value in case the length is not given.
  *
+ * This is a workaround to pass in default parameters to function
+ * _stringstream_alloc().
+ *
+ * @param[in] sstream_var_args _stringstream_alloc_args instance.
  * @return stringstream - Heap allocated instance.
  */
-stringstream stringstream_alloc_default() {
-  return stringstream_alloc(SSTREAM_DEFAULT_SIZE);
+stringstream _stringstream_var_args_alloc(
+    struct _stringstream_alloc_args sstream_var_args) {
+  return _stringstream_alloc(sstream_var_args.length);
 }
 
 /**
@@ -39,8 +45,8 @@ stringstream stringstream_alloc_default() {
  * @param[in] length Bytes to allocate for the string.
  * @return stringstream - Heap allocated instance.
  */
-stringstream stringstream_alloc(const __uint32_t length) {
-  stringstream sstream = {.data = (void*)0, .length = 0, .capacity = 0};
+stringstream _stringstream_alloc(const __uint32_t length) {
+  stringstream sstream = {.data = (void*)0, .length = length, .capacity = 0};
 
   __uint32_t capacity = 1;
   while (capacity < length)
@@ -63,7 +69,7 @@ stringstream stringstream_alloc(const __uint32_t length) {
  */
 stringstream stringstream_str_alloc(const char* string) {
   __uint32_t length = strlen(string);
-  stringstream sstream = stringstream_alloc(length);
+  stringstream sstream = _stringstream_alloc(length);
   if (sstream.capacity) {
     memcpy(sstream.data, string, length * sizeof(char));
     sstream.length = length;
