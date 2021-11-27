@@ -26,6 +26,10 @@
 #define REALLOC_NOT_REQUIRED \
   ((REALLOC_FAILURE | REALLOC_SUCCESS) << REALLOC_SUCCESS)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief stringstream structure is a container for our string stream. It holds
  * the actual data, the length of the string and the capacity.
@@ -140,5 +144,9 @@ const char* begin(const stringstream* const sstream);
  * @return const char* pointer to the end of the data instance.
  */
 const char* end(const stringstream* const sstream);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

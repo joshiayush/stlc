@@ -22,6 +22,10 @@
 
 #include "data/sstream/sstream.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Reads the content of the file given in the stringstream instance.
  *
@@ -45,5 +49,9 @@ void stringstream_readfile(stringstream* const sstream, FILE* const file,
  */
 void stringstream_writefile(stringstream* const sstream, FILE* const file,
                             size_t begin, size_t end);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -23,6 +23,10 @@
 
 #define NULL_CHAR '\0'
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * @brief Terminates a string inside of the stringstream instance at '\0'.
  *
@@ -67,5 +71,9 @@ void stringstream_read(stringstream* const sstream, const void* data,
  * ('\0') by.
  */
 void stringstream_retreat(stringstream* const sstream, const size_t length);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
