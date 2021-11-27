@@ -21,6 +21,11 @@
 
 #define SSTREAM_DEFAULT_SIZE (1 << 2)
 
+#define REALLOC_FAILURE 0
+#define REALLOC_SUCCESS !REALLOC_FAILURE
+#define REALLOC_NOT_REQUIRED \
+  ((REALLOC_FAILURE | REALLOC_SUCCESS) << REALLOC_SUCCESS)
+
 /**
  * @brief stringstream structure is a container for our string stream. It holds
  * the actual data, the length of the string and the capacity.
@@ -31,8 +36,8 @@
  */
 typedef struct stringstream {
   char* data;
-  __uint32_t length;
-  __uint32_t capacity;
+  size_t length;
+  size_t capacity;
 } stringstream;
 
 /**
@@ -43,7 +48,7 @@ typedef struct stringstream {
  * @param length String length.
  */
 typedef struct _stringstream_alloc_args {
-  __uint32_t length;
+  size_t length;
 } _stringstream_alloc_args;
 
 /**
@@ -85,7 +90,7 @@ stringstream _stringstream_var_args_alloc(
  * @param[in] length Bytes to allocate for the string.
  * @return stringstream - Heap allocated instance.
  */
-stringstream _stringstream_alloc(const __uint32_t length);
+stringstream _stringstream_alloc(const size_t length);
 
 /**
  * @brief Function allocates a stringstream instance using a const char*
@@ -95,6 +100,20 @@ stringstream _stringstream_alloc(const __uint32_t length);
  * @return stringstream - Heap allocated instance.
  */
 stringstream stringstream_str_alloc(const char* string);
+
+/**
+ * @brief Function reallocates the free store space occupied by the stringstream
+ * data.
+ *
+ * @param[in] sstream stringstream instance.
+ * @param[in] length New space to occupy in free store.
+ * @return REALLOC_FAILURE If function failed in reallocating free store space.
+ * @return REALLOC_SUCCESS If function succeed in reallocating free store space.
+ * @return REALLOC_NOT_REQUIRED If the stringstream instance already has enough
+ * space.
+ */
+__uint8_t stringstream_realloc(stringstream* const sstream,
+                               const size_t length);
 
 /**
  * @brief Function deallocates the memory occupied by the stringstream instance

@@ -45,18 +45,15 @@ stringstream _stringstream_var_args_alloc(
  * @param[in] length Bytes to allocate for the string.
  * @return stringstream - Heap allocated instance.
  */
-stringstream _stringstream_alloc(const __uint32_t length) {
+stringstream _stringstream_alloc(const size_t length) {
   stringstream sstream = {.data = (void*)0, .length = length, .capacity = 0};
-
   __uint32_t capacity = 1;
   while (capacity < length)
     capacity <<= 1;
-
   if (sstream.data = malloc(capacity * sizeof(char))) {
     sstream.capacity = capacity;
     _terminate(sstream);
   }
-
   return sstream;
 }
 
@@ -75,6 +72,38 @@ stringstream stringstream_str_alloc(const char* string) {
     sstream.length = length;
   }
   return sstream;
+}
+
+/**
+ * @brief Function reallocates the free store space occupied by the stringstream
+ * data.
+ *
+ * @param[in] sstream stringstream instance.
+ * @param[in] length New space to occupy in free store.
+ * @return REALLOC_FAILURE If function failed in reallocating free store space.
+ * @return REALLOC_SUCCESS If function succeed in reallocating free store space.
+ * @return REALLOC_NOT_REQUIRED If the stringstream instance already has enough
+ * space.
+ */
+__uint8_t stringstream_realloc(stringstream* const sstream,
+                               const size_t length) {
+  if (length <= sstream->capacity)
+    return REALLOC_NOT_REQUIRED;
+  size_t capacity = sstream->capacity ? sstream->capacity : 1;
+  while (capacity <= length + 1)
+    capacity <<= 1;
+  char* data = sstream->data;
+  sstream->data = realloc(sstream->data, capacity * sizeof(char));
+  if (!sstream->data) {
+    if (!(sstream->data = malloc(capacity * sizeof(char)))) {
+      sstream->data = data;
+      return REALLOC_FAILURE;
+    }
+    memcpy(sstream->data, data, sstream->capacity * sizeof(char));
+    free(data);
+  }
+  sstream->capacity = capacity;
+  return REALLOC_SUCCESS;
 }
 
 /**
