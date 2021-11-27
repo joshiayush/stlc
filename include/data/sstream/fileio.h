@@ -33,4 +33,17 @@
 void stringstream_readfile(stringstream* const sstream, FILE* const file,
                            size_t length);
 
+/**
+ * @brief Writes stringstream data to the file given.
+ *
+ * @param[in] sstream stringstream instance to write.
+ * @param[in] file File to write the stringstream instance data in.
+ * @param[in] begin stringstream data element position from where to start
+ * writing to the file.
+ * @param[in] end stringstream data element position where to end writing to the
+ * file.
+ */
+void stringstream_writefile(stringstream* const sstream, FILE* const file,
+                            size_t begin, size_t end);
+
 #endif
