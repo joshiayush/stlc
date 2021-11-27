@@ -34,7 +34,7 @@
  * @return stringstream - Heap allocated instance.
  */
 stringstream _stringstream_var_args_alloc(
-    const struct _stringstream_alloc_args sstream_var_args) {
+    const _stringstream_alloc_args sstream_var_args) {
   return _stringstream_alloc(sstream_var_args.length);
 }
 
