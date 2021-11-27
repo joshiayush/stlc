@@ -64,7 +64,7 @@ void stringstream_concat(stringstream* const sstream, const char* format, ...) {
  */
 void stringstream_read(stringstream* const sstream, const void* data,
                        const size_t length) {
-  (void)stringstream_realloc(sstream, length);
+  (void)stringstream_realloc(sstream, sstream->data + length);
   memcpy(sstream->data + sstream->length, data, length);
   sstream->length += length;
   _terminate(*sstream);
