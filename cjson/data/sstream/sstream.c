@@ -34,7 +34,7 @@
  * @return stringstream - Heap allocated instance.
  */
 stringstream _stringstream_var_args_alloc(
-    struct _stringstream_alloc_args sstream_var_args) {
+    const struct _stringstream_alloc_args sstream_var_args) {
   return _stringstream_alloc(sstream_var_args.length);
 }
 
@@ -47,7 +47,7 @@ stringstream _stringstream_var_args_alloc(
  */
 stringstream _stringstream_alloc(const size_t length) {
   stringstream sstream = {.data = (void*)0, .length = length, .capacity = 0};
-  __uint32_t capacity = 1;
+  size_t capacity = 1;
   while (capacity < length)
     capacity <<= 1;
   if (sstream.data = malloc(capacity * sizeof(char))) {
@@ -65,7 +65,7 @@ stringstream _stringstream_alloc(const size_t length) {
  * @return stringstream - Heap allocated instance.
  */
 stringstream stringstream_str_alloc(const char* string) {
-  __uint32_t length = strlen(string);
+  size_t length = strlen(string);
   stringstream sstream = _stringstream_alloc(length);
   if (sstream.capacity) {
     memcpy(sstream.data, string, length * sizeof(char));

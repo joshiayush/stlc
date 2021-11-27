@@ -36,8 +36,8 @@ void stringstream_concat(stringstream* const sstream, const char* format, ...) {
   va_list args;
   va_start(args, format);
   size_t avail = stringstream_avail(*sstream);
-  __int32_t format_size = vsnprintf(sstream->data + sstream->length,
-                                    avail * sizeof(char), format, args);
+  size_t format_size = vsnprintf(sstream->data + sstream->length,
+                                 avail * sizeof(char), format, args);
   va_end(args);
   if (stringstream_realloc(sstream, sstream->length + format_size) ==
       REALLOC_SUCCESS) {  // vsnprintf() has overflow protection, so if this

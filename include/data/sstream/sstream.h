@@ -81,7 +81,7 @@ typedef struct _stringstream_alloc_args {
  * @return stringstream - Heap allocated instance.
  */
 stringstream _stringstream_var_args_alloc(
-    struct _stringstream_alloc_args sstream_var_args);
+    const struct _stringstream_alloc_args sstream_var_args);
 
 /**
  * @brief Function allocates a stringstream instance using the string size @p
