@@ -23,7 +23,7 @@
  *
  * @param[in] sstream stringstring instance.
  */
-#define _stringstream_avail(sstream) \
-  ((sstream->capacity) - (sstream->length) - 1)
+#define stringstream_avail(sstream) \
+  (((sstream).capacity) - ((sstream).length) - 1)
 
 #endif
