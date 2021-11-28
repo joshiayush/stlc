@@ -19,9 +19,8 @@
 
 #include <sys/types.h>
 
+#include "bytes.h"
 #include "data/sstream/sstream.h"
-
-#define NULL_CHAR '\0'
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,10 +33,10 @@ extern "C" {
  *
  * @note This macro is private to the module sstream.
  */
-#define _terminate(sstream)                         \
-  do {                                              \
-    if ((sstream).data && (sstream).capacity)       \
-      (sstream).data[(sstream).length] = NULL_CHAR; \
+#define _terminate(sstream)                       \
+  do {                                            \
+    if ((sstream).data && (sstream).capacity)     \
+      (sstream).data[(sstream).length] = NULLCHR; \
   } while (0)
 
 /**

@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License along with
 // this program. If not, see <https://www.gnu.org/licenses/>.
 
-#include "data/sstream/modifiers.h"
+#include "bytes.h"
 #include "data/sstream/sstream.h"
 
 /**
@@ -35,7 +35,7 @@ const char* begin(const stringstream* const sstream) { return sstream->data; }
  */
 const char* end(const stringstream* const sstream) {
   char* ptr = sstream->data;
-  while ((ptr++ + (char)1) != NULL_CHAR)
+  while ((ptr++ + (char)1) != NULLCHR)
     ;
   return ptr;
 }
