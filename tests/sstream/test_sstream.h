@@ -21,6 +21,9 @@
 
 class SstreamTest : public ::testing::Test {
  protected:
+  /**
+   * @brief Deallocates @a stringstream instance from the free store.
+   */
   void TearDown() override { stringstream_dealloc(&sstream); }
 
  protected:
