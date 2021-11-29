@@ -115,3 +115,24 @@ void d_array_free(d_array* const darray) {
   free(darray->data);
   darray->data = (void*)0;
 }
+
+/**
+ * @brief Functions frees up the free store space occupied by the @a d_array
+ * container and the elements.
+ *
+ * @details This function frees up the free store space occupied by the @a
+ * d_array container and the elements in the @a d_array container. So if you use
+ * this function keep this in mind that you'll also lose access to the elements
+ * somewhere else in the free store pointed by the @a d_array container, like
+ * "lose lose".
+ *
+ * @param darray @a d_array instance.
+ */
+void d_array_free_deep(d_array* const darray) {
+  for (size_t i = 0; i < darray->capacity; ++i)
+    free(darray->data[i]);
+  darray->size = 0;
+  darray->capacity = 0;
+  free(darray->data);
+  darray->data = (void*)0;
+}

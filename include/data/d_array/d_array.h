@@ -131,6 +131,20 @@ void d_array_clear(d_array* const darray);
  */
 void d_array_free(d_array* const darray);
 
+/**
+ * @brief Functions frees up the free store space occupied by the @a d_array
+ * container and the elements.
+ *
+ * @details This function frees up the free store space occupied by the @a
+ * d_array container and the elements in the @a d_array container. So if you use
+ * this function keep this in mind that you'll also lose access to the elements
+ * somewhere else in the free store pointed by the @a d_array container, like
+ * "lose lose".
+ *
+ * @param darray @a d_array instance.
+ */
+void d_array_free_deep(d_array* const darray);
+
 #ifdef __cplusplus
 }
 #endif
