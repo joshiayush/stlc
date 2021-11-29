@@ -66,8 +66,11 @@ typedef struct _d_array_alloc_args {
  *
  * @param[in] ... Variadic argument list.
  *
- * @example d_array_alloc();
+ * @example 
+ * @code
+ *  d_array_alloc();
  *  d_array_alloc(.size=20);
+ * @endcode
  */
 #define d_array_alloc(...) \
   _d_array_var_args_alloc( \
@@ -84,8 +87,7 @@ typedef struct _d_array_alloc_args {
  * @param[in] darray_var_args _d_array_alloc_args instance.
  * @return d_array - Heap allocated instance.
  */
-d_array _d_array_var_args_alloc(
-    const _d_array_alloc_args darray_var_args);
+d_array _d_array_var_args_alloc(const _d_array_alloc_args darray_var_args);
 
 /**
  * @brief Function allocates a d_array instance in the free store of the given
@@ -108,6 +110,14 @@ d_array _d_array_alloc(const size_t size);
  * space.
  */
 __uint8_t d_array_resize(d_array* const darray, const size_t size);
+
+/**
+ * @brief Function clears up the @a d_array container and allocates fresh space
+ * for data elements.
+ *
+ * @param darray @a d_array instance.
+ */
+void d_array_clear(d_array* const darray);
 
 #ifdef __cplusplus
 }

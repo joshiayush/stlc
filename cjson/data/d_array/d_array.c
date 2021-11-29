@@ -30,8 +30,7 @@
  * @param[in] darray_var_args _d_array_alloc_args instance.
  * @return d_array - Heap allocated instance.
  */
-d_array _d_array_var_args_alloc(
-    const _d_array_alloc_args darray_var_args) {
+d_array _d_array_var_args_alloc(const _d_array_alloc_args darray_var_args) {
   return _d_array_alloc(darray_var_args.size);
 }
 
@@ -82,4 +81,20 @@ __uint8_t d_array_resize(d_array* const darray, const size_t size) {
   }
   darray->capacity = capacity;
   return RESIZE_SUCCESS;
+}
+
+/**
+ * @brief Function clears up the @a d_array container and allocates fresh space
+ * for data elements.
+ *
+ * @param darray @a d_array instance.
+ */
+void d_array_clear(d_array* const darray) {
+  free(darray->data);
+  darray->size = D_ARRAY_DEFAULT_SIZE;
+  size_t capacity = 1;
+  while (capacity < darray->size)
+    capacity <<= 1;
+  darray->data = malloc(capacity * sizeof(void*));
+  darray->capacity = capacity;
 }
