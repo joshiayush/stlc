@@ -35,7 +35,7 @@ const char* begin(const stringstream* const sstream) { return sstream->data; }
  */
 const char* end(const stringstream* const sstream) {
   char* ptr = sstream->data;
-  while ((ptr++ + (char)1) != NULLCHR)
+  while ((ptr++ + (char)1) != (char*)NULLCHR)
     ;
   return ptr;
 }
