@@ -66,7 +66,7 @@ typedef struct _d_array_alloc_args {
  *
  * @param[in] ... Variadic argument list.
  *
- * @example 
+ * @example
  * @code
  *  d_array_alloc();
  *  d_array_alloc(.size=20);
@@ -118,6 +118,18 @@ __uint8_t d_array_resize(d_array* const darray, const size_t size);
  * @param darray @a d_array instance.
  */
 void d_array_clear(d_array* const darray);
+
+/**
+ * @brief Function frees up the free store space occupied by the @a d_array
+ * container.
+ *
+ * @details This function frees up the free store space occupied by the @a
+ * d_array container. Note, this function does not free up the space occupied by
+ * the container elements in the free store.
+ *
+ * @param darray @a d_array instance.
+ */
+void d_array_free(d_array* const darray);
 
 #ifdef __cplusplus
 }

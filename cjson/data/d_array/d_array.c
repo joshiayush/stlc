@@ -98,3 +98,20 @@ void d_array_clear(d_array* const darray) {
   darray->data = malloc(capacity * sizeof(void*));
   darray->capacity = capacity;
 }
+
+/**
+ * @brief Function frees up the free store space occupied by the @a d_array
+ * container.
+ *
+ * @details This function frees up the free store space occupied by the @a
+ * d_array container. Note, this function does not free up the space occupied by
+ * the container elements in the free store.
+ *
+ * @param darray @a d_array instance.
+ */
+void d_array_free(d_array* const darray) {
+  darray->size = 0;
+  darray->capacity = 0;
+  free(darray->data);
+  darray->data = (void*)0;
+}
