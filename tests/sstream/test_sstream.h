@@ -27,10 +27,21 @@ class SstreamTest : public ::testing::Test {
   stringstream sstream;
 };
 
-TEST_F(SstreamTest, SstreamTest_testStringStreamAllocMacroWith0Arguments_Test) {
-  sstream = stringstream_alloc();
+TEST_F(SstreamTest, SstreamTest_testStringStreamDefAllocFunction_Test) {
+  sstream = stringstream_def_alloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
+  uint32_t capacity = 1;
+  while (capacity < sstream.length)
+    capacity <<= 1;
+  ASSERT_EQ(sstream.capacity, capacity);
+}
+
+TEST_F(SstreamTest,
+       SstreamTest_testStringStreamAllocFunctionWith10Length_Test) {
+  sstream = stringstream_alloc(10);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 10);
   uint32_t capacity = 1;
   while (capacity < sstream.length)
     capacity <<= 1;

@@ -45,47 +45,12 @@ typedef struct stringstream {
 } stringstream;
 
 /**
- * @brief Structure used in the wrapper function _stringstream_var_args_alloc()
- * to allocate a default string length of SSTREAM_DEFAULT_SIZE in case the
- * string length is not given explicitly.
+ * @brief Function allocates a stringstream instance using a default string
+ * length value in case the length is not given.
  *
- * @param length String length.
- */
-typedef struct _stringstream_alloc_args {
-  size_t length;
-} _stringstream_alloc_args;
-
-/**
- * @brief Wrapper around the function _stringstream_var_args_alloc to provide
- * variadic arguments to the _stringstream_alloc_args instance while
- * instantiating one with a length argument.
- *
- * The C standard allows specifying named parameters multiple times, the later
- * override, so we leverage this power of C and pass a default .length argument
- * in case none is given.
- *
- * @param[in] __VA_ARGS__ Variadic arguments.
- *
- * @example stringstream_alloc();
- *  stringstream_alloc(.length=20);
- */
-#define stringstream_alloc(...) \
-  _stringstream_var_args_alloc( \
-      (_stringstream_alloc_args){.length = SSTREAM_DEFAULT_SIZE, __VA_ARGS__})
-
-/**
- * @brief Function allocates a stringstream instance using a
- * _stringstream_alloc_args struct to populate the string length argument with a
- * default value in case the length is not given.
- *
- * This is a workaround to pass in default parameters to function
- * _stringstream_alloc().
- *
- * @param[in] sstream_var_args _stringstream_alloc_args instance.
  * @return stringstream - Heap allocated instance.
  */
-stringstream _stringstream_var_args_alloc(
-    const _stringstream_alloc_args sstream_var_args);
+stringstream stringstream_def_alloc();
 
 /**
  * @brief Function allocates a stringstream instance using the string size @p
@@ -94,7 +59,7 @@ stringstream _stringstream_var_args_alloc(
  * @param[in] length Bytes to allocate for the string.
  * @return stringstream - Heap allocated instance.
  */
-stringstream _stringstream_alloc(const size_t length);
+stringstream stringstream_alloc(const size_t length);
 
 /**
  * @brief Function allocates a stringstream instance using a const char*
