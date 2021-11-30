@@ -41,10 +41,10 @@ TEST_F(SstreamTest, SstreamTest_testStringStreamDefAllocFunction_Test) {
 }
 
 TEST_F(SstreamTest,
-       SstreamTest_testStringStreamAllocFunctionWith10Length_Test) {
-  sstream = stringstream_alloc(10);
+       SstreamTest_testStringStreamAllocFunctionWithArbitraryLength_Test) {
+  sstream = stringstream_alloc(2147483648);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, 10);
+  ASSERT_EQ(sstream.length, 2147483648);
   uint32_t capacity = 1;
   while (capacity < sstream.length)
     capacity <<= 1;

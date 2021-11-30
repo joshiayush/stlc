@@ -16,7 +16,7 @@
 
 #include <gtest/gtest.h>
 
-#include "sstream/test_sstream.h"
+#include "sstream/testSstream.h"
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
