@@ -30,7 +30,7 @@ class SstreamTest : public ::testing::Test {
   stringstream sstream;
 };
 
-TEST_F(SstreamTest, SstreamTest_testStringStreamDefAllocFunction_Test) {
+TEST_F(SstreamTest, stringStreamDefAllocFunctionTest) {
   sstream = stringstream_def_alloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
@@ -40,8 +40,7 @@ TEST_F(SstreamTest, SstreamTest_testStringStreamDefAllocFunction_Test) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(SstreamTest,
-       SstreamTest_testStringStreamAllocFunctionWithArbitraryLength_Test) {
+TEST_F(SstreamTest, stringStreamAllocFunctionWithArbitraryLengthTest) {
   sstream = stringstream_alloc(2147483648);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 2147483648);
