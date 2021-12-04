@@ -16,6 +16,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
+
 #include "data/sstream/accessors.h"
 #include "data/sstream/sstream.h"
 
@@ -44,6 +46,18 @@ TEST_F(SstreamTest, stringStreamAllocFunctionWithArbitraryLengthTest) {
   sstream = stringstream_alloc(2147483648);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 2147483648);
+  uint32_t capacity = 1;
+  while (capacity < sstream.length)
+    capacity <<= 1;
+  ASSERT_EQ(sstream.capacity, capacity);
+}
+
+TEST_F(SstreamTest, stringStreamStrAllocFunctionWithConstCharPointerTest) {
+  const char* str = "stringStreamStrAllocFunctionWithConstCharPointerTest";
+  sstream = stringstream_str_alloc(str);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(std::strcmp(sstream.data, str), 0);
+  ASSERT_EQ(sstream.length, std::strlen(str));
   uint32_t capacity = 1;
   while (capacity < sstream.length)
     capacity <<= 1;
