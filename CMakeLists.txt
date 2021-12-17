@@ -27,10 +27,25 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-find_package(GTest REQUIRED)
-include_directories(${GTest_INCLUDE_DIRS})
+cmake_minimum_required(VERSION 3.16.3)
+project(cjson
+	VERSION 1.0.0
+	HOMEPAGE_URL https://github.com/joshiayush/cjson
+	LANGUAGES C CXX)
 
-file(GLOB TEST_SRC_FILES "*.cc")
+include_directories(include)
 
-add_executable(tests ${TEST_SRC_FILES})
-target_link_libraries(tests ${GTEST_LIBRARIES} ${PROJECT_NAME} pthread)
+# Note: This requires cmake to be run each time the files have changed to
+# configure the build system 
+file(GLOB_RECURSE CJSON_SRC_FILES "cjson/*.c")
+
+option(BUILD_TESTS "Builds the tests for library cjson." OFF)
+
+add_library(${PROJECT_NAME} SHARED ${CJSON_SRC_FILES})
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION 1)
+
+install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/build)
+
+if(BUILD_TESTS)
+	add_subdirectory(tests)
+endif()
