@@ -27,33 +27,57 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "data/d_array/accessors.h"
+#ifndef CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
+#define CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
 
-#include <stdio.h>
-#include <sys/types.h>
+#include <gtest/gtest.h>
 
-/**
- * @brief Sets the value in a @a d_array instance provided that the @p idx value
- * given is in bounds.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] elem Element to add or to replace the @a d_array data with.
- * @param[in] idx Index where to add the @p elem given.
- */
-void d_array_set(d_array* const darray, const void* const elem,
-                 const size_t idx) {
-  if (idx > darray->capacity)
-    return;
-  darray->data[idx] = elem;
+#include <cstring>
+
+#include "data/sstream/accessors.h"
+#include "data/sstream/sstream.h"
+
+class SstreamTest : public ::testing::Test {
+ protected:
+  /**
+   * @brief Deallocates @a stringstream instance from the free store.
+   */
+  void TearDown() override { stringstream_dealloc(&sstream); }
+
+ protected:
+  stringstream sstream;
+};
+
+TEST_F(SstreamTest, stringStreamDefAllocFunctionTest) {
+  sstream = stringstream_def_alloc();
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
+  uint32_t capacity = 1;
+  while (capacity < sstream.length)
+    capacity <<= 1;
+  ASSERT_EQ(sstream.capacity, capacity);
 }
 
-/**
- * @brief Returns the @a d_array instance data at given @p idx.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] idx Element index.
- * @return const void* to the data located at the location.
- */
-const void* d_array_get(const d_array* const darray, const size_t idx) {
-  return idx > darray->size ? NULL : darray->data[idx];
+TEST_F(SstreamTest, stringStreamAllocFunctionWithArbitraryLengthTest) {
+  sstream = stringstream_alloc(2147483648);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 2147483648);
+  uint32_t capacity = 1;
+  while (capacity < sstream.length)
+    capacity <<= 1;
+  ASSERT_EQ(sstream.capacity, capacity);
 }
+
+TEST_F(SstreamTest, stringStreamStrAllocFunctionWithConstCharPointerTest) {
+  const char* str = "stringStreamStrAllocFunctionWithConstCharPointerTest";
+  sstream = stringstream_str_alloc(str);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(std::strcmp(sstream.data, str), 0);
+  ASSERT_EQ(sstream.length, std::strlen(str));
+  uint32_t capacity = 1;
+  while (capacity < sstream.length)
+    capacity <<= 1;
+  ASSERT_EQ(sstream.capacity, capacity);
+}
+
+#endif  // CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_

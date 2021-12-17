@@ -27,33 +27,7 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "data/d_array/accessors.h"
+#ifndef INCLUDE_CJSON_H_
+#define INCLUDE_CJSON_H_
 
-#include <stdio.h>
-#include <sys/types.h>
-
-/**
- * @brief Sets the value in a @a d_array instance provided that the @p idx value
- * given is in bounds.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] elem Element to add or to replace the @a d_array data with.
- * @param[in] idx Index where to add the @p elem given.
- */
-void d_array_set(d_array* const darray, const void* const elem,
-                 const size_t idx) {
-  if (idx > darray->capacity)
-    return;
-  darray->data[idx] = elem;
-}
-
-/**
- * @brief Returns the @a d_array instance data at given @p idx.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] idx Element index.
- * @return const void* to the data located at the location.
- */
-const void* d_array_get(const d_array* const darray, const size_t idx) {
-  return idx > darray->size ? NULL : darray->data[idx];
-}
+#endif  // INCLUDE_CJSON_H_
