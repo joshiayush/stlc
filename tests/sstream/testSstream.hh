@@ -37,46 +37,51 @@
 #include "data/sstream/accessors.h"
 #include "data/sstream/sstream.h"
 
-class SstreamTest : public ::testing::Test {
+class StringStreamTest : public ::testing::Test {
  protected:
-  /**
-   * @brief Deallocates @a stringstream instance from the free store.
-   */
-  void TearDown() override { stringstream_dealloc(&sstream); }
+  // Computes the capacity of the 'StringStream' instance using the Python list
+  // resize routine that is identical to static function
+  // '_ComputeStringStreamContCapacity()' inside module 'sstream.c'.
+  void _ComputeStringStreamContCapacity(const size_t length,
+                                        size_t* const capacity) {
+    *capacity = (length >> 3) + (length < 9 ? 3 : 6);
+    *capacity += length;
+  }
+
+  // De-allocate 'StringStream' instance from the free store.
+  void TearDown() override { StringStreamDealloc(&sstream); }
 
  protected:
-  stringstream sstream;
+  StringStream sstream;
 };
 
-TEST_F(SstreamTest, stringStreamDefAllocFunctionTest) {
-  sstream = stringstream_def_alloc();
+TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
+  sstream = StringStreamDefAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
-  uint32_t capacity = 1;
-  while (capacity < sstream.length)
-    capacity <<= 1;
+  size_t capacity = 1;
+  _ComputeStringStreamContCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(SstreamTest, stringStreamAllocFunctionWithArbitraryLengthTest) {
-  sstream = stringstream_alloc(2147483648);
+TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitraryLengthTest) {
+  sstream = StringStreamAlloc(2147483648);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 2147483648);
-  uint32_t capacity = 1;
-  while (capacity < sstream.length)
-    capacity <<= 1;
+  size_t capacity = 1;
+  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(SstreamTest, stringStreamStrAllocFunctionWithConstCharPointerTest) {
-  const char* str = "stringStreamStrAllocFunctionWithConstCharPointerTest";
-  sstream = stringstream_str_alloc(str);
+TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
+  const char* str = "StringStreamStrAllocFunctionWithConstCharPointerTest";
+  sstream = StringStreamStrAlloc(str);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(std::strcmp(sstream.data, str), 0);
   ASSERT_EQ(sstream.length, std::strlen(str));
-  uint32_t capacity = 1;
-  while (capacity < sstream.length)
-    capacity <<= 1;
+  size_t capacity = 1;
+  _ComputeStringStreamContCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 

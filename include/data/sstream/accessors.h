@@ -36,7 +36,7 @@
  *
  * @param[in] sstream stringstring instance.
  */
-#define stringstream_avail(sstream) \
+#define _GetStringStreamAvailableSpace(sstream) \
   (((sstream).capacity) - ((sstream).length) - 1)
 
 #endif  // CJSON_INCLUDE_DATA_SSTREAM_ACCESSORS_H_

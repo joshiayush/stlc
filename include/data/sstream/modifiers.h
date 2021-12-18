@@ -39,50 +39,27 @@
 extern "C" {
 #endif
 
-/**
- * @brief Terminates a string inside of the stringstream instance at '\0'.
- *
- * @param[in] sstream stringstream instance.
- *
- * @note This macro is private to the module sstream.
- */
-#define _terminate(sstream)                       \
+// Terminates a 'StringStream' 'data' instance at '\0'.
+#define _TerminateStringStreamBuffer(sstream)     \
   do {                                            \
     if ((sstream).data && (sstream).capacity)     \
       (sstream).data[(sstream).length] = NULLCHR; \
   } while (0)
 
-/**
- * @brief Concatenates a newly formatted string onto the existing string in
- * stringstream instance.
- *
- * @param[in] sstream stringstream instance.
- * @param[in] format Formatted string to concatenate.
- * @param[in] ... Arguments to substitute the formatted string with.
- */
-void stringstream_concat(stringstream* const sstream, const char* format, ...);
+// Concatenates a newly formatted string onto the existing string inside
+// 'StringStream' instance and increments the 'length' attribute.
+void StringStreamConcat(StringStream* const sstream, const char* format, ...);
 
-/**
- * @brief Concatenates data of known length on to the existing data instance of
- * stringstream instance.
- *
- * @param[in] sstream stringstream instance.
- * @param[in] data String to concatenate the new data on.
- * @param[in] length String to concatenate.
- */
-void stringstream_read(stringstream* const sstream, const void* data,
-                       const size_t length);
+// Concatenates data of known length onto the existing 'data' instance of
+// 'StringStream' instance.  This function will re-allocate the 'data' buffer if
+// needed.
+void StringStreamRead(StringStream* const sstream, const void* data,
+                      const size_t length);
 
-/**
- * @brief Impedes the position of the terminator character ('\0') by length, or
- * if the length is greater than the data length of stringstream instance,
- * places the terminator character ('\0') at beginning.
- *
- * @param[in] sstream stringstream instance.
- * @param[in] length Number of elements to impede the terminator character
- * ('\0') by.
- */
-void stringstream_retreat(stringstream* const sstream, const size_t length);
+// Impedes the position of the terminate character '\0' by 'length', or if the
+// length is greater than the data length of 'StringStream' instance, places the
+// terminator '\0' at beginning.
+void StringStreamRetreat(StringStream* const sstream, const size_t length);
 
 #ifdef __cplusplus
 }

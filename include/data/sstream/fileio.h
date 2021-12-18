@@ -39,29 +39,18 @@
 extern "C" {
 #endif
 
-/**
- * @brief Reads the content of the file given in the stringstream instance.
- *
- * @param[in] sstream stringstream instance.
- * @param[in] file File pointer.
- * @param[in] length Length of the data to be read. Reads the entire file if the
- * length given is 0.
- */
-void stringstream_readfile(stringstream* const sstream, FILE* const file,
-                           size_t length);
+// Reads the content of the file given of the given 'length' in the
+// 'StringStream' instance.
+//
+// The length of the data read from the file by this function is equal to the
+// value of the 'length' given but in case the 'length' given is '0' then this
+// function will read the entire file.
+void StringStreamReadFile(StringStream* const sstream, FILE* const file,
+                          size_t length);
 
-/**
- * @brief Writes stringstream data to the file given.
- *
- * @param[in] sstream stringstream instance to write.
- * @param[in] file File to write the stringstream instance data in.
- * @param[in] begin stringstream data element position from where to start
- * writing to the file.
- * @param[in] end stringstream data element position where to end writing to the
- * file.
- */
-void stringstream_writefile(stringstream* const sstream, FILE* const file,
-                            size_t begin, size_t end);
+// Writes 'StringStream' data from position 'begin' to 'end' in the given file.
+void StringStreamWriteFile(StringStream* const sstream, FILE* const file,
+                           size_t begin, size_t end);
 
 #ifdef __cplusplus
 }

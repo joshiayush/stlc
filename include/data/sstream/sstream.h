@@ -34,76 +34,59 @@
 
 #define SSTREAM_DEFAULT_SIZE (1 << 2)
 
-#define REALLOC_FAILURE 0
-#define REALLOC_SUCCESS !REALLOC_FAILURE
-#define REALLOC_NOT_REQUIRED \
-  ((REALLOC_FAILURE | REALLOC_SUCCESS) << REALLOC_SUCCESS)
+#define SSTREAM_REALLOC_FAILURE 0
+#define SSTREAM_REALLOC_SUCCESS !SSTREAM_REALLOC_FAILURE
+#define SSTREAM_REALLOC_NOT_REQUIRED                   \
+  ((SSTREAM_REALLOC_FAILURE | SSTREAM_REALLOC_SUCCESS) \
+   << SSTREAM_REALLOC_SUCCESS)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * @brief stringstream structure is a container for our string stream. It holds
- * the actual data, the length of the string and the capacity.
- *
- * @param data String.
- * @param length String length.
- * @param capacity String capacity.
- */
-typedef struct stringstream {
+// Container for our string streams.  It holds the actual data, the length of
+// the string and the capacity of the StringStream container.
+typedef struct StringStream {
   char* data;
   size_t length;
+  // data contains space for 'capacity' elements.  The number
+  // currently in use is length.
+  // Invariants:
+  //     0 <= length <= capacity
+  //     data == NULL implies length == capacity == 0
   size_t capacity;
-} stringstream;
+} StringStream;
 
-/**
- * @brief Function allocates a stringstream instance using a default string
- * length value in case the length is not given.
- *
- * @return stringstream - Heap allocated instance.
- */
-stringstream stringstream_def_alloc();
+// Default string stream allocator in case the length is not known.
+//
+// This function will initialize a 'StringStream' container with a initial
+// 'length' of '_SSTREAM_DEFAULT_SIZE'.
+StringStream StringStreamDefAlloc();
 
-/**
- * @brief Function allocates a stringstream instance using the string size @p
- * length.
- *
- * @param[in] length Bytes to allocate for the string.
- * @return stringstream - Heap allocated instance.
- */
-stringstream stringstream_alloc(const size_t length);
+// Allocates 'StringStream' instance of given length.
+StringStream StringStreamAlloc(const size_t length);
 
-/**
- * @brief Function allocates a stringstream instance using a const char*
- * instance.
- *
- * @param[in] string String to copy to stringstream instance.
- * @return stringstream - Heap allocated instance.
- */
-stringstream stringstream_str_alloc(const char* string);
+// Allocates 'StringStream' from a 'const char*' C-String.
+//
+// The length of the 'StringStream' instance will be the number of items from
+// the first element to the first NULL byte in the string.
+StringStream StringStreamStrAlloc(const char* string);
 
-/**
- * @brief Function reallocates the free store space occupied by the stringstream
- * data.
- *
- * @param[in] sstream stringstream instance.
- * @param[in] length New space to occupy in free store.
- * @return REALLOC_FAILURE If function failed in reallocating free store space.
- * @return REALLOC_SUCCESS If function succeed in reallocating free store space.
- * @return REALLOC_NOT_REQUIRED If the stringstream instance already has enough
- * space.
- */
-__uint8_t stringstream_realloc(stringstream* const sstream,
-                               const size_t length);
+// Reallocates the free store space occupied by the 'StringStream' instance.
+//
+// This function reallocates the 'StringStream' instance either by expanding the
+// size in place (if available) or by moving the entire container to a new
+// address.
+//
+// 'length' is the new length of the container; if less than the capacity of the
+// container then this function will simply return the value of macro
+// 'SSTREAM_REALLOC_NOT_REQUIRED' or if greater than the capacity of the
+// container then will return 'SSTREAM_REALLOC_SUCCESS' on success or
+// 'SSTREAM_REALLOC_FAILURE' on failure.
+__uint8_t StringStreamRealloc(StringStream* const sstream, const size_t length);
 
-/**
- * @brief Function deallocates the memory occupied by the stringstream instance
- * in the free store.
- *
- * @param[in] sstream stringstream instance.
- */
-void stringstream_dealloc(stringstream* const sstream);
+// Deallocates the memory occupied by the 'StringStream' instance.
+void StringStreamDealloc(StringStream* const sstream);
 
 #ifdef __cplusplus
 }

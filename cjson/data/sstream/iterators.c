@@ -30,23 +30,15 @@
 #include "bytes.h"
 #include "data/sstream/sstream.h"
 
-/**
- * @brief Returns a iterator to the beginning of the data instance of the
- * stringstream instance.
- *
- * @param[in] sstream stringstream instance.
- * @return const char* pointer to the beginning of the data instance.
- */
-const char* begin(const stringstream* const sstream) { return sstream->data; }
+// Returns a 'const char*' to the beginning of the 'data' instance of the
+// 'StringStream' instance.
+const char* StringStreamBegin(const StringStream* const sstream) {
+  return sstream->data;
+}
 
-/**
- * @brief Returns a iterator to the end of the data instance of the stringstream
- * instance.
- *
- * @param[in] sstream stringstream instance.
- * @return const char* pointer to the end of the data instance.
- */
-const char* end(const stringstream* const sstream) {
+// Returns a iterator to the end of the 'data' instance of the 'StringStream'
+// instance.
+const char* StringStreamEnd(const StringStream* const sstream) {
   char* ptr = sstream->data;
   while ((ptr++ + (char)1) != (char*)NULLCHR)
     ;  // NOLINT
