@@ -34,20 +34,19 @@
 
 #include <cstring>
 
-#include "data/sstream/accessors.h"
 #include "data/sstream/sstream.h"
 
-#define _ARBITRARY_TESTING_LENGTH 2147483648
+#define _ARBITRARY_SSTREAM_TESTING_LENGTH 2147483648
 
 class StringStreamTest : public ::testing::Test {
  protected:
   // Computes the capacity of the 'StringStream' instance using the Python list
   // resize routine that is identical to static function
   // '_ComputeStringStreamBufferCapacity()' inside module 'sstream.c'.
-  void _ComputeStringStreamBufferCapacity(const size_t length,
-                                          size_t* const capacity) {
-    *capacity = (length >> 3) + (length < 9 ? 3 : 6);
-    *capacity += length;
+  void _ComputeStringStreamBufferCapacity(const size_t& length,
+                                          size_t& capacity) {
+    capacity = (length >> 3) + (length < 9 ? 3 : 6);
+    capacity += length;
   }
 
   // De-allocate 'StringStream' instance from the free store.
@@ -62,17 +61,17 @@ TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitraryLengthTest) {
-  sstream = StringStreamAlloc(_ARBITRARY_TESTING_LENGTH);
+TEST_F(StringStreamTest,
+       StringStreamAllocFunctionWithArbitrarySstreamLengthTest) {
+  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
-
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -83,7 +82,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
   ASSERT_EQ(std::strcmp(sstream.data, str), 0);
   ASSERT_EQ(sstream.length, std::strlen(str));
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -98,7 +97,7 @@ TEST_F(
   ASSERT_EQ(std::strncmp(sstream.data, str, std::strlen(str)), 0);
   ASSERT_EQ(sstream.length, std::strlen(str));
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -114,33 +113,36 @@ TEST_F(
   ASSERT_EQ(std::strncmp(sstream.data, str, strlen_), 0);
   ASSERT_EQ(sstream.length, strlen_);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
-  sstream = StringStreamAlloc(_ARBITRARY_TESTING_LENGTH);
+  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
-  ASSERT_EQ(StringStreamRealloc(&sstream, _ARBITRARY_TESTING_LENGTH / 2),
-            SSTREAM_REALLOC_NOT_REQUIRED);
+  ASSERT_EQ(
+      StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH / 2),
+      SSTREAM_REALLOC_NOT_REQUIRED);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
-  sstream = StringStreamAlloc(_ARBITRARY_TESTING_LENGTH);
+  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
-  ASSERT_EQ(StringStreamRealloc(&sstream, _ARBITRARY_TESTING_LENGTH * 2),
-            SSTREAM_REALLOC_SUCCESS);
-  ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
-  _ComputeStringStreamBufferCapacity(_ARBITRARY_TESTING_LENGTH * 2, &capacity);
+  ASSERT_EQ(
+      StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH * 2),
+      SSTREAM_REALLOC_SUCCESS);
+  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
+  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH * 2,
+                                     capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
