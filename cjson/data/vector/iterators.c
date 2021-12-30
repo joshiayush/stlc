@@ -13,7 +13,7 @@
 // distribution.
 //     * Neither the name of joshiayush Inc. nor the names of its
 // contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
+// this software without spescific prior written permission.
 //
 // THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 // "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -27,33 +27,50 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "data/d_array/accessors.h"
+#include "data/vector/iterators.h"
 
-#include <stdio.h>
 #include <sys/types.h>
 
-/**
- * @brief Sets the value in a @a d_array instance provided that the @p idx value
- * given is in bounds.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] elem Element to add or to replace the @a d_array data with.
- * @param[in] idx Index where to add the @p elem given.
- */
-void d_array_set(d_array* const darray, const void* const elem,
-                 const size_t idx) {
-  if (idx > darray->capacity)
-    return;
-  darray->data[idx] = elem;
+#include "bool.h"
+
+VectorIterator VectorIteratorNew(Vector *const vector) {
+  VectorIterator vector_iterator;
+  vector_iterator.data = vector;
+  vector_iterator.cur_idx = 0;
+  return vector_iterator;
 }
 
-/**
- * @brief Returns the @a d_array instance data at given @p idx.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] idx Element index.
- * @return const void* to the data located at the location.
- */
-const void* d_array_get(const d_array* const darray, const size_t idx) {
-  return idx > darray->size ? NULL : darray->data[idx];
+void *VectorIteratorNext(VectorIterator *it) {
+  return it->cur_idx < it->data->size ? it->data->data[it->cur_idx++]
+                                      : (void *)0;
+}
+
+// Executes the given predicate on each element of the 'Vector' instance.
+void VectorMap(Vector *const vector, void (*pred)(const void *const elem)) {
+  for (size_t i = 0; i < vector->size; ++i)
+    pred(vector->data[i]);
+}
+
+// Checks if for any value in the 'Vector' instance the given predicate
+// evaluates to true or not.
+//
+// Elements can be of any type that evaluates to true when used as an expression
+// inside of the 'if' clause.
+bool_t VectorAny(Vector *const vector, bool_t (*pred)(const void *const elem)) {
+  for (size_t i = 0; i < vector->size; ++i)
+    if (pred(vector->data[i]))
+      return TRUE;
+  return FALSE;
+}
+
+// Checks if for all of the values in the 'Vector' instance the given predicate
+// evaluates to true or not.
+//
+// Elements can be of any type that evaluates to true when used as an expression
+// inside of the 'if' clause.
+bool_t VectorAll(Vector *const vector, bool_t (*pred)(const void *const elem)) {
+  for (size_t i = 0; i < vector->size; ++i)
+    if (!pred(vector->data[i]))
+      return FALSE;
+  return TRUE;
 }

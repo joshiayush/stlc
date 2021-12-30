@@ -27,39 +27,45 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_DATA_D_ARRAY_ACCESSORS_H_
-#define CJSON_INCLUDE_DATA_D_ARRAY_ACCESSORS_H_
+#ifndef CJSON_INCLUDE_DATA_VECTOR_MODIFIERS_H_
+#define CJSON_INCLUDE_DATA_VECTOR_MODIFIERS_H_
 
 #include <sys/types.h>
 
-#include "data/d_array/d_array.h"
+#include "data/vector/vector.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-/**
- * @brief Sets the value in a @a d_array instance provided that the @p idx value
- * given is in bounds.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] elem Element to add or to replace the @a d_array data with.
- * @param[in] idx Index where to add the @p elem given.
- */
-void d_array_set(d_array* const darray, const void* const elem,
-                 const size_t idx);
+// Function to insert elmenet at a specific index inside the 'Vector' container.
+//
+// Function inserts element at a specific index inside the 'Vector' container
+// provided that the index is in bounds.
+void VectorInsert(Vector* const vector, void* const elem, const size_t idx);
 
-/**
- * @brief Returns the @a d_array instance data at given @p idx.
- *
- * @param[in] darray @a d_array instance.
- * @param[in] idx Element index.
- * @return const void* to the data located at the location.
- */
-const void* d_array_get(const d_array* const darray, const size_t idx);
+// Function to insert the given element at the very first index shifting the
+// rest of the array elements towards the last.
+void VectorUnshift(Vector* const vector, void* const elem);
+
+// Function to insert the given element at the very last index of the 'Vector'
+// buffer.
+void VectorPush(Vector* const vector, void* const elem);
+
+// Returns the address of the element located at the index 'idx' while
+// over-writing element's position.
+void* VectorDelete(Vector* const vector, const size_t idx);
+
+// Returns the very first element of a 'Vector' instance and then over writes
+// the memory block.
+void* VectorShift(Vector* const vector);
+
+// Returns the very last element of a 'Vector' instance and then over writes the
+// memory block.
+void* VectorRemove(Vector* const vector);
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif  // CJSON_INCLUDE_DATA_D_ARRAY_ACCESSORS_H_
+#endif  // CJSON_INCLUDE_DATA_VECTOR_MODIFIERS_H_
