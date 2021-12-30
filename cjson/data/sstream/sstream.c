@@ -69,12 +69,18 @@ StringStream StringStreamAlloc(const size_t length) {
 // The length of the 'StringStream' instance will be the number of items from
 // the first element to the first NULL byte in the string.
 StringStream StringStreamStrAlloc(const char* string) {
-  size_t length = strlen(string);
-  StringStream sstream = StringStreamAlloc(length);
-  if (sstream.capacity) {
-    memcpy(sstream.data, string, length * sizeof(char));
-    sstream.length = length;
-  }
+  return StringStreamStrNAlloc(string, strlen(string));
+}
+
+// Allocates 'n' from a 'const char*' C-String into a 'StringStream' instance.
+//
+// This function will create a 'StringStream' instance by copying all the
+// characters from the given C-String to the 'data' member inside 'StringStream'
+// instance regardless of any 'NULL' byte on the way.
+StringStream StringStreamStrNAlloc(const char* string, const size_t n) {
+  StringStream sstream = StringStreamAlloc(n);
+  if (sstream.capacity)
+    memcpy(sstream.data, string, sstream.length * sizeof(char));
   return sstream;
 }
 

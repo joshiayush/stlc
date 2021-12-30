@@ -102,6 +102,22 @@ TEST_F(
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
+TEST_F(
+    StringStreamTest,
+    StringStreamStrNAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
+  const char* str =
+      "StringStream\0StrN\0AllocFunctionWithConstChar\0PointerWithEmbededNullBy"
+      "teTes\0t";
+  const size_t strlen_ = 77;
+  sstream = StringStreamStrNAlloc(str, strlen_);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(std::strncmp(sstream.data, str, strlen_), 0);
+  ASSERT_EQ(sstream.length, strlen_);
+  size_t capacity;
+  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  ASSERT_EQ(sstream.capacity, capacity);
+}
+
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
   sstream = StringStreamAlloc(_ARBITRARY_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);

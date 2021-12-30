@@ -72,6 +72,13 @@ StringStream StringStreamAlloc(const size_t length);
 // the first element to the first NULL byte in the string.
 StringStream StringStreamStrAlloc(const char* string);
 
+// Allocates 'n' from a 'const char*' C-String into a 'StringStream' instance.
+//
+// This function will create a 'StringStream' instance by copying all the
+// characters from the given C-String to the 'data' member inside 'StringStream'
+// instance regardless of any 'NULL' byte on the way.
+StringStream StringStreamStrNAlloc(const char* string, const size_t n);
+
 // Reallocates the free store space occupied by the 'StringStream' instance.
 //
 // This function reallocates the 'StringStream' instance either by expanding the
