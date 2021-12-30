@@ -39,11 +39,15 @@
 extern "C" {
 #endif
 
+// 'VectorIterator' creates a iterator using the 'Vector' instance.
 typedef struct VectorIterator {
   Vector *data;
+  // 'cur_idx' holds the current position of the iterator inside the
+  // 'VectorIterator' instance.
   size_t cur_idx;
 } VectorIterator;
 
+// Creates a new 'VectorIterator' instance using a 'Vector' instance.
 VectorIterator VectorIteratorNew(Vector *const vector);
 
 void *VectorIteratorNext(VectorIterator *it);

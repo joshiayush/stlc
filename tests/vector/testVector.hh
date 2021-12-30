@@ -27,12 +27,48 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef CJSON_TESTS_VECTOR_TESTVECTOR_HH_
+#define CJSON_TESTS_VECTOR_TESTVECTOR_HH_
+
 #include <gtest/gtest.h>
 
-#include "sstream/testSstream.hh"
-#include "vector/testVector.hh"
+#include "data/vector/vector.h"
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+#define _ARBITRARY_VECTOR_TESTING_LENGTH 2147489
+
+class VectorTest : public ::testing::Test {
+ protected:
+  // Computes the capacity of the 'Vector' instance using the Python list resize
+  // routine that is identical to static function
+  // '_ComputeVectorBufferCapacity()' inside module 'sstream.c'.
+  void _ComputeVectorBufferCapacity(const size_t& size, size_t& capacity) {
+    capacity = (size >> 3) + (size < 9 ? 3 : 6);
+    capacity += size;
+  }
+
+  // De-allocate 'StringStream' instance from the free store.
+  void TearDown() override { VectorFree(&vector); }
+
+ protected:
+  Vector vector;
+};
+
+TEST_F(VectorTest, VectorDefAllocFunctionWithDefaultLengthTest) {
+  vector = VectorDefAlloc();
+  ASSERT_NE(vector.data, (void*)0);
+  ASSERT_EQ(vector.size, VECTOR_DEFAULT_SIZE);
+  size_t capacity;
+  _ComputeVectorBufferCapacity(vector.size, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
 }
+
+TEST_F(VectorTest, VectorAllocFunctionWithArbitraryVectorLengthTest) {
+  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+  ASSERT_NE(vector.data, (void*)0);
+  ASSERT_EQ(vector.size, _ARBITRARY_VECTOR_TESTING_LENGTH);
+  size_t capacity;
+  _ComputeVectorBufferCapacity(vector.size, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+}
+
+#endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_

@@ -33,16 +33,17 @@
 
 #include "bool.h"
 
+// Creates a new 'VectorIterator' instance using a 'Vector' instance.
 VectorIterator VectorIteratorNew(Vector *const vector) {
-  VectorIterator vector_iterator;
-  vector_iterator.data = vector;
-  vector_iterator.cur_idx = 0;
-  return vector_iterator;
+  VectorIterator vector_itr;
+  vector_itr.data = vector;
+  vector_itr.cur_idx = 0;
+  return vector_itr;
 }
 
-void *VectorIteratorNext(VectorIterator *it) {
-  return it->cur_idx < it->data->size ? it->data->data[it->cur_idx++]
-                                      : (void *)0;
+void *VectorIteratorNext(VectorIterator *itr) {
+  return itr->cur_idx < itr->data->size ? itr->data->data[itr->cur_idx++]
+                                        : (void *)0;
 }
 
 // Executes the given predicate on each element of the 'Vector' instance.

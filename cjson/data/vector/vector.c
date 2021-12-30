@@ -52,7 +52,7 @@ Vector VectorAlloc(const size_t size) {
   Vector vector = {.data = (void*)0, .size = size, .capacity = 0};
   size_t capacity;
   _ComputeVectorBufferCapacity(size, &capacity);
-  if (vector.data = malloc(capacity * sizeof(void*)))
+  if (vector.data = (void**)malloc(capacity * sizeof(void*)))
     vector.capacity = capacity;
   return vector;
 }
@@ -74,9 +74,9 @@ __uint8_t VectorResize(Vector* const vector, const size_t size) {
   size_t capacity;
   _ComputeVectorBufferCapacity(size, &capacity);
   void** data = vector->data;
-  vector->data = realloc(vector->data, capacity * sizeof(void*));
+  vector->data = (void**)realloc(vector->data, capacity * sizeof(void*));
   if (!vector->data) {
-    if (!(vector->data = malloc(capacity * sizeof(void*)))) {
+    if (!(vector->data = (void**)malloc(capacity * sizeof(void*)))) {
       vector->data = data;
       return VECTOR_RESIZE_FAILURE;
     }
@@ -91,7 +91,7 @@ __uint8_t VectorResize(Vector* const vector, const size_t size) {
 // Clears up the 'Vector' container and allocates fresh space for data elements.
 void VectorClear(Vector* const vector) {
   free(vector->data);
-  vector->data = malloc(vector->capacity * sizeof(void*));
+  vector->data = (void**)malloc(vector->capacity * sizeof(void*));
 }
 
 // Frees up the free store space occupied by the 'Vector' container.
@@ -115,11 +115,15 @@ void VectorFree(Vector* const vector) {
 // function keep this in mind that you'll also lose access to the elements
 // somewhere else in the free store pointed by the 'Vector' container, like
 // "lose lose".
+//
+// THE MAIN CAVEAT of using this function is that the elements stored in this
+// 'vector' must be dynamically allocated otherwise you might get a error:
+//          free(): double free detected in tcache 2
+//          Aborted (core dumped)
 void VectorFreeDeep(Vector* const vector) {
   for (size_t i = 0; i < vector->capacity; ++i)
     free(vector->data[i]);
   vector->size = 0;
   vector->capacity = 0;
-  free(vector->data);
   vector->data = (void*)0;
 }
