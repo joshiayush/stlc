@@ -43,9 +43,9 @@ class StringStreamTest : public ::testing::Test {
  protected:
   // Computes the capacity of the 'StringStream' instance using the Python list
   // resize routine that is identical to static function
-  // '_ComputeStringStreamContCapacity()' inside module 'sstream.c'.
-  void _ComputeStringStreamContCapacity(const size_t length,
-                                        size_t* const capacity) {
+  // '_ComputeStringStreamBufferCapacity()' inside module 'sstream.c'.
+  void _ComputeStringStreamBufferCapacity(const size_t length,
+                                          size_t* const capacity) {
     *capacity = (length >> 3) + (length < 9 ? 3 : 6);
     *capacity += length;
   }
@@ -62,7 +62,7 @@ TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -71,7 +71,7 @@ TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitraryLengthTest) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
 
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -83,7 +83,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
   ASSERT_EQ(std::strcmp(sstream.data, str), 0);
   ASSERT_EQ(sstream.length, std::strlen(str));
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -98,7 +98,7 @@ TEST_F(
   ASSERT_EQ(std::strncmp(sstream.data, str, std::strlen(str)), 0);
   ASSERT_EQ(sstream.length, std::strlen(str));
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -114,7 +114,7 @@ TEST_F(
   ASSERT_EQ(std::strncmp(sstream.data, str, strlen_), 0);
   ASSERT_EQ(sstream.length, strlen_);
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -123,7 +123,7 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
   ASSERT_EQ(StringStreamRealloc(&sstream, _ARBITRARY_TESTING_LENGTH / 2),
             SSTREAM_REALLOC_NOT_REQUIRED);
@@ -135,12 +135,12 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
   size_t capacity;
-  _ComputeStringStreamContCapacity(sstream.length, &capacity);
+  _ComputeStringStreamBufferCapacity(sstream.length, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
   ASSERT_EQ(StringStreamRealloc(&sstream, _ARBITRARY_TESTING_LENGTH * 2),
             SSTREAM_REALLOC_SUCCESS);
   ASSERT_EQ(sstream.length, _ARBITRARY_TESTING_LENGTH);
-  _ComputeStringStreamContCapacity(_ARBITRARY_TESTING_LENGTH * 2, &capacity);
+  _ComputeStringStreamBufferCapacity(_ARBITRARY_TESTING_LENGTH * 2, &capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 

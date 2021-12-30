@@ -38,8 +38,8 @@
 // Computes the capacity of the 'StringStream' instance using the Python list
 // resize routine so that the following evaluates to true:
 //      0 <= length <= capacity
-static void _ComputeStringStreamContCapacity(const size_t length,
-                                             size_t* const capacity) {
+static void _ComputeStringStreamBufferCapacity(const size_t length,
+                                               size_t* const capacity) {
   *capacity = (length >> 3) + (length < 9 ? 3 : 6);
   *capacity += length;
 }
@@ -56,7 +56,7 @@ StringStream StringStreamDefAlloc() {
 StringStream StringStreamAlloc(const size_t length) {
   StringStream sstream = {.data = (void*)0, .length = length, .capacity = 0};
   size_t capacity;
-  _ComputeStringStreamContCapacity(length, &capacity);
+  _ComputeStringStreamBufferCapacity(length, &capacity);
   if (sstream.data = malloc(capacity * sizeof(char))) {
     sstream.capacity = capacity;
     _TerminateStringStreamBuffer(sstream);
@@ -100,7 +100,7 @@ __uint8_t StringStreamRealloc(StringStream* const sstream,
   if (length <= sstream->capacity)
     return SSTREAM_REALLOC_NOT_REQUIRED;
   size_t capacity;
-  _ComputeStringStreamContCapacity(length, &capacity);
+  _ComputeStringStreamBufferCapacity(length, &capacity);
   char* data = sstream->data;
   sstream->data = realloc(sstream->data, capacity * sizeof(char));
   if (!sstream->data) {
