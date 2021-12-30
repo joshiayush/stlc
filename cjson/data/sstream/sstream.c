@@ -57,7 +57,7 @@ StringStream StringStreamAlloc(const size_t length) {
   StringStream sstream = {.data = (void*)0, .length = length, .capacity = 0};
   size_t capacity;
   _ComputeStringStreamBufferCapacity(length, &capacity);
-  if (sstream.data = malloc(capacity * sizeof(char))) {
+  if (sstream.data = (char*)malloc(capacity * sizeof(char))) {
     sstream.capacity = capacity;
     _TerminateStringStreamBuffer(sstream);
   }
@@ -102,9 +102,9 @@ __uint8_t StringStreamRealloc(StringStream* const sstream,
   size_t capacity;
   _ComputeStringStreamBufferCapacity(length, &capacity);
   char* data = sstream->data;
-  sstream->data = realloc(sstream->data, capacity * sizeof(char));
+  sstream->data = (char*)realloc(sstream->data, capacity * sizeof(char));
   if (!sstream->data) {
-    if (!(sstream->data = malloc(capacity * sizeof(char)))) {
+    if (!(sstream->data = (char*)malloc(capacity * sizeof(char)))) {
       sstream->data = data;
       return SSTREAM_REALLOC_FAILURE;
     }
