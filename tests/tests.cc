@@ -29,7 +29,11 @@
 
 #include <gtest/gtest.h>
 
+// StringStream API tests
+#include "sstream/testAccessors.hh"
 #include "sstream/testSstream.hh"
+
+// Vector API tests
 #include "vector/testVector.hh"
 
 int main(int argc, char** argv) {

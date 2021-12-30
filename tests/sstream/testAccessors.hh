@@ -27,12 +27,29 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_DATA_SSTREAM_ACCESSORS_H_
-#define CJSON_INCLUDE_DATA_SSTREAM_ACCESSORS_H_
+#ifndef CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_
+#define CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_
 
-// Calculates the number of memory blocks available in the data instance of the
-// 'StringStream' instance.
-#define _GetStringStreamAvailableSpace(sstream) \
-  (((sstream).capacity) - ((sstream).length) - 1)
+#include <gtest/gtest.h>
 
-#endif  // CJSON_INCLUDE_DATA_SSTREAM_ACCESSORS_H_
+#include "data/sstream/accessors.h"
+#include "data/sstream/sstream.h"
+
+TEST(GetStringStreamAvailableSpace,
+     TestProtectedMacroWhenStringStreamDefAllocIsUsed) {
+  StringStream sstream = StringStreamDefAlloc();
+  ASSERT_EQ(_GetStringStreamAvailableSpace(sstream),
+            ((((sstream.length >> 3) + (3)) + sstream.length) -
+             (sstream.length) - 1));
+}
+
+TEST(GetStringStreamAvailableSpace,
+     TestProtectedMacroWhenStringStreamAllocIsUsed) {
+  const size_t strlen_ = 2147483648;
+  StringStream sstream = StringStreamAlloc(strlen_);
+  ASSERT_EQ(
+      _GetStringStreamAvailableSpace(sstream),
+      ((((sstream.length >> 3) + 6) + sstream.length) - (sstream.length) - 1));
+}
+
+#endif  // CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_
