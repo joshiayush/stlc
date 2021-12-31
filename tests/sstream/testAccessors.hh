@@ -35,18 +35,27 @@
 #include "data/sstream/accessors.h"
 #include "data/sstream/sstream.h"
 
-TEST(GetStringStreamAvailableSpace,
-     TestProtectedMacroWhenStringStreamDefAllocIsUsed) {
-  StringStream sstream = StringStreamDefAlloc();
+class GetStringStreamAvailableSpaceTest : public ::testing::Test {
+ protected:
+  // De-allocate 'StringStream' instance from the free store.
+  void TearDown() override { StringStreamDealloc(&sstream); }
+
+ protected:
+  StringStream sstream;
+};
+
+TEST_F(GetStringStreamAvailableSpaceTest,
+       TestProtectedMacroWhenStringStreamDefAllocIsUsed) {
+  sstream = StringStreamDefAlloc();
   ASSERT_EQ(_GetStringStreamAvailableSpace(sstream),
             ((((sstream.length >> 3) + (3)) + sstream.length) -
              (sstream.length) - 1));
 }
 
-TEST(GetStringStreamAvailableSpace,
-     TestProtectedMacroWhenStringStreamAllocIsUsed) {
+TEST_F(GetStringStreamAvailableSpaceTest,
+       TestProtectedMacroWhenStringStreamAllocIsUsed) {
   const size_t strlen_ = 2147483648;
-  StringStream sstream = StringStreamAlloc(strlen_);
+  sstream = StringStreamAlloc(strlen_);
   ASSERT_EQ(
       _GetStringStreamAvailableSpace(sstream),
       ((((sstream.length >> 3) + 6) + sstream.length) - (sstream.length) - 1));
