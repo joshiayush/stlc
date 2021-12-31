@@ -27,17 +27,48 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef CJSON_TESTS_SSTREAM_TESTITERATORS_HH_
+#define CJSON_TESTS_SSTREAM_TESTITERATORS_HH_
+
 #include <gtest/gtest.h>
 
-// StringStream API tests
-#include "sstream/testAccessors.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testSstream.hh"
+#include <cstring>
 
-// Vector API tests
-#include "vector/testVector.hh"
+#include "data/sstream/iterators.h"
+#include "data/sstream/sstream.h"
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+class StringStreamIteratorsTest : public ::testing::Test {
+ protected:
+  // De-allocate 'StringStream' instance from the free store.
+  void TearDown() override { StringStreamDealloc(&sstream); }
+
+ protected:
+  StringStream sstream;
+};
+
+TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithNullByte) {
+  sstream = StringStreamStrAlloc("\0");
+  ASSERT_EQ(*StringStreamBegin(&sstream), (const char)'\0');
 }
+
+TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithCString) {
+  const char* str = "StringStreamBeginTestWithCString";
+  sstream = StringStreamStrAlloc(str);
+  const char* begin = StringStreamBegin(&sstream);
+  ASSERT_EQ(*begin, (const char)'S');
+  ASSERT_EQ(std::strncmp(begin, str, sstream.length), 0);
+}
+
+TEST_F(StringStreamIteratorsTest, StringStreamEndTestWithNullByte) {
+  sstream = StringStreamStrAlloc("\0");
+  ASSERT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
+}
+
+TEST_F(StringStreamIteratorsTest, StringStreamEndTestWithCString) {
+  const char* str = "StringStreamBeginTestWithCString";
+  sstream = StringStreamStrAlloc(str);
+  const char* end = StringStreamEnd(&sstream);
+  ASSERT_EQ(*end, (const char)'\0');
+}
+
+#endif  // CJSON_TESTS_SSTREAM_TESTITERATORS_HH_
