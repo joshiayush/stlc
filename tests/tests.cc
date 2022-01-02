@@ -32,6 +32,7 @@
 // StringStream API tests
 #include "sstream/testAccessors.hh"
 #include "sstream/testIterators.hh"
+#include "sstream/testModifiers.hh"
 #include "sstream/testSstream.hh"
 
 // Vector API tests
