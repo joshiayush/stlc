@@ -39,7 +39,6 @@
 
 class StringStreamIteratorsTest : public ::testing::Test {
  protected:
-  // De-allocate 'StringStream' instance from the free store.
   void TearDown() override { StringStreamDealloc(&sstream); }
 
  protected:

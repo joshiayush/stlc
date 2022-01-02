@@ -35,21 +35,12 @@
 #include <cstring>
 
 #include "data/sstream/sstream.h"
+#include "utils.hh"
 
 #define _ARBITRARY_SSTREAM_TESTING_LENGTH 2147483648
 
 class StringStreamTest : public ::testing::Test {
  protected:
-  // Computes the capacity of the ``StringStream`` instance using the Python
-  // list resize routine that is identical to static function
-  // ``_ComputeStringStreamBufferCapacity()`` inside module ``sstream.c``.
-  void _ComputeStringStreamBufferCapacity(const size_t& length,
-                                          size_t& capacity) {
-    capacity = (length >> 3) + (length < 9 ? 3 : 6);
-    capacity += length;
-  }
-
-  // De-allocate ``StringStream`` instance from the free store.
   void TearDown() override { StringStreamDealloc(&sstream); }
 
  protected:
@@ -61,7 +52,8 @@ TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(SSTREAM_DEFAULT_SIZE, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -71,8 +63,8 @@ TEST_F(StringStreamTest,
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH,
-                                     capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -85,7 +77,8 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
   ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -100,7 +93,8 @@ TEST_F(
   ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -117,7 +111,8 @@ TEST_F(
   ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
   ASSERT_EQ(sstream.length, strlen_);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -126,8 +121,8 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH,
-                                     capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
   ASSERT_EQ(
       StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH / 2),
@@ -140,15 +135,15 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH,
-                                     capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
   ASSERT_EQ(
       StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH * 2),
       SSTREAM_REALLOC_SUCCESS);
   ASSERT_EQ(sstream.length, 0);
-  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH * 2,
-                                     capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      _ARBITRARY_SSTREAM_TESTING_LENGTH * 2, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 

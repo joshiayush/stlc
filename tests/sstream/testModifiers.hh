@@ -36,19 +36,10 @@
 
 #include "data/sstream/modifiers.h"
 #include "data/sstream/sstream.h"
+#include "utils.hh"
 
 class StringStreamModifiersTest : public ::testing::Test {
  protected:
-  // Computes the capacity of the ``StringStream`` instance using the Python
-  // list resize routine that is identical to static function
-  // ``_ComputeStringStreamBufferCapacity()`` inside module ``sstream.c``.
-  void _ComputeStringStreamBufferCapacity(const size_t& length,
-                                          size_t& capacity) {
-    capacity = (length >> 3) + (length < 9 ? 3 : 6);
-    capacity += length;
-  }
-
-  // De-allocate ``StringStream`` instance from the free store.
   void TearDown() override { StringStreamDealloc(&sstream); }
 
  protected:
@@ -63,7 +54,8 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(SSTREAM_DEFAULT_SIZE, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
   StringStreamConcat(&sstream, "%s %s", teststr_, "and charming :).");
@@ -76,7 +68,8 @@ TEST_F(StringStreamModifiersTest,
       << "  data_\n"
       << "    Which is: " << data_;
   ASSERT_EQ(sstream.length, 39);
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -88,7 +81,8 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, std::strlen(teststr_));
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
   StringStreamConcat(&sstream, " %s %s %d%s", "is really sweet :)",
@@ -103,7 +97,8 @@ TEST_F(StringStreamModifiersTest,
       << "  data_\n"
       << "    Which is: " << data_;
   ASSERT_EQ(sstream.length, 63);
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 

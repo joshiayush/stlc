@@ -27,35 +27,23 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_
-#define CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_
+#ifndef CJSON_TESTS_SSTREAM_UTILS_HH_
+#define CJSON_TESTS_SSTREAM_UTILS_HH_
 
-#include <gtest/gtest.h>
-
-#include "data/sstream/accessors.h"
-#include "data/sstream/sstream.h"
-
-class GetStringStreamAvailableSpaceTest : public ::testing::Test {
- protected:
-  void TearDown() override { StringStreamDealloc(&sstream); }
-
- protected:
-  StringStream sstream;
-};
-
-TEST_F(GetStringStreamAvailableSpaceTest,
-       TestProtectedMacroWhenStringStreamDefAllocIsUsed) {
-  sstream = StringStreamDefAlloc();
-  ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
-            sstream.capacity - sstream.length - 1);
+namespace cjson {
+namespace testing {
+namespace sstream {
+namespace utils {
+// Computes the capacity of the ``StringStream`` instance using the Python
+// list resize routine that is identical to static function
+// ``_ComputeStringStreamBufferCapacity()`` inside module ``sstream.c``.
+void ComputeStringStreamBufferCapacity(const size_t& length, size_t& capacity) {
+  capacity = (length >> 3) + (length < 9 ? 3 : 6);
+  capacity += length;
 }
+}  // namespace utils
+}  // namespace sstream
+}  // namespace testing
+}  // namespace cjson
 
-TEST_F(GetStringStreamAvailableSpaceTest,
-       TestProtectedMacroWhenStringStreamAllocIsUsed) {
-  const size_t strlen_ = 2147483648;
-  sstream = StringStreamAlloc(strlen_);
-  ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
-            sstream.capacity - sstream.length - 1);
-}
-
-#endif  // CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_
+#endif  // CJSON_TESTS_SSTREAM_UTILS_HH_
