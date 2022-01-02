@@ -30,20 +30,22 @@
 #include "data/map/ops.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "bool.h"
 #include "data/map/map.h"
 
-// Injects the given set of key-value pair to the given 'Map' instance if
+// Injects the given set of key-value pair to the given ``Map`` instance if
 // already exists, overrides it.
 //
 // Generates a hash value using the given key and finds the position of a new
-// 'MapEntry' instance in the 'buckets' linked list.  To combat collision we
-// extend the already saved 'MapEntry' by hooking it up with the new 'MapEntry'
-// instance while keeping the order sorted based on the hash computed.
+// ``MapEntry`` instance in the ``buckets`` linked list.  To combat collision we
+// extend the already saved ``MapEntry`` by hooking it up with the new
+// ``MapEntry`` instance while keeping the order sorted based on the hash
+// computed.
 //
-// Resizes the 'Map' instance in case the load factor exceeds the
-// 'MAX_LOAD_FACTOR'.
+// Resizes the ``Map`` instance in case the load factor exceeds the
+// ``MAX_LOAD_FACTOR``.
 void MapPut(Map *map, void *const key, void *const value) {
   hash_t hash = map->hash(key);
   size_t idx = hash % map->bucketslen;
@@ -82,7 +84,7 @@ void MapPut(Map *map, void *const key, void *const value) {
 // computed ``hash``.
 //
 // This should be very reminiscent of what we are doing in function
-// ``MapEntry *MapGetEntry(Map *const map, void *const key)``
+// ``MapEntry *MapGetEntry(Map *const map, void *const key)``.
 void *MapGet(Map *const map, void *const key) {
   MapEntry *mapentry = MapGetEntry(map, key);
   return mapentry ? mapentry->value : NULL;
@@ -116,4 +118,49 @@ MapEntry *MapGetEntry(Map *const map, void *const key) {
   }
 
   return current;
+}
+
+// Returns a ``void*`` and removes to/the value mapped by the given ``key``.
+//
+// ``MapEntry`` with the associated key i.e., ``key`` will be deleted from the
+// free-store while returning a ``void*`` to the value mapped with the given
+// ``key``.
+//
+// This should be very reminiscent of what we are doing in function
+// ``MapEntry *MapGetEntry(Map *const map, void *const key)`` except after
+// locating the entry in the ``buckets`` list we free the memory occupied by
+// that ``MapEntry``.  This function is not responsible to free up the
+// free-store occupied by the value inside of the ``MapEntry`` the caller should
+// take care of that.
+void *MapRemove(Map *const map, void *const key) {
+  hash_t hash = map->hash(key);
+  size_t idx = hash % map->bucketslen;
+
+  if (map->buckets[idx] == NULL)
+    return NULL;
+
+  MapEntry *current = map->buckets[idx];
+  MapEntry *prev = NULL;
+
+  while (current) {
+    if (hash < current->hash)
+      return (current = NULL);
+    if (hash == current->hash && map->keycmp(key, current->key))
+      break;
+    prev = current;
+    current = current->next;
+  }
+
+  if (current == NULL)
+    return NULL;
+
+  void *ret = current->value;
+  if (prev)
+    prev->next = current->next;
+  else
+    map->buckets[idx] = current->next;
+  free(current);
+  --(map->entrieslen);
+
+  return ret;
 }
