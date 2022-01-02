@@ -223,6 +223,17 @@ void _MapFreeEntryDeep(MapEntry* const mapentry) {
   }
 }
 
+// Returns a ``Map`` instance with the built-in support for hash generation and
+// key comparison regardless of their data types.
+Map MapAllocStrAsKey() { return MapAlloc(Hash, KeyCmp); }
+
+// Returns a ``Map`` instance with the number of given ``entrieslen`` entries
+// and with the built-in support for hash generation and key comparison
+// regardless of their data types.
+Map MapAllocNStrAsKey(const size_t entrieslen) {
+  return MapAllocNEntries(entrieslen, Hash, KeyCmp);
+}
+
 // Creates a hash from a ``key`` of generic data type.
 //
 // This functionality allow us to place a ``key`` inside our ``Map`` regardless
