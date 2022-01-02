@@ -35,7 +35,7 @@
 #include "bool.h"
 
 // We are pretty much doing everything in constant time if we don't have a load
-// factor greater than '1'.
+// factor greater than ``1``.
 //
 //                      #Entries
 //      LoadFactor = ~~~~~~~~~~~~~~    <= 1 for O(1)
@@ -50,24 +50,24 @@ extern "C" {
 // Custom type to represent hash data.
 typedef size_t hash_t;
 
-// Function signature for the function defined to generate hash using the 'key'
-// value.
+// Function signature for the function defined to generate hash using the
+// ``key`` value.
 //
-// Function defined with this signature takes in a 'const void*' which means a
-// value of any type can be placed in the 'key' of the 'Map' and using that
-// 'key' we can generate a 'hash' which is a 'hash_t' type value.
+// Function defined with this signature takes in a ``const void*`` which means a
+// value of any type can be placed in the ``key`` of the ``Map`` and using that
+// ``key`` we can generate a ``hash`` which is a ``hash_t`` type value.
 typedef hash_t (*hash_f)(const void* key);
 
 // Function signature for the function defined to compare two different keys for
 // their equality.
 //
-// Function defined with this signature takes 'const void*' to the keys of the
-// 'Map' which means you can pass in a data of any type that makes a 'key' pair
-// inside the 'Map'.
+// Function defined with this signature takes ``const void*`` to the keys of the
+// ``Map`` which means you can pass in a data of any type that makes a ``key``
+// pair inside the ``Map``.
 typedef bool_t (*keycmp_f)(const void* key1, const void* key2);
 
 // Creates a Map entry inside of a bucket.  This map entry is later extended in
-// case the 'LoadFactor' exceeds by '1' due to collision.
+// case the ``LoadFactor`` exceeds by ``1`` due to collision.
 typedef struct MapEntry {
   void* key;
   void* value;
@@ -84,11 +84,11 @@ typedef struct MapEntry {
   struct MapEntry* next;
 } MapEntry;
 
-// Creates a 'MapEntry' instance with the given key-value pairs and a hash.
+// Creates a ``MapEntry`` instance with the given key-value pairs and a hash.
 //
-// Allocates a 'MapEntry' instance in the free-store and fills that memory with
-// the given values.  Remember to free the returned 'MapEntry' instance when not
-// needed.
+// Allocates a ``MapEntry`` instance in the free-store and fills that memory
+// with the given values.  Remember to free the returned ``MapEntry`` instance
+// when not needed.
 MapEntry* MapAllocEntryWithHash(void* key, void* value, const hash_t hash);
 
 typedef struct Map {
@@ -103,89 +103,92 @@ typedef struct Map {
   size_t entrieslen;
 } Map;
 
-// Allocates a 'Map' instance of a default bucket length of
-// 'MAP_DEFAULT_BUCKET_LEN' provided that the 'hash' function to generate a hash
-// and a 'keycmp' function to compare two distinct keys inside a 'Map' instance
-// is given.
+// Allocates a ``Map`` instance of a default bucket length of
+// ``MAP_DEFAULT_BUCKET_LEN`` provided that the ``hash`` function to generate a
+// hash and a ``keycmp`` function to compare two distinct keys inside a ``Map``
+// instance is given.
 //
-// While allocating a 'Map' instance you can also use the built-in hash
-// generator function 'Hash()' to generate a hash value from a 'key' regardless
-// of its data type and also the built-in key compare function 'KeyCmp()' to
-// compare two distinct keys regardless of their data type but both of the keys
-// must have the same data type and the size occupied by the type in the memory
-// must be explicitly provided.
+// While allocating a ``Map`` instance you can also use the built-in hash
+// generator function ``Hash()`` to generate a hash value from a ``key``
+// regardless of its data type and also the built-in key compare function
+// ``KeyCmp()`` to compare two distinct keys regardless of their data type but
+// both of the keys must have the same data type and the size occupied by the
+// type in the memory must be explicitly provided.
 Map MapAlloc(hash_f hash, keycmp_f keycmp);
 
-// Allocates a 'Map' instance of the given 'bucketslen' provided that the 'hash'
-// function to generate a hash and a 'keycmp' function to compare two distinct
-// keys inside a 'Map' instance is given.
+// Allocates a ``Map`` instance of the given ``bucketslen`` provided that the
+// ``hash`` function to generate a hash and a ``keycmp`` function to compare two
+// distinct keys inside a ``Map`` instance is given.
 //
-// While allocating a 'Map' instance you can also use the built-in hash
-// generator function 'Hash()' to generate a hash value from a 'key' regardless
-// of its data type and also the built-in key compare function 'KeyCmp()' to
-// compare two distinct keys regardless of their data type but both of the keys
-// must have the same data type and the size occupied by the type in the memory
-// must be explicitly provided.
+// While allocating a ``Map`` instance you can also use the built-in hash
+// generator function ``Hash()`` to generate a hash value from a ``key``
+// regardless of its data type and also the built-in key compare function
+// ``KeyCmp()`` to compare two distinct keys regardless of their data type but
+// both of the keys must have the same data type and the size occupied by the
+// type in the memory must be explicitly provided.
 Map MapAllocNBuckets(size_t bucketslen, hash_f hash, keycmp_f keycmp);
 
-// Allocates a 'Map' instance when the number of entries that are going to be in
-// our bucket is given.
+// Allocates a ``Map`` instance when the number of entries that are going to be
+// in our bucket is given.
 //
-// Explicitly providing the number of entries in the entire 'Map' instance is
-// helpful to keep the 'MAX_LOAD_FACTOR' below 0.75 by increasing the amount of
-// buckets our 'Map' instance can hold thus minimizing the chances of collision.
+// Explicitly providing the number of entries in the entire ``Map`` instance is
+// helpful to keep the ``MAX_LOAD_FACTOR`` below 0.75 by increasing the amount
+// of buckets our ``Map`` instance can hold thus minimizing the chances of
+// collision.
 //
-// While allocating a 'Map' instance you can also use the built-in hash
-// generator function 'Hash()' to generate a hash value from a 'key' regardless
-// of its data type and also the built-in key compare function 'KeyCmp()' to
-// compare two distinct keys regardless of their data type but both of the keys
-// must have the same data type and the size occupied by the type in the memory
-// must be explicitly provided.
+// While allocating a ``Map`` instance you can also use the built-in hash
+// generator function ``Hash()`` to generate a hash value from a ``key``
+// regardless of its data type and also the built-in key compare function
+// ``KeyCmp()`` to compare two distinct keys regardless of their data type but
+// both of the keys must have the same data type and the size occupied by the
+// type in the memory must be explicitly provided.
 Map MapAllocNEntries(const size_t entrieslen, hash_f hash, keycmp_f keycmp);
 
-// Reallocates a 'Map' instance by extending the 'bucketslen' until the
+// Reallocates a ``Map`` instance by extending the ``bucketslen`` until the
 // following does not evaluates to true:
 //
 //                      #Entries
 //      LoadFactor > ~~~~~~~~~~~~~~
 //                      #Buckets
 //
-// Calling this function will result in a new 'Map' instance which would be the
-// exact copy of the previous 'Map' instance except for the 'bucketslen'.
+// Calling this function will result in a new ``Map`` instance which would be
+// the exact copy of the previous ``Map`` instance except for the
+// ``bucketslen``.
 //
-// We want to re-allocate the 'Map' instance and extend the number of buckets it
-// currently has so to combat the chances of collisions.
+// We want to re-allocate the ``Map`` instance and extend the number of buckets
+// it currently has so to combat the chances of collisions.
 void MapRealloc(Map* map);
 
-// Frees up a 'Map' instance and the entries associated with it.
+// Frees up a ``Map`` instance and the entries associated with it.
 //
 // This function is resposible for clearning up the free-store occupied by your
-// 'Map' instance after calling this function the 'Map' data reference passed
-// becomes empty.
+// ``Map`` instance after calling this function the ``Map`` data reference
+// passed becomes empty.
 void MapFree(Map* const map);
 
 // Private function to free up the space occupied by the entries in a bucket.
 //
-// Takes in a 'MapEntry' instance but frees up all the other entries linked with
-// that map entry and leaves the map entry given intially unchanged.
+// Takes in a ``MapEntry`` instance but frees up all the other entries linked
+// with that map entry and leaves the map entry given intially unchanged.
 //
 // Only the neighbours are freed using this function not the head node you still
 // need to free the head node by yourself.  This function is an implementation
 // detail you should not use it as it is not the part of the public API.
 void _MapFreeEntry(MapEntry* mapentry);
 
-// Creates a hash from a 'key' of generic data type.
+// Creates a hash from a ``key`` of generic data type.
 //
-// This functionality allow us to place a 'key' inside our 'Map' regardless of
-// the data type.  We read 'size' bytes from the given 'key' and accumulate a
-// 'hash' value.
+// This functionality allow us to place a ``key`` inside our ``Map`` regardless
+// of the data type.  We read ``size`` bytes from the given ``key`` and
+// accumulate a
+// ``hash`` value.
 hash_t Hash(const void* key, const size_t size);
 
-// Compares the eqaulity of two 'keys' of generic data type.
+// Compares the eqaulity of two ``keys`` of generic data type.
 //
-// We compare 'size' bytes of 'key1' with 'key2' to create a result.  Keys can
-// be of any type as long as the size of memory occupied by an individual key is
-// given.
+// We compare ``size`` bytes of ``key1`` with ``key2`` to create a result.  Keys
+// can be of any type as long as the size of memory occupied by an individual
+// key is given.
 bool_t KeyCmp(const void* key1, const void* key2, const size_t size);
 
 #ifdef __cplusplus

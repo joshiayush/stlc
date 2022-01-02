@@ -39,7 +39,8 @@
 extern "C" {
 #endif
 
-// Terminates a 'StringStream' 'data' instance at '\0'.
+// Terminates a ``StringStream`` ``data`` instance at ``\0``.  Meant to be
+// protected inside ``sstream`` module.
 #define _TerminateStringStreamBuffer(sstream)     \
   do {                                            \
     if ((sstream).data && (sstream).capacity)     \
@@ -47,18 +48,18 @@ extern "C" {
   } while (0)
 
 // Concatenates a newly formatted string onto the existing string inside
-// 'StringStream' instance and increments the 'length' attribute.
+// ``StringStream`` instance and increments the ``length`` attribute.
 void StringStreamConcat(StringStream* const sstream, const char* format, ...);
 
-// Concatenates data of known length onto the existing 'data' instance of
-// 'StringStream' instance.  This function will re-allocate the 'data' buffer if
-// needed.
+// Concatenates data of known length onto the existing ``data`` instance of
+// ``StringStream`` instance.  This function will re-allocate the ``data``
+// buffer if needed.
 void StringStreamRead(StringStream* const sstream, const void* data,
                       const size_t length);
 
-// Impedes the position of the terminate character '\0' by 'length', or if the
-// length is greater than the data length of 'StringStream' instance, places the
-// terminator '\0' at beginning.
+// Impedes the position of the terminate character ``\0`` by ``length``, or if
+// the length is greater than the data length of ``StringStream`` instance,
+// places the terminator ``\0`` at beginning.
 void StringStreamRetreat(StringStream* const sstream, const size_t length);
 
 #ifdef __cplusplus

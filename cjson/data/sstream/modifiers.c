@@ -38,7 +38,7 @@
 #include "data/sstream/sstream.h"
 
 // Concatenates a newly formatted string onto the existing string inside
-// 'StringStream' instance and increments the 'length' attribute.
+// ``StringStream`` instance and increments the ``length`` attribute.
 void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -62,9 +62,9 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   _TerminateStringStreamBuffer(*sstream);
 }
 
-// Concatenates data of known length onto the existing 'data' instance of
-// 'StringStream' instance.  This function will re-allocate the 'data' buffer if
-// needed.
+// Concatenates data of known length onto the existing ``data`` instance of
+// ``StringStream`` instance.  This function will re-allocate the ``data``
+// buffer if needed.
 void StringStreamRead(StringStream* const sstream, const void* data,
                       const size_t length) {
   (void)StringStreamRealloc(sstream, sstream->length + length);
@@ -73,9 +73,9 @@ void StringStreamRead(StringStream* const sstream, const void* data,
   _TerminateStringStreamBuffer(*sstream);
 }
 
-// Impedes the position of the terminate character '\0' by 'length', or if the
-// length is greater than the data length of 'StringStream' instance, places the
-// terminator '\0' at beginning.
+// Impedes the position of the terminate character ``\0`` by ``length``, or if
+// the length is greater than the data length of ``StringStream`` instance,
+// places the terminator ``\0`` at beginning.
 void StringStreamRetreat(StringStream* const sstream, const size_t length) {
   if (!sstream->length || !sstream->capacity)
     return;

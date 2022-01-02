@@ -49,7 +49,7 @@ extern "C" {
 typedef struct StringStream {
   char* data;
   size_t length;
-  // data contains space for 'capacity' elements.  The number
+  // data contains space for ``capacity`` elements.  The number
   // currently in use is length.
   // Invariants:
   //     0 <= length <= capacity
@@ -59,40 +59,41 @@ typedef struct StringStream {
 
 // Default string stream allocator in case the length is not known.
 //
-// This function will initialize a 'StringStream' container with a initial
-// 'length' of '_SSTREAM_DEFAULT_SIZE'.
+// This function will initialize a ``StringStream`` container with a initial
+// ``length`` of ``_SSTREAM_DEFAULT_SIZE``.
 StringStream StringStreamDefAlloc();
 
-// Allocates 'StringStream' instance of given length.
+// Allocates ``StringStream`` instance of given length.
 StringStream StringStreamAlloc(const size_t length);
 
-// Allocates 'StringStream' from a 'const char*' C-String.
+// Allocates ``StringStream`` from a ``const char*`` C-String.
 //
-// The length of the 'StringStream' instance will be the number of items from
+// The length of the ``StringStream`` instance will be the number of items from
 // the first element to the first NULL byte in the string.
 StringStream StringStreamStrAlloc(const char* string);
 
-// Allocates 'n' from a 'const char*' C-String into a 'StringStream' instance.
+// Allocates ``n`` from a ``const char*`` C-String into a ``StringStream``
+// instance.
 //
-// This function will create a 'StringStream' instance by copying all the
-// characters from the given C-String to the 'data' member inside 'StringStream'
-// instance regardless of any 'NULL' byte on the way.
+// This function will create a ``StringStream`` instance by copying all the
+// characters from the given C-String to the ``data`` member inside
+// ``StringStream`` instance regardless of any ``NULL`` byte on the way.
 StringStream StringStreamStrNAlloc(const char* string, const size_t n);
 
-// Reallocates the free store space occupied by the 'StringStream' instance.
+// Reallocates the free store space occupied by the ``StringStream`` instance.
 //
-// This function reallocates the 'StringStream' instance either by expanding the
-// size in place (if available) or by moving the entire container to a new
+// This function reallocates the ``StringStream`` instance either by expanding
+// the size in place (if available) or by moving the entire container to a new
 // address.
 //
-// 'length' is the new length of the container; if less than the capacity of the
-// container then this function will simply return the value of macro
-// 'SSTREAM_REALLOC_NOT_REQUIRED' or if greater than the capacity of the
-// container then will return 'SSTREAM_REALLOC_SUCCESS' on success or
-// 'SSTREAM_REALLOC_FAILURE' on failure.
+// ``length`` is the new length of the container; if less than the capacity of
+// the container then this function will simply return the value of macro
+// ``SSTREAM_REALLOC_NOT_REQUIRED`` or if greater than the capacity of the
+// container then will return ``SSTREAM_REALLOC_SUCCESS`` on success or
+// ``SSTREAM_REALLOC_FAILURE`` on failure.
 __uint8_t StringStreamRealloc(StringStream* const sstream, const size_t length);
 
-// Deallocates the memory occupied by the 'StringStream' instance.
+// Deallocates the memory occupied by the ``StringStream`` instance.
 void StringStreamDealloc(StringStream* const sstream);
 
 #ifdef __cplusplus
