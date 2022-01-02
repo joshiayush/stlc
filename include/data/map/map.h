@@ -210,20 +210,18 @@ Map MapAllocStrAsKey();
 // regardless of their data types.
 Map MapAllocNStrAsKey(const size_t entrieslen);
 
-// Creates a hash from a ``key`` of generic data type.
+// Creates a hash from a ``key`` of ``string`` data type.
 //
-// This functionality allow us to place a ``key`` inside our ``Map`` regardless
-// of the data type.  We read ``size`` bytes from the given ``key`` and
-// accumulate a
-// ``hash`` value.
-hash_t Hash(const void* key, const size_t size);
+// This functionality allow us to place a ``key`` inside our ``Map`` provided
+// that the given ``key`` is a ``string`` data type.  We read ``keylen`` bytes
+// from the given ``key`` and accumulate a ``hash`` value.
+hash_t Hash(const void* key);
 
-// Compares the eqaulity of two ``keys`` of generic data type.
+// Compares the eqaulity of two ``keys`` of ``string`` data type.
 //
-// We compare ``size`` bytes of ``key1`` with ``key2`` to create a result.  Keys
-// can be of any type as long as the size of memory occupied by an individual
-// key is given.
-bool_t KeyCmp(const void* key1, const void* key2, const size_t size);
+// We compare ``key1`` with ``key2`` to create a result.  Key should be of
+// ``string`` data type and must have a ``NULL`` terminator character.
+bool_t KeyCmp(const void* key1, const void* key2);
 
 #ifdef __cplusplus
 }

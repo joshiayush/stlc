@@ -171,7 +171,7 @@ void MapFree(Map* const map) {
 // the ``Map`` instance will be destroyed forever.  So there is no way back to
 // the ``key-value`` pairs once you call this function.
 void MapFreeDeep(Map* const map) {
-  for (size_t i = 0; i < map->bucketslen; i++) {
+  for (size_t i = 0; i < map->bucketslen; ++i) {
     if (map->buckets[i]) {
       _MapFreeEntryDeep(*(map->buckets + i));
       free(*(map->buckets + i));
@@ -234,31 +234,30 @@ Map MapAllocNStrAsKey(const size_t entrieslen) {
   return MapAllocNEntries(entrieslen, Hash, KeyCmp);
 }
 
-// Creates a hash from a ``key`` of generic data type.
+// Creates a hash from a ``key`` of ``string`` data type.
 //
-// This functionality allow us to place a ``key`` inside our ``Map`` regardless
-// of the data type.  We read ``size`` bytes from the given ``key`` and
-// accumulate a
-// ``hash`` value.
-hash_t Hash(const void* key, const size_t size) {
+// This functionality allow us to place a ``key`` inside our ``Map`` provided
+// that the given ``key`` is a ``string`` data type.  We read ``keylen`` bytes
+// from the given ``key`` and accumulate a ``hash`` value.
+hash_t Hash(const void* key) {
   hash_t hash = 0;
   if (key == NULL)
     return hash;
-  char* key_ = (char*)key;
-  for (size_t i = 0; i < size; ++i)
+  const char* key_ = (char*)key;
+  size_t keylen = strlen(key_);
+  for (size_t i = 0; i < keylen; ++i)
     hash = (((hash_t)(*(key_ + i))) + (31 * hash));
   return hash;
 }
 
-// Compares the eqaulity of two ``keys`` of generic data type.
+// Compares the eqaulity of two ``keys`` of ``string`` data type.
 //
-// We compare ``size`` bytes of ``key1`` with ``key2`` to create a result.  Keys
-// can be of any type as long as the size of memory occupied by an individual
-// key is given.
-bool_t KeyCmp(const void* key1, const void* key2, const size_t size) {
+// We compare ``key1`` with ``key2`` to create a result.  Key should be of
+// ``string`` data type and must have a ``NULL`` terminator character.
+bool_t KeyCmp(const void* key1, const void* key2) {
   if (key1 == NULL && key2 == NULL)
     return TRUE;
   if (key1 == NULL || key2 == NULL)
     return FALSE;
-  return memcmp(key1, key2, size) == 0 ? TRUE : FALSE;
+  return strcmp((char*)key1, (char*)key2) == 0 ? TRUE : FALSE;
 }
