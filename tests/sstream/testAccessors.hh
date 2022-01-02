@@ -48,17 +48,15 @@ TEST_F(GetStringStreamAvailableSpaceTest,
        TestProtectedMacroWhenStringStreamDefAllocIsUsed) {
   sstream = StringStreamDefAlloc();
   ASSERT_EQ(_GetStringStreamAvailableSpace(sstream),
-            ((((sstream.length >> 3) + (3)) + sstream.length) -
-             (sstream.length) - 1));
+            sstream.capacity - sstream.length - 1);
 }
 
 TEST_F(GetStringStreamAvailableSpaceTest,
        TestProtectedMacroWhenStringStreamAllocIsUsed) {
   const size_t strlen_ = 2147483648;
   sstream = StringStreamAlloc(strlen_);
-  ASSERT_EQ(
-      _GetStringStreamAvailableSpace(sstream),
-      ((((sstream.length >> 3) + 6) + sstream.length) - (sstream.length) - 1));
+  ASSERT_EQ(_GetStringStreamAvailableSpace(sstream),
+            sstream.capacity - sstream.length - 1);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTACCESSORS_HH_

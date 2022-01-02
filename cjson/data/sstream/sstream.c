@@ -35,7 +35,7 @@
 
 #include "data/sstream/modifiers.h"
 
-// Computes the capacity of the 'StringStream' instance using the Python list
+// Computes the capacity of the ``StringStream`` instance using the Python list
 // resize routine so that the following evaluates to true:
 //      0 <= length <= capacity
 static void _ComputeStringStreamBufferCapacity(const size_t length,
@@ -46,15 +46,15 @@ static void _ComputeStringStreamBufferCapacity(const size_t length,
 
 // Default string stream allocator in case the length is not known.
 //
-// This function will initialize a 'StringStream' container with a initial
-// 'length' of 'SSTREAM_DEFAULT_SIZE'.
+// This function will initialize a ``StringStream`` container with a initial
+// ``length`` of ``SSTREAM_DEFAULT_SIZE``.
 StringStream StringStreamDefAlloc() {
   return StringStreamAlloc(SSTREAM_DEFAULT_SIZE);
 }
 
-// Allocates 'StringStream' instance of given length.
+// Allocates ``StringStream`` instance of given length.
 StringStream StringStreamAlloc(const size_t length) {
-  StringStream sstream = {.data = (void*)0, .length = length, .capacity = 0};
+  StringStream sstream = {.data = (void*)0, .length = 0, .capacity = 0};
   size_t capacity;
   _ComputeStringStreamBufferCapacity(length, &capacity);
   if (sstream.data = (char*)malloc(capacity * sizeof(char))) {
@@ -64,37 +64,40 @@ StringStream StringStreamAlloc(const size_t length) {
   return sstream;
 }
 
-// Allocates 'StringStream' from a 'const char*' C-String.
+// Allocates ``StringStream`` from a ``const char*`` C-String.
 //
-// The length of the 'StringStream' instance will be the number of items from
+// The length of the ``StringStream`` instance will be the number of items from
 // the first element to the first NULL byte in the string.
 StringStream StringStreamStrAlloc(const char* string) {
   return StringStreamStrNAlloc(string, strlen(string));
 }
 
-// Allocates 'n' from a 'const char*' C-String into a 'StringStream' instance.
+// Allocates ``n`` from a ``const char*`` C-String into a ``StringStream``
+// instance.
 //
-// This function will create a 'StringStream' instance by copying all the
-// characters from the given C-String to the 'data' member inside 'StringStream'
-// instance regardless of any 'NULL' byte on the way.
-StringStream StringStreamStrNAlloc(const char* string, const size_t n) {
-  StringStream sstream = StringStreamAlloc(n);
-  if (sstream.capacity)
-    memcpy(sstream.data, string, sstream.length * sizeof(char));
+// This function will create a ``StringStream`` instance by copying all the
+// characters from the given C-String to the ``data`` member inside
+// ``StringStream`` instance regardless of any ``NULL`` byte on the way.
+StringStream StringStreamStrNAlloc(const char* string, const size_t length) {
+  StringStream sstream = StringStreamAlloc(length);
+  if (sstream.capacity) {
+    memcpy(sstream.data, string, length * sizeof(char));
+    sstream.length = length;
+  }
   return sstream;
 }
 
-// Reallocates the free store space occupied by the 'StringStream' instance.
+// Reallocates the free store space occupied by the ``StringStream`` instance.
 //
-// This function reallocates the 'StringStream' instance either by expanding the
-// size in place (if available) or by moving the entire container to a new
+// This function reallocates the ``StringStream`` instance either by expanding
+// the size in place (if available) or by moving the entire container to a new
 // address.
 //
-// 'length' is the new length of the container; if less than the capacity of the
-// container then this function will simply return the value of macro
-// 'SSTREAM_REALLOC_NOT_REQUIRED' or if greater than the capacity of the
-// container then will return 'SSTREAM_REALLOC_SUCCESS' on success or
-// 'SSTREAM_REALLOC_FAILURE' on failure.
+// ``length`` is the new length of the container; if less than the capacity of
+// the container then this function will simply return the value of macro
+// ``SSTREAM_REALLOC_NOT_REQUIRED`` or if greater than the capacity of the
+// container then will return ``SSTREAM_REALLOC_SUCCESS`` on success or
+// ``SSTREAM_REALLOC_FAILURE`` on failure.
 __uint8_t StringStreamRealloc(StringStream* const sstream,
                               const size_t length) {
   if (length <= sstream->capacity)
@@ -115,7 +118,7 @@ __uint8_t StringStreamRealloc(StringStream* const sstream,
   return SSTREAM_REALLOC_SUCCESS;
 }
 
-// Deallocates the memory occupied by the 'StringStream' instance.
+// Deallocates the memory occupied by the ``StringStream`` instance.
 void StringStreamDealloc(StringStream* const sstream) {
   sstream->length = 0;
   sstream->capacity = 0;

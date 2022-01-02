@@ -40,16 +40,16 @@
 
 class StringStreamTest : public ::testing::Test {
  protected:
-  // Computes the capacity of the 'StringStream' instance using the Python list
-  // resize routine that is identical to static function
-  // '_ComputeStringStreamBufferCapacity()' inside module 'sstream.c'.
+  // Computes the capacity of the ``StringStream`` instance using the Python
+  // list resize routine that is identical to static function
+  // ``_ComputeStringStreamBufferCapacity()`` inside module ``sstream.c``.
   void _ComputeStringStreamBufferCapacity(const size_t& length,
                                           size_t& capacity) {
     capacity = (length >> 3) + (length < 9 ? 3 : 6);
     capacity += length;
   }
 
-  // De-allocate 'StringStream' instance from the free store.
+  // De-allocate ``StringStream`` instance from the free store.
   void TearDown() override { StringStreamDealloc(&sstream); }
 
  protected:
@@ -59,9 +59,9 @@ class StringStreamTest : public ::testing::Test {
 TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
   sstream = StringStreamDefAlloc();
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, SSTREAM_DEFAULT_SIZE);
+  ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  _ComputeStringStreamBufferCapacity(SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
@@ -69,18 +69,21 @@ TEST_F(StringStreamTest,
        StringStreamAllocFunctionWithArbitrarySstreamLengthTest) {
   sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH,
+                                     capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
 TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
-  const char* str = "StringStreamStrAllocFunctionWithConstCharPointerTest";
-  sstream = StringStreamStrAlloc(str);
+  const char* teststr =
+      "Mohika says I'm that exam question that everyone left without "
+      "understanding :(.";
+  sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(std::strcmp(sstream.data, str), 0);
-  ASSERT_EQ(sstream.length, std::strlen(str));
+  ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
+  ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
   _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
@@ -89,13 +92,13 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
 TEST_F(
     StringStreamTest,
     StringStreamStrAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
-  const char* str =
-      "StringStream\0StrAllocFunctionWithConstCharPointerWithEmbededNullByteTes"
-      "t";
-  sstream = StringStreamStrAlloc(str);
+  const char* teststr =
+      "Mohika\0says\0I'm\0that\0exam\0question\0that\0everyone\0left\0without\0"
+      "understanding\0:(.";
+  sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(std::strncmp(sstream.data, str, std::strlen(str)), 0);
-  ASSERT_EQ(sstream.length, std::strlen(str));
+  ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
+  ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
   _ComputeStringStreamBufferCapacity(sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
@@ -104,13 +107,14 @@ TEST_F(
 TEST_F(
     StringStreamTest,
     StringStreamStrNAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
-  const char* str =
-      "StringStream\0StrN\0AllocFunctionWithConstChar\0PointerWithEmbededNullBy"
-      "teTes\0t";
-  const size_t strlen_ = 77;
-  sstream = StringStreamStrNAlloc(str, strlen_);
+  const char* teststr =
+      "Mohika\0says\0I'm\0that\0exam\0question\0that\0everyone\0left\0without\0"
+      "understanding\0:(;"
+      "\0\0I\0did\0not\0get\0a\0chance\0to\0even\0attempt\0that\0exam\0:(.";
+  const size_t strlen_ = 134;
+  sstream = StringStreamStrNAlloc(teststr, strlen_);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(std::strncmp(sstream.data, str, strlen_), 0);
+  ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
   ASSERT_EQ(sstream.length, strlen_);
   size_t capacity;
   _ComputeStringStreamBufferCapacity(sstream.length, capacity);
@@ -120,9 +124,10 @@ TEST_F(
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
   sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH,
+                                     capacity);
   ASSERT_EQ(sstream.capacity, capacity);
   ASSERT_EQ(
       StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH / 2),
@@ -133,14 +138,15 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
   sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  _ComputeStringStreamBufferCapacity(sstream.length, capacity);
+  _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH,
+                                     capacity);
   ASSERT_EQ(sstream.capacity, capacity);
   ASSERT_EQ(
       StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH * 2),
       SSTREAM_REALLOC_SUCCESS);
-  ASSERT_EQ(sstream.length, _ARBITRARY_SSTREAM_TESTING_LENGTH);
+  ASSERT_EQ(sstream.length, 0);
   _ComputeStringStreamBufferCapacity(_ARBITRARY_SSTREAM_TESTING_LENGTH * 2,
                                      capacity);
   ASSERT_EQ(sstream.capacity, capacity);
