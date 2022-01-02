@@ -162,6 +162,26 @@ void MapFree(Map* const map) {
   free(map->buckets);
 }
 
+// Frees up a ``Map`` instance and the entries associated with it with their
+// ``key-value`` pairs.
+//
+// This function is resposible for clearning up the free-store occupied by your
+// ``Map`` instance after calling this function the ``Map`` data reference
+// passed becomes empty and the values stored as ``key-value`` pairs inside of
+// the ``Map`` instance will be destroyed forever.  So there is no way back to
+// the ``key-value`` pairs once you call this function.
+void MapFreeDeep(Map* const map) {
+  for (size_t i = 0; i < map->bucketslen; i++) {
+    if (map->buckets[i]) {
+      _MapFreeEntryDeep(*(map->buckets + i));
+      free(*(map->buckets + i));
+    }
+  }
+  map->bucketslen = 0;
+  map->entrieslen = 0;
+  free(map->buckets);
+}
+
 // Private function to free up the space occupied by the entries in a bucket.
 //
 // Takes in a ``MapEntry`` instance but frees up all the other entries linked
@@ -176,6 +196,30 @@ void _MapFreeEntry(MapEntry* const mapentry) {
   if (mapentry->next) {
     _MapFreeEntry(mapentry->next);
     free(mapentry->next);
+  }
+}
+
+// Private function to free up the space occupied by the entries and their
+// respective ``key-value`` pairs in a bucket.
+//
+// Takes in a ``MapEntry`` instance but frees up all the other entries linked
+// with that map entry and leaves the map entry given intially unchanged.
+//
+// Only the neighbours are freed using this function not the head node you still
+// need to free the head node by yourself.  This function is an implementation
+// detail you should not use it as it is not the part of the public API.
+//
+// Although the ``key-value`` pair stored inside of the initial ``MapEntry``
+// will always get destroyed from the free-store but not the ``MapEntry``
+// container.
+void _MapFreeEntryDeep(MapEntry* const mapentry) {
+  if (mapentry) {
+    if (mapentry->next) {
+      _MapFreeEntryDeep(mapentry->next);
+      free(mapentry->next);
+    }
+    free(mapentry->key);
+    free(mapentry->value);
   }
 }
 
