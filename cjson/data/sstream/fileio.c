@@ -52,7 +52,7 @@ void StringStreamReadFile(StringStream* const sstream, FILE* const file,
   StringStreamRealloc(sstream, sstream->length + length);
   fread(sstream->data + sstream->length, sizeof(char), length, file);
   sstream->length += length;
-  _TerminateStringStreamBuffer(*sstream);
+  _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }
 
 // Writes 'StringStream' data from position 'begin' to 'end' in the given file.

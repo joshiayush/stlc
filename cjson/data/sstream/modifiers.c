@@ -42,24 +42,24 @@
 void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   va_list args;
   va_start(args, format);
-  size_t avail = _GetStringStreamAvailableSpace(*sstream);
+  size_t avail = _GET_STRING_STREAM_AVAILABLE_SPACE(*sstream);
   size_t format_size = vsnprintf(sstream->data + sstream->length,
                                  avail * sizeof(char), format, args);
   va_end(args);
 
-  // vsnprintf() has overflow protection, so if this condition evaluates to true
-  // that means vsnprintf() did not concatenate the new string properly; this
-  // clause takes care of that.
+  // ``vsnprintf()`` has overflow protection, so if this condition evaluates to
+  // true that means ``vsnprintf()`` did not concatenate the new string
+  // properly; this clause takes care of that.
   if (StringStreamRealloc(sstream, sstream->length + format_size) ==
       SSTREAM_REALLOC_SUCCESS) {
     va_start(args, format);
-    avail = _GetStringStreamAvailableSpace(*sstream);
+    avail = _GET_STRING_STREAM_AVAILABLE_SPACE(*sstream);
     format_size = vsnprintf(sstream->data + sstream->length,
                             avail * sizeof(char), format, args);
     va_end(args);
   }
   sstream->length += format_size;
-  _TerminateStringStreamBuffer(*sstream);
+  _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }
 
 // Concatenates data of known length onto the existing ``data`` instance of
@@ -70,7 +70,7 @@ void StringStreamRead(StringStream* const sstream, const void* data,
   (void)StringStreamRealloc(sstream, sstream->length + length);
   memcpy(sstream->data + sstream->length, data, length);
   sstream->length += length;
-  _TerminateStringStreamBuffer(*sstream);
+  _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }
 
 // Impedes the position of the terminate character ``\0`` by ``length``, or if
@@ -80,5 +80,5 @@ void StringStreamRetreat(StringStream* const sstream, const size_t length) {
   if (!sstream->length || !sstream->capacity)
     return;
   sstream->length = length >= sstream->length ? 0 : sstream->length - length;
-  _TerminateStringStreamBuffer(*sstream);
+  _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }

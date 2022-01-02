@@ -41,7 +41,7 @@ extern "C" {
 
 // Terminates a ``StringStream`` ``data`` instance at ``\0``.  Meant to be
 // protected inside ``sstream`` module.
-#define _TerminateStringStreamBuffer(sstream)     \
+#define _TERMINATE_STRING_STREAM_BUFFER(sstream)  \
   do {                                            \
     if ((sstream).data && (sstream).capacity)     \
       (sstream).data[(sstream).length] = NULLCHR; \

@@ -32,7 +32,7 @@
 
 // Calculates the number of memory blocks available in the data instance of the
 // 'StringStream' instance.
-#define _GetStringStreamAvailableSpace(sstream) \
+#define _GET_STRING_STREAM_AVAILABLE_SPACE(sstream) \
   (((sstream).capacity) - ((sstream).length) - 1)
 
 #endif  // CJSON_INCLUDE_DATA_SSTREAM_ACCESSORS_H_

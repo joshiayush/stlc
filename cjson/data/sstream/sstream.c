@@ -59,7 +59,7 @@ StringStream StringStreamAlloc(const size_t length) {
   _ComputeStringStreamBufferCapacity(length, &capacity);
   if (sstream.data = (char*)malloc(capacity * sizeof(char))) {
     sstream.capacity = capacity;
-    _TerminateStringStreamBuffer(sstream);
+    _TERMINATE_STRING_STREAM_BUFFER(sstream);
   }
   return sstream;
 }
