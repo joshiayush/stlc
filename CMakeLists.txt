@@ -29,9 +29,11 @@
 
 cmake_minimum_required(VERSION 3.16.3)
 project(cjson
-	VERSION 1.0.0
-	HOMEPAGE_URL https://github.com/joshiayush/cjson
-	LANGUAGES C CXX)
+				VERSION 1.0.0
+				HOMEPAGE_URL https://github.com/joshiayush/cjson
+				LANGUAGES C CXX)
+
+cmake_policy(SET CMP0115 OLD)
 
 include_directories(include)
 
