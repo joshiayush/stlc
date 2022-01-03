@@ -30,4 +30,64 @@
 #ifndef INCLUDE_CJSON_H_
 #define INCLUDE_CJSON_H_
 
+#include <sys/types.h>
+
+#include "bool.h"
+#include "data/map/map.h"
+#include "data/sstream/sstream.h"
+#include "data/vector/vector.h"
+
+typedef void* json_null_t;
+typedef char* json_string_t;
+typedef __int64_t json_number_t;
+typedef double json_decimal_t;
+typedef bool_t json_bool_t;
+typedef Vector json_list_t;
+typedef Map json_object_t;
+
+// ``JSON_type`` stores the different ``JSON`` types that we can possibly have.
+// This ``enum`` is used to identify the type of the ``JSON_value`` instance
+// currently holding in it.
+enum JSON_type {
+  JSON_null = 0,
+  JSON_string = 1,
+  JSON_number = 2,
+  JSON_decimal = 3,
+  JSON_boolean = 4,
+  JSON_list = 5,
+  JSON_object = 6
+};
+
+// ``JSON_value`` union stores ``JSON`` style values.  ``union`` is preferred
+// over a ``struct`` to save memory.  Only one the value at a time can be stored
+// while the others will be currupted.
+typedef union JSON_value {
+  json_null_t null;
+  json_string_t string;
+  json_number_t number;
+  json_decimal_t decimal;
+  json_bool_t boolean;
+  json_list_t list;
+  json_object_t map;
+} JSON_value;
+
+typedef struct JSON {
+  JSON_type type;
+  JSON_value value;
+} JSON;
+
+JSON JSONType(JSON_type type);
+JSON JSONTypeSize(JSON_type type, size_t size);
+
+JSON JSONNull();
+JSON JSONString(const json_string_t string);
+JSON JSONNumber(const json_number_t number);
+JSON JSONDecimal(const json_decimal_t decimal);
+JSON JSONBool(const json_bool_t boolean);
+JSON JSONList(const json_list_t* list);
+JSON JSONObject(const json_object_t* map);
+
+JSON* JSONAllocType(JSON_type type);
+JSON* JSONAllocTypeSize(JSON_type type, size_t size);
+
 #endif  // INCLUDE_CJSON_H_

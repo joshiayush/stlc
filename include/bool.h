@@ -35,6 +35,9 @@
 #define TRUE 1
 #define FALSE !TRUE
 
+#define JSON_TRUE "true"
+#define JSON_FALSE "false"
+
 typedef __uint8_t bool_t;
 
 #endif  // CJSON_INCLUDE_BOOL_H_

@@ -30,6 +30,9 @@
 #ifndef CJSON_INCLUDE_BYTES_H_
 #define CJSON_INCLUDE_BYTES_H_
 
-#define NULLCHR '\0'
+#define endl '\n'
+#define nullchr '\0'
+
+#define JSON_NULL "null"
 
 #endif  // CJSON_INCLUDE_BYTES_H_
