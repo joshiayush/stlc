@@ -54,6 +54,9 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...);
 // Concatenates data of known length onto the existing ``data`` instance of
 // ``StringStream`` instance.  This function will re-allocate the ``data``
 // buffer if needed.
+//
+// The ``length`` property will decide how many bytes to copy from ``data`` to
+// ``sstream->data`` while ignoring the ``NULL`` bytes on the way.
 void StringStreamRead(StringStream* const sstream, const void* data,
                       const size_t length);
 

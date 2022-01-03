@@ -65,6 +65,9 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
 // Concatenates data of known length onto the existing ``data`` instance of
 // ``StringStream`` instance.  This function will re-allocate the ``data``
 // buffer if needed.
+//
+// The ``length`` property will decide how many bytes to copy from ``data`` to
+// ``sstream->data`` while ignoring the ``NULL`` bytes on the way.
 void StringStreamRead(StringStream* const sstream, const void* data,
                       const size_t length) {
   (void)StringStreamRealloc(sstream, sstream->length + length);
@@ -77,7 +80,7 @@ void StringStreamRead(StringStream* const sstream, const void* data,
 // the length is greater than the data length of ``StringStream`` instance,
 // places the terminator ``\0`` at beginning.
 void StringStreamRetreat(StringStream* const sstream, const size_t length) {
-  if (!sstream->length || !sstream->capacity)
+  if ((sstream != NULL) && (!sstream->length || !sstream->capacity))
     return;
   sstream->length = length >= sstream->length ? 0 : sstream->length - length;
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
