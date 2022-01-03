@@ -36,12 +36,12 @@
 extern "C" {
 #endif
 
-// Returns a 'const char*' to the beginning of the 'data' instance of the
-// 'StringStream' instance.
+// Returns a ``const char*`` to the beginning of the ``data`` instance of the
+// ``StringStream`` instance.
 const char* StringStreamBegin(const StringStream* const sstream);
 
-// Returns a iterator to the end of the 'data' instance of the 'StringStream'
-// instance.
+// Returns a iterator to the end of the ``data`` instance of the
+// ``StringStream`` instance.
 const char* StringStreamEnd(const StringStream* const sstream);
 
 #ifdef __cplusplus

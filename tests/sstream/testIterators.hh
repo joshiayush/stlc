@@ -31,6 +31,7 @@
 #define CJSON_TESTS_SSTREAM_TESTITERATORS_HH_
 
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <cstring>
 
@@ -38,7 +39,10 @@
 
 class StringStreamIteratorsTest : public ::testing::Test {
  protected:
-  void TearDown() override { StringStreamDealloc(&sstream); }
+  void TearDown() override {
+    if (sstream.data != NULL)
+      StringStreamDealloc(&sstream);
+  }
 
  protected:
   StringStream sstream;
@@ -46,27 +50,44 @@ class StringStreamIteratorsTest : public ::testing::Test {
 
 TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithNullByte) {
   sstream = StringStreamStrAlloc("\0");
-  ASSERT_EQ(*StringStreamBegin(&sstream), (const char)'\0');
+  EXPECT_EQ(*StringStreamBegin(&sstream), (const char)'\0');
 }
 
 TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithCString) {
-  const char* str = "StringStreamBeginTestWithCString";
+  const char* str = "Mohika, I miss your smile.";
   sstream = StringStreamStrAlloc(str);
   const char* begin = StringStreamBegin(&sstream);
-  ASSERT_EQ(*begin, (const char)'S');
-  ASSERT_EQ(std::strncmp(begin, str, sstream.length), 0);
+  EXPECT_EQ(*begin, (const char)'M');
+  EXPECT_EQ(std::strncmp(begin, str, sstream.length), 0);
 }
 
 TEST_F(StringStreamIteratorsTest, StringStreamEndTestWithNullByte) {
   sstream = StringStreamStrAlloc("\0");
-  ASSERT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
+  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
 }
 
 TEST_F(StringStreamIteratorsTest, StringStreamEndTestWithCString) {
-  const char* str = "StringStreamBeginTestWithCString";
+  const char* str = "Mohika, I miss your smile.";
   sstream = StringStreamStrAlloc(str);
-  const char* end = StringStreamEnd(&sstream);
-  ASSERT_EQ(*end, (const char)'\0');
+  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
+}
+
+TEST_F(StringStreamIteratorsTest,
+       StringStreamEndTestWithCStringWithEmbededNullByte) {
+  const char* str = "Mohika,\0I miss your smile.";
+  sstream = StringStreamStrAlloc(str);
+  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
+  EXPECT_EQ(*(StringStreamEnd(&sstream) - 1), (const char)',');
+}
+
+TEST_F(
+    StringStreamIteratorsTest,
+    StringStreamEndTestWithCStringWithEmbededNullByteWhenAllocatedWithStringStreamStrNAlloc) {
+  const char* str = "Mohika,\0I miss your smile.";
+  const size_t strlen_ = 27;
+  sstream = StringStreamStrNAlloc(str, strlen_);
+  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
+  EXPECT_EQ(*(StringStreamEnd(&sstream) - 1), (const char)'.');
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTITERATORS_HH_
