@@ -32,6 +32,7 @@
 #include <sys/types.h>
 
 #include "bool.h"
+#include "data/vector/vector.h"
 
 // Creates a new 'VectorIterator' instance using a 'Vector' instance.
 VectorIterator VectorIteratorNew(Vector *const vector) {

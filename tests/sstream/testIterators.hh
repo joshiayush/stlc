@@ -34,7 +34,6 @@
 
 #include <cstring>
 
-#include "data/sstream/iterators.h"
 #include "data/sstream/sstream.h"
 
 class StringStreamIteratorsTest : public ::testing::Test {

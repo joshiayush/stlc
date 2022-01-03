@@ -32,6 +32,8 @@
 #include <stdio.h>
 #include <sys/types.h>
 
+#include "data/vector/vector.h"
+
 // Sets the value in a 'Vector' instance provided that the 'idx' value given is
 // in bounds.
 void VectorSet(Vector* const vector, void* const elem, const size_t idx) {

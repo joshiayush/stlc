@@ -32,7 +32,6 @@
 #include <stdio.h>
 #include <sys/types.h>
 
-#include "data/sstream/modifiers.h"
 #include "data/sstream/sstream.h"
 
 // Reads the content of the file given of the given 'length' in the

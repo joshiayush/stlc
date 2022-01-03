@@ -227,4 +227,7 @@ bool_t KeyCmp(const void* key1, const void* key2);
 }
 #endif
 
+#include "data/map/iterators.h"
+#include "data/map/ops.h"
+
 #endif  // CJSON_INCLUDE_DATA_MAP_MAP_H_

@@ -40,9 +40,9 @@ const char* StringStreamBegin(const StringStream* const sstream) {
 // instance.
 const char* StringStreamEnd(const StringStream* const sstream) {
   char* ptr = sstream->data;
-  if (*ptr == (char)NULLCHR)
+  if (*ptr == (char)nullchr)
     return ptr;
-  while (*(ptr++ + (char)1) != (char)NULLCHR)
+  while (*(ptr++ + (char)1) != (char)nullchr)
     ;  // NOLINT
   return ptr;
 }

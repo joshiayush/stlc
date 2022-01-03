@@ -44,7 +44,7 @@ extern "C" {
 #define _TERMINATE_STRING_STREAM_BUFFER(sstream)  \
   do {                                            \
     if ((sstream).data && (sstream).capacity)     \
-      (sstream).data[(sstream).length] = NULLCHR; \
+      (sstream).data[(sstream).length] = nullchr; \
   } while (0)
 
 // Concatenates a newly formatted string onto the existing string inside

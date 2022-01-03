@@ -106,4 +106,8 @@ void VectorFreeDeep(Vector* const vector);
 }
 #endif
 
+#include "data/vector/accessors.h"
+#include "data/vector/iterators.h"
+#include "data/vector/modifiers.h"
+
 #endif  // CJSON_INCLUDE_DATA_VECTOR_VECTOR_H_

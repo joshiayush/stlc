@@ -34,7 +34,6 @@
 #include <string.h>
 #include <sys/types.h>
 
-#include "data/sstream/accessors.h"
 #include "data/sstream/sstream.h"
 
 // Concatenates a newly formatted string onto the existing string inside
