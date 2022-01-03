@@ -38,6 +38,9 @@
 // Vector API tests
 #include "vector/testVector.hh"
 
+// Map API tests
+#include "map/testMap.hh"
+
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
