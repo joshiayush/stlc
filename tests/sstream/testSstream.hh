@@ -70,8 +70,8 @@ TEST_F(StringStreamTest,
 
 TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
   const char* teststr =
-      "Mohika says I'm that exam question that everyone left without "
-      "understanding :(.";
+      "Mohika says \"I'm that exam question that everyone left without "
+      "understanding :(.\"";
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
@@ -86,8 +86,9 @@ TEST_F(
     StringStreamTest,
     StringStreamStrAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
   const char* teststr =
-      "Mohika\0says\0I'm\0that\0exam\0question\0that\0everyone\0left\0without\0"
-      "understanding\0:(.";
+      "Mohika\0says\0\"I'"
+      "m\0that\0exam\0question\0that\0everyone\0left\0without\0"
+      "understanding\0:(.\"";
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
@@ -102,8 +103,9 @@ TEST_F(
     StringStreamTest,
     StringStreamStrNAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
   const char* teststr =
-      "Mohika\0says\0I'm\0that\0exam\0question\0that\0everyone\0left\0without\0"
-      "understanding\0:(;"
+      "Mohika\0says\0\"I'"
+      "m\0that\0exam\0question\0that\0everyone\0left\0without\0"
+      "understanding\0:(\";"
       "\0\0I\0did\0not\0get\0a\0chance\0to\0even\0attempt\0that\0exam\0:(.";
   const size_t strlen_ = 134;
   sstream = StringStreamStrNAlloc(teststr, strlen_);

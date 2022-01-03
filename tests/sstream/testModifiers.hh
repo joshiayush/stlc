@@ -167,12 +167,12 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_EQ(sstream.capacity, capacity);
 
   const char* readstr =
-      " the happiest people don't have the best of everything, they just make "
+      ", the happiest people don't have the best of everything, they just make "
       "the best of everything.";
   StringStreamRead(&sstream, readstr, std::strlen(readstr));
   const char* data_ =
-      "Mohika the happiest people don't have the best of everything, they just "
-      "make the best of everything.";
+      "Mohika, the happiest people don't have the best of everything, they "
+      "just make the best of everything.";
 
   ASSERT_EQ(std::strcmp(sstream.data, data_), 0)
       << "Expected equality of these values:\n"
