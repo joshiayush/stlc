@@ -31,6 +31,7 @@
 #define CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
 
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <cstring>
 
@@ -41,7 +42,10 @@
 
 class StringStreamTest : public ::testing::Test {
  protected:
-  void TearDown() override { StringStreamDealloc(&sstream); }
+  void TearDown() override {
+    if (sstream.data != NULL)
+      StringStreamDealloc(&sstream);
+  }
 
  protected:
   StringStream sstream;
@@ -57,8 +61,7 @@ TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest,
-       StringStreamAllocFunctionWithArbitrarySstreamLengthTest) {
+TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitrarySstreamLength) {
   sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -68,7 +71,7 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
+TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointer) {
   const char* teststr =
       "Mohika says \"I'm that exam question that everyone left without "
       "understanding :(.\"";
@@ -82,13 +85,11 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointerTest) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(
-    StringStreamTest,
-    StringStreamStrAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
+TEST_F(StringStreamTest,
+       StringStreamStrAllocFunctionWithConstCharPointerWithEmbededNullByte) {
   const char* teststr =
-      "Mohika\0says\0\"I'"
-      "m\0that\0exam\0question\0that\0everyone\0left\0without\0"
-      "understanding\0:(.\"";
+      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
+      "\0without\0understanding\0:(.\"";
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
@@ -99,13 +100,11 @@ TEST_F(
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(
-    StringStreamTest,
-    StringStreamStrNAllocFunctionWithConstCharPointerWithEmbededNullByteTest) {
+TEST_F(StringStreamTest,
+       StringStreamStrNAllocFunctionWithConstCharPointerWithEmbededNullByte) {
   const char* teststr =
-      "Mohika\0says\0\"I'"
-      "m\0that\0exam\0question\0that\0everyone\0left\0without\0"
-      "understanding\0:(\";"
+      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
+      "\0without\0understanding\0:(\";"
       "\0\0I\0did\0not\0get\0a\0chance\0to\0even\0attempt\0that\0exam\0:(.";
   const size_t strlen_ = 134;
   sstream = StringStreamStrNAlloc(teststr, strlen_);
@@ -147,6 +146,104 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH * 2, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
+}
+
+TEST_F(StringStreamTest,
+       StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamDefAlloc) {
+  sstream = StringStreamDefAlloc();
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  size_t capacity;
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      SSTREAM_DEFAULT_SIZE, capacity);
+  ASSERT_EQ(sstream.capacity, capacity);
+
+  StringStreamDealloc(&sstream);
+  ASSERT_EQ(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
+}
+
+TEST_F(StringStreamTest,
+       StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamAlloc) {
+  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  size_t capacity;
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
+  ASSERT_EQ(sstream.capacity, capacity);
+
+  StringStreamDealloc(&sstream);
+  ASSERT_EQ(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
+}
+
+TEST_F(StringStreamTest,
+       StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamStrNAlloc) {
+  const char* teststr =
+      "Mohika says \"I'm that exam question that everyone left without "
+      "understanding :(\"; I did not get a chance to even attempt that exam "
+      ":(.";
+  const size_t strlen_ = 134;
+  sstream = StringStreamStrNAlloc(teststr, strlen_);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
+  ASSERT_EQ(sstream.length, strlen_);
+  size_t capacity;
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
+  ASSERT_EQ(sstream.capacity, capacity);
+
+  StringStreamDealloc(&sstream);
+  ASSERT_EQ(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
+}
+
+TEST_F(
+    StringStreamTest,
+    StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamStrAllocWithEmbededNullByte) {
+  const char* teststr =
+      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
+      "\0without\0understanding\0:(.\"";
+  sstream = StringStreamStrAlloc(teststr);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
+  ASSERT_EQ(sstream.length, std::strlen(teststr));
+  size_t capacity;
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
+  ASSERT_EQ(sstream.capacity, capacity);
+
+  StringStreamDealloc(&sstream);
+  ASSERT_EQ(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
+}
+
+TEST_F(
+    StringStreamTest,
+    StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamNAllocWithEmbededNullByte) {
+  const char* teststr =
+      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
+      "\0without\0understanding\0:(\";"
+      "\0\0I\0did\0not\0get\0a\0chance\0to\0even\0attempt\0that\0exam\0:(.";
+  const size_t strlen_ = 134;
+  sstream = StringStreamStrNAlloc(teststr, strlen_);
+  ASSERT_NE(sstream.data, (void*)0);
+  ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
+  ASSERT_EQ(sstream.length, strlen_);
+  size_t capacity;
+  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+      sstream.length, capacity);
+  ASSERT_EQ(sstream.capacity, capacity);
+
+  StringStreamDealloc(&sstream);
+  ASSERT_EQ(sstream.data, (void*)0);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
