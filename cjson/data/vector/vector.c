@@ -52,7 +52,7 @@ Vector VectorAlloc(const size_t size) {
   Vector vector = {.data = (void*)0, .size = 0, .capacity = 0};
   size_t capacity;
   _ComputeVectorBufferCapacity(size, &capacity);
-  if (vector.data = (void**)malloc(capacity * sizeof(void*)))
+  if ((vector.data = (void**)malloc(capacity * sizeof(void*))))
     vector.capacity = capacity;
   return vector;
 }
@@ -68,7 +68,7 @@ Vector VectorAlloc(const size_t size) {
 // ``VECTOR_RESIZE_NOT_REQUIRED`` or if greater than the capacity of the
 // container then will return ``VECTOR_RESIZE_SUCCESS`` on success or
 // ``VECTOR_RESIZE_FAILURE`` on failure.
-__uint8_t VectorResize(Vector* const vector, const size_t size) {
+u_int8_t VectorResize(Vector* const vector, const size_t size) {
   if (size <= vector->capacity)
     return VECTOR_RESIZE_NOT_REQUIRED;
   size_t capacity;
@@ -86,6 +86,25 @@ __uint8_t VectorResize(Vector* const vector, const size_t size) {
   }
   vector->capacity = capacity;
   return VECTOR_RESIZE_SUCCESS;
+}
+
+// Copies ``src`` to ``dest``.
+//
+// This function will not make the copies of the values stored inside of the
+// ``src`` vector but will create a new list of pointers pointing to the values
+// inside ``src`` vector.
+//
+// This is mainly used when ``src`` instance is stored in the ``stack`` while
+// the values inside of it are stored in the ``free-store`` and you don't want
+// to lose the memory when ``src`` goes out of scope; thus it's better to copy
+// the entire ``src`` vector into a new vector that is dynamically allocated.
+u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
+  if (src->size > dest->size)
+    if (VectorResize(dest, src->size) == VECTOR_RESIZE_FAILURE)
+      return VECTOR_COPY_FAILURE;
+  for (size_t i = 0; i < src->size; ++i)
+    *(dest->data + i) = *(src->data + i);
+  return VECTOR_COPY_SUCCESS;
 }
 
 // Clears up the ``Vector`` container and allocates fresh space for data

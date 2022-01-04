@@ -159,6 +159,19 @@ Map MapAllocNEntries(const size_t entrieslen, hash_f hash, keycmp_f keycmp);
 // it currently has so to combat the chances of collisions.
 void MapRealloc(Map* map);
 
+// Copies ``src`` to ``dest``.
+//
+// This function will not make the copies of the values stored inside of the
+// ``src`` hash map but will create a new bucket list of pointers pointing to
+// the values inside ``src`` hash map.
+//
+// This is mainly used when ``src`` instance is stored in the ``stack`` while
+// the values inside of it are stored in the ``free-store`` and you don't want
+// to lose the memory when ``src`` goes out of scope; thus it's better to copy
+// the entire ``src`` hash map bucket into a new bucket that is dynamically
+// allocated.
+void MapCopy(Map* const dest, Map* const src);
+
 // Frees up a ``Map`` instance and the entries associated with it.
 //
 // This function is resposible for clearning up the free-store occupied by your

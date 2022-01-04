@@ -127,8 +127,8 @@ Map MapAllocNEntries(const size_t entrieslen, hash_f hash, keycmp_f keycmp) {
 // it currently has so to combat the chances of collisions.
 void MapRealloc(Map* map) {
   Map map_ = MapAllocNEntries(map->entrieslen, map->hash, map->keycmp);
-  const size_t bucketslen = map_.bucketslen;
 
+  const size_t bucketslen = map_.bucketslen;
   for (size_t i = 0; i < map_.bucketslen; ++i) {
     MapEntry* current = *(map->buckets + i);
     while (current)
@@ -138,11 +138,29 @@ void MapRealloc(Map* map) {
   MapEntry** tmp_buckets = map->buckets;
   map->buckets = map_.buckets;
   map_.buckets = tmp_buckets;
-
   map_.bucketslen = map->bucketslen;
   MapFree(&map_);
-
   map->bucketslen = bucketslen;
+}
+
+// Copies ``src`` to ``dest``.
+//
+// This function will not make the copies of the values stored inside of the
+// ``src`` hash map but will create a new bucket list of pointers pointing to
+// the values inside ``src`` hash map.
+//
+// This is mainly used when ``src`` instance is stored in the ``stack`` while
+// the values inside of it are stored in the ``free-store`` and you don't want
+// to lose the memory when ``src`` goes out of scope; thus it's better to copy
+// the entire ``src`` hash map bucket into a new bucket that is dynamically
+// allocated.
+void MapCopy(Map* const dest, Map* const src) {
+  if (src->entrieslen > dest->entrieslen) {
+    dest->entrieslen = src->entrieslen;
+    MapRealloc(dest);
+  }
+  for (size_t i = 0; i < src->bucketslen; ++i)
+    *(dest->buckets + i) = *(src->buckets + i);
 }
 
 // Frees up a ``Map`` instance and the entries associated with it.

@@ -39,20 +39,23 @@
 #define VECTOR_RESIZE_NOT_REQUIRED \
   ((VECTOR_RESIZE_FAILURE | VECTOR_RESIZE_SUCCESS) << VECTOR_RESIZE_SUCCESS)
 
+#define VECTOR_COPY_SUCCESS VECTOR_RESIZE_SUCCESS
+#define VECTOR_COPY_FAILURE VECTOR_RESIZE_FAILURE
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-// 'Vector' is a container for our dynamic array.  It holds the actual array
+// ``Vector`` is a container for our dynamic array.  It holds the actual array
 // data, the size of the data and the capacity.
 //
-// 'Vector' structure creates a generic container for dynamic arrays that means
-// any type of array can be stored inside of the 'Vector' container.
+// ``Vector`` structure creates a generic container for dynamic arrays that
+// means any type of array can be stored inside of the ``Vector`` container.
 typedef struct Vector {
   void** data;
   size_t size;
-  // data contains space for 'capacity' elements.  The number
-  // currently in use is 'size'.
+  // data contains space for ``capacity`` elements.  The number
+  // currently in use is ``size``.
   // Invariants:
   //     0 <= size <= capacity
   //     data == NULL implies size == capacity == 0
@@ -61,44 +64,57 @@ typedef struct Vector {
 
 // Default dynamic array allocator in case the length is not known.
 //
-// This function will initialize a 'Vector' container with a initial
-// 'length' of 'VECTOR_DEFAULT_SIZE'.
+// This function will initialize a ``Vector`` container with a initial
+// ``length`` of ``VECTOR_DEFAULT_SIZE``.
 Vector VectorDefAlloc();
 
-// Allocate 'Vector' container of given size.
+// Allocate ``Vector`` container of given size.
 Vector VectorAlloc(const size_t size);
 
-// Re-allocates the free store space occupied by the 'Vector' container.
+// Re-allocates the free store space occupied by the ``Vector`` container.
 //
-// This function re-allocates the 'Vector' instance either by expanding the
+// This function re-allocates the ``Vector`` instance either by expanding the
 // size in place (if available) or by moving the entire container to a new
 // address.
 //
-// 'size' is the new size of the container; if less than the capacity of the
+// ``size`` is the new size of the container; if less than the capacity of the
 // container then this function will simply return the value of macro
-// 'VECTOR_RESIZE_NOT_REQUIRED' or if greater than the capacity of the
-// container then will return 'VECTOR_RESIZE_SUCCESS' on success or
-// 'VECTOR_RESIZE_FAILURE' on failure.
-__uint8_t VectorResize(Vector* const vector, const size_t size);
+// ``VECTOR_RESIZE_NOT_REQUIRED`` or if greater than the capacity of the
+// container then will return ``VECTOR_RESIZE_SUCCESS`` on success or
+// ``VECTOR_RESIZE_FAILURE`` on failure.
+u_int8_t VectorResize(Vector* const vector, const size_t size);
 
-// Clears up the 'Vector' container and allocates fresh space for data elements.
+// Copies ``src`` to ``dest``.
+//
+// This function will not make the copies of the values stored inside of the
+// ``src`` vector but will create a new list of pointers pointing to the values
+// inside ``src`` vector.
+//
+// This is mainly used when ``src`` instance is stored in the ``stack`` while
+// the values inside of it are stored in the ``free-store`` and you don``t want
+// to lose the memory when ``src`` goes out of scope; thus it``s better to copy
+// the entire ``src`` vector into a new vector that is dynamically allocated.
+u_int8_t VectorCopy(Vector* const dest, Vector* const src);
+
+// Clears up the ``Vector`` container and allocates fresh space for data
+// elements.
 void VectorClear(Vector* const vector);
 
-// Frees up the free store space occupied by the 'Vector' container.
+// Frees up the free store space occupied by the ``Vector`` container.
 //
-// This function frees up the free store space occupied by the 'Vector'
+// This function frees up the free store space occupied by the ``Vector``
 // container.
 //
 // Note: This function does not free up the space occupied by the container
 // elements in the free store.
 void VectorFree(Vector* const vector);
 
-// Frees up the free store space occupied by the 'Vector' container.
+// Frees up the free store space occupied by the ``Vector`` container.
 //
-// This function frees up the free store space occupied by the 'Vector'
-// container and the elements in the 'Vector' container so if you use this
-// function keep this in mind that you'll also lose access to the elements
-// somewhere else in the free store pointed by the 'Vector' container, like
+// This function frees up the free store space occupied by the ``Vector``
+// container and the elements in the ``Vector`` container so if you use this
+// function keep this in mind that you``ll also lose access to the elements
+// somewhere else in the free store pointed by the ``Vector`` container, like
 // "lose lose".
 void VectorFreeDeep(Vector* const vector);
 
