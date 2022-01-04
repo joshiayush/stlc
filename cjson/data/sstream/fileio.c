@@ -34,12 +34,12 @@
 
 #include "data/sstream/sstream.h"
 
-// Reads the content of the file given of the given 'length' in the
-// 'StringStream' instance.
+// Reads the content of the file given of the given ``length`` in the
+// ``StringStream`` instance.
 //
 // The length of the data read from the file by this function is equal to the
-// value of the 'length' given but in case the 'length' given is '0' then this
-// function will read the entire file.
+// value of the ``length`` given but in case the ``length`` given is ``0`` then
+// this function will read the entire file.
 void StringStreamReadFile(StringStream* const sstream, FILE* const file,
                           size_t length) {
   if (length == 0) {
@@ -54,7 +54,8 @@ void StringStreamReadFile(StringStream* const sstream, FILE* const file,
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }
 
-// Writes 'StringStream' data from position 'begin' to 'end' in the given file.
+// Writes ``StringStream`` data from position ``begin`` to ``end`` in the given
+// file.
 void StringStreamWriteFile(StringStream* const sstream, FILE* const file,
                            size_t begin, size_t end) {
   if (begin >= sstream->length)
