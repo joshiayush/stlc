@@ -39,7 +39,7 @@
 
 typedef void* json_null_t;
 typedef char* json_string_t;
-typedef __int64_t json_number_t;
+typedef int64_t json_number_t;
 typedef double json_decimal_t;
 typedef bool_t json_bool_t;
 typedef Vector json_list_t;
@@ -48,7 +48,7 @@ typedef Map json_object_t;
 // ``JSON_type`` stores the different ``JSON`` types that we can possibly have.
 // This ``enum`` is used to identify the type of the ``JSON_value`` instance
 // currently holding in it.
-enum JSON_type {
+typedef enum JSON_type {
   JSON_null = 0,
   JSON_string = 1,
   JSON_number = 2,
@@ -56,7 +56,7 @@ enum JSON_type {
   JSON_boolean = 4,
   JSON_list = 5,
   JSON_object = 6
-};
+} JSON_type;
 
 // ``JSON_value`` union stores ``JSON`` style values.  ``union`` is preferred
 // over a ``struct`` to save memory.  Only one the value at a time can be stored
@@ -71,23 +71,103 @@ typedef union JSON_value {
   json_object_t map;
 } JSON_value;
 
+// ``JSON`` structure stores the ``JSON`` data and its type.  We can't infer the
+// type of the ``JSON`` data that we are holding in a ``JSON`` instance so we
+// need to store it explicitly in a separate variable ``type`` which is a
+// ``JSON_type`` enum.
+//
+// Values are stored inside of the ``JSON_value`` union container to save memory
+// by only sharing a maximum common amount of memory where we can only perform
+// read and write operations over a single value at a time.
 typedef struct JSON {
   JSON_type type;
   JSON_value value;
 } JSON;
 
+// Returns a ``JSON`` instance of the given ``type``.
+//
+// This function assumes that the requested ``JSON`` instance has a type size of
+// ``0`` thus calls the function ``JSON_TypeSize(type, 0)`` with the given type
+// and the ``size`` as ``0``.
 JSON JSONType(JSON_type type);
+
+// Returns a ``JSON`` instance of the given ``type``, in case ``size`` is given
+// allocates ``size`` amount of memory in the free-store for the ``JSON``
+// instance.
+//
+// Uses the given ``size`` to allocate ``size`` bytes for either the ``Vector``
+// or the ``Map`` instance inside the ``JSON_value`` ``union``.
 JSON JSONTypeSize(JSON_type type, size_t size);
 
+// Returns a ``JSON`` instance containing ``null`` value.
+//
+// Unlike the other allocation methods this method does not take in an explicit
+// argument reason being the ``JSON`` instance automatically assigned a ``null``
+// value inside function ``JSONTypeSize()`` as soon the ``type`` is inferred as
+// ``JSON_null``.
 JSON JSONNull();
-JSON JSONString(const json_string_t string);
-JSON JSONNumber(const json_number_t number);
-JSON JSONDecimal(const json_decimal_t decimal);
-JSON JSONBool(const json_bool_t boolean);
-JSON JSONList(const json_list_t* list);
-JSON JSONObject(const json_object_t* map);
 
-JSON* JSONAllocType(JSON_type type);
-JSON* JSONAllocTypeSize(JSON_type type, size_t size);
+// Creates a ``JSON`` instance from a ``json_string_t`` type.
+//
+// Allocates free-store memory to store the comming ``string`` instance. Assigns
+// ``NULL`` to the ``json.value.string`` instance if dynamic-memory allocation
+// failed.
+JSON JSONString(const json_string_t string);
+
+// Creates a ``JSON`` instance from a ``json_number_t`` type.
+//
+// The given number is copied to the ``json.value.number`` instance of the
+// ``JSON`` instance and can be access as long as ``JSON`` instance is in the
+// memory.
+JSON JSONNumber(const json_number_t number);
+
+// Creates a ``JSON`` instance from a ``json_decimal_t`` type.
+//
+// The given number is copied to the ``json.value.decimal`` instance of the
+// ``JSON`` instance and can be access as long as ``JSON`` instance is in the
+// memory.
+//
+// This particular function is aimed to take in ``floating-point`` values of
+// type ``double``.
+JSON JSONDecimal(const json_decimal_t decimal);
+
+// Creates a ``JSON`` instance from a ``json_bool_t`` type.
+//
+// The given number, which is a ``json_bool_t`` type which unwinds to
+// ``__uint8_t`` can be either ``0`` ("false") or any value greater than and
+// less than ``256`` to be stored as a ``JSON_boolean`` type data inside
+// ``json.value.boolean``.
+JSON JSONBool(const json_bool_t boolean);
+
+// Creates a ``JSON`` instance from a ``json_list_t*`` pointer type.
+//
+// Saves a ``json_list_t*`` value by going over the ``data`` attribute of
+// ``Vector`` instance and copying the addresses of the values the ``data``
+// linked list is pointing to.
+//
+// Note: This function does not copy the ``void*`` instances in the free-store
+// instead only creates a new table in the free-store while keeping the pointer
+// to the initial values regardless of their scope in the memory.  So if the
+// initial data dies because it was allocated in stack not in the free-store
+// then the ``JSON`` instance will lose that data too, so make sure to pass in
+// dynamically allocated data.
+JSON JSONList(json_list_t* list);
+
+// Creates a ``JSON`` instance from a ``json_object_t*`` pointer type.
+//
+// Saves a ``json_object_t*`` value by going over the ``buckets`` attribute of
+// the ``Map`` instance and copying the addresses of the values the ``buckets``
+// linked list is pointing to.
+//
+// Note: This function does not copy the ``MapEntry`` instances in the
+// free-store instead only creates a new table in the free-store while keeping
+// the pointer to the initial values regardless of their scope in the memory.
+// So if the initial data dies because it was allocated in stack not in the
+// free-store then the ``JSON`` instance will lose that data too, so make sure
+// to pass in dynamically allocated data.
+JSON JSONObject(json_object_t* map);
+
+// JSON* JSONAllocType(JSON_type type);
+// JSON* JSONAllocTypeSize(JSON_type type, size_t size);
 
 #endif  // INCLUDE_CJSON_H_
