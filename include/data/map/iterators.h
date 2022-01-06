@@ -63,4 +63,14 @@ void MapTraverse(Map *const map, TraversePredicate predicate);
 void MapTraverseWithMapInstance(Map *const map,
                                 TraverseWithMapInstancePredicate predicate);
 
+typedef struct MapIterator {
+  Map *map;
+  size_t cur_bucket_idx;
+  MapEntry *cur_entry;
+} MapIterator;
+
+MapIterator MapIteratorNew(Map *const map);
+
+MapEntry *MapIteratorNext(MapIterator *const it);
+
 #endif  // CJSON_INCLUDE_DATA_MAP_ITERATORS_H_

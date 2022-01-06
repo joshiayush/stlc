@@ -29,6 +29,8 @@
 
 #include "data/map/iterators.h"
 
+#include <stdio.h>
+
 #include "data/map/map.h"
 
 // Traverses through the ``Map`` instance and executes the given ``predicate``
@@ -61,4 +63,29 @@ void MapTraverseWithMapInstance(Map *const map,
       current = current->next;
     }
   }
+}
+
+MapIterator MapIteratorNew(Map *const map) {
+  MapIterator it = {.map = map, .cur_bucket_idx = 0, .cur_entry = NULL};
+  while (it.cur_bucket_idx < map->bucketslen) {
+    if (map->buckets[it.cur_bucket_idx]) {
+      it.cur_entry = map->buckets[it.cur_bucket_idx];
+      break;
+    }
+    ++(it.cur_bucket_idx);
+  }
+  return it;
+}
+
+MapEntry *MapIteratorNext(MapIterator *const it) {
+  if (it->cur_bucket_idx >= it->map->bucketslen)
+    return NULL;
+  MapEntry *mapentry = it->cur_entry;
+  MapEntry *current = mapentry->next;
+  while (current == NULL && it->cur_bucket_idx < it->map->bucketslen) {
+    ++(it->cur_bucket_idx);
+    current = it->map->buckets[it->cur_bucket_idx];
+  }
+  it->cur_entry = current;
+  return mapentry;
 }

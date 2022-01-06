@@ -27,18 +27,25 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <gtest/gtest.h>
+#ifndef CJSON_INCLUDE_ACCESSORS_H_
+#define CJSON_INCLUDE_ACCESSORS_H_
 
-#include "cjson/testAccessors.hh"
-#include "map/testMap.hh"
-#include "sstream/testAccessors.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
-#include "utils/testUtils.hh"
-#include "vector/testVector.hh"
+#include <sys/types.h>
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+#include "bool.h"
+#include "cjson.h"
+#include "data/sstream/sstream.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+StringStream JSONStringify(JSON* const json, const bool_t prettify,
+                           const size_t init_tab_pos,
+                           const bool_t is_dict_valid);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif  // CJSON_ACCESSORS_H_

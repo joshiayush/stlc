@@ -27,18 +27,37 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <gtest/gtest.h>
+#include "utils/utils.h"
 
-#include "cjson/testAccessors.hh"
-#include "map/testMap.hh"
-#include "sstream/testAccessors.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
-#include "utils/testUtils.hh"
-#include "vector/testVector.hh"
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+static const char kPathSeparator = '/';
+
+bool_t IsAbsPath(const char* const path) { return *path == kPathSeparator; }
+
+void Split(char* const head, char* const tail, const char* const path) {
+  ssize_t last_sep_idx = -1;
+
+  if (path == NULL)
+    return;
+
+  size_t pathlen = strlen(path);
+  for (size_t i = 0; i < pathlen; ++i)
+    if (*path == kPathSeparator)
+      last_sep_idx = i;
+
+  strncpy(head, path, last_sep_idx + 1);
+  *(head + (last_sep_idx + 1)) = '\0';
+  if (*(path + (char)last_sep_idx + 1) == '\0') {
+    *tail = '\0';
+    return;
+  } else {
+    strncpy(tail, path + (char)last_sep_idx + 1, pathlen - last_sep_idx + 1);
+    *(tail + (pathlen - last_sep_idx + 2)) = '\0';
+  }
 }
+
+// char* _GetCurrentWorkingDir(char* const abspath, char* const buffer,
+//                             const size_t size) {}

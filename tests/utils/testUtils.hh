@@ -29,16 +29,27 @@
 
 #include <gtest/gtest.h>
 
-#include "cjson/testAccessors.hh"
-#include "map/testMap.hh"
-#include "sstream/testAccessors.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
-#include "utils/testUtils.hh"
-#include "vector/testVector.hh"
+#include <cstring>
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+#include "utils/utils.h"
+
+TEST(UtilsFunctionTest, TestIsAbsPathFunction) {
+  EXPECT_TRUE(IsAbsPath("/"));
+  EXPECT_TRUE(IsAbsPath(__FILE__));
+}
+
+TEST(UtilsFunctionTest, TestSplitFunction) {
+  char head[100];
+  char tail[100];
+
+  const char* path = "/";
+  Split(head, tail, path);
+
+  EXPECT_EQ(std::strncmp(head, path, std::strlen(path)), 0);
+  EXPECT_EQ(*tail, (const char)'\0');
+
+  const char* current_file_path = __FILE__;
+  Split(head, tail, current_file_path);
+
+  EXPECT_EQ(std::strncmp(head, path, std::strlen(current_file_path) - 12), 0);
 }

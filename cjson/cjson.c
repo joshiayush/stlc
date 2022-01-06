@@ -172,3 +172,87 @@ JSON JSONObject(json_object_t* map) {
   MapCopy(&json.value.map, map);
   return json;
 }
+
+JSON* JSONAllocType(JSON_type type) {
+  return JSONAllocTypeSize(type, sizeof(JSON));
+}
+
+JSON* JSONAllocTypeSize(JSON_type type, size_t size) {
+  JSON* json = (JSON*)(malloc(size));
+  switch (type) {
+    case JSON_null:
+      json->value.null = NULL;
+      break;
+    case JSON_string:
+      json->value.string = (char*)(malloc(size * sizeof(char)));
+      break;
+    case JSON_decimal:
+      json->value.decimal = 0.0;
+      break;
+    case JSON_number:
+      json->value.number = 0;
+      break;
+    case JSON_boolean:
+      json->value.boolean = FALSE;
+      break;
+    case JSON_list:
+      json->value.list = VectorAlloc(size);
+      break;
+    case JSON_object:
+      json->value.map = MapAllocNStrAsKey(size);
+      break;
+  }
+  return json;
+}
+
+void JSONFree(JSON* const json) {
+  if (json->type == JSON_string) {
+    free(json->value.string);
+  } else if (json->type == JSON_list) {
+    void* current = NULL;
+    VectorIterator vector_it = VectorIteratorNew(&json->value.list);
+    while ((current = VectorIteratorNext(&vector_it)))
+      JSONFree((JSON*)current);
+    VectorFree(&json->value.list);
+  } else if (json->type == JSON_object) {
+    MapEntry* current = NULL;
+    MapIterator map_it = MapIteratorNew(&json->value.map);
+    while ((current = MapIteratorNext(&map_it)))
+      JSONFree((JSON*)current);
+    MapFree(&json->value.map);
+  } else if (json->type == JSON_number) {
+    json->value.number = 0;
+  } else if (json->type == JSON_decimal) {
+    json->value.decimal = 0.0;
+  } else if (json->type = JSON_boolean) {
+    json->value.boolean = FALSE;
+  } else {
+    json->value.null = NULL;
+  }
+}
+
+void JSONFreeDeep(JSON* const json) {
+  if (json->type == JSON_string) {
+    free(json->value.string);
+  } else if (json->type == JSON_list) {
+    void* current = NULL;
+    VectorIterator vector_it = VectorIteratorNew(&json->value.list);
+    while ((current = VectorIteratorNext(&vector_it)))
+      JSONFreeDeep((JSON*)current);
+    VectorFreeDeep(&json->value.list);
+  } else if (json->type == JSON_object) {
+    MapEntry* current = NULL;
+    MapIterator map_it = MapIteratorNew(&json->value.map);
+    while ((current = MapIteratorNext(&map_it)))
+      JSONFreeDeep((JSON*)current);
+    MapFreeDeep(&json->value.map);
+  } else if (json->type == JSON_number) {
+    json->value.number = 0;
+  } else if (json->type == JSON_decimal) {
+    json->value.decimal = 0.0;
+  } else if (json->type = JSON_boolean) {
+    json->value.boolean = FALSE;
+  } else {
+    json->value.null = NULL;
+  }
+}

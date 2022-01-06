@@ -27,18 +27,36 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <gtest/gtest.h>
+#ifndef CJSON_INCLUDE_MODIFIERS_H_
+#define CJSON_INCLUDE_MODIFIERS_H_
 
-#include "cjson/testAccessors.hh"
-#include "map/testMap.hh"
-#include "sstream/testAccessors.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
-#include "utils/testUtils.hh"
-#include "vector/testVector.hh"
+#include "cjson.h"
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void JSONListAdd(JSON* const list, JSON* const value);
+void JSONListAddNull(JSON* const list);
+void JSONListAddNumber(JSON* const list, const json_number_t value);
+void JSONListAddDecimal(JSON* const list, const json_decimal_t value);
+void JSONListAddBool(JSON* const list, const json_bool_t value);
+void JSONListAddString(JSON* const list, const json_string_t data);
+
+void JSONObjectPut(JSON* const object, const json_string_t key,
+                   JSON* const value);
+void JSONObjectPutNull(JSON* const object, const json_string_t key);
+void JSONObjectPutNumber(JSON* const object, const json_string_t key,
+                         const json_number_t value);
+void JSONObjectPutDecimal(JSON* const object, const json_string_t key,
+                          const json_decimal_t value);
+void JSONObjectPutBool(JSON* const object, const json_string_t key,
+                       const json_bool_t value);
+void JSONObjectPutString(JSON* const object, const json_string_t key,
+                         const json_string_t data);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif  // CJSON_MODIFIERS_H_

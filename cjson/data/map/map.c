@@ -257,7 +257,7 @@ Map MapAllocNStrAsKey(const size_t entrieslen) {
 // This functionality allow us to place a ``key`` inside our ``Map`` provided
 // that the given ``key`` is a ``string`` data type.  We read ``keylen`` bytes
 // from the given ``key`` and accumulate a ``hash`` value.
-hash_t Hash(const void* key) {
+hash_t Hash(const void* const key) {
   hash_t hash = 0;
   if (key == NULL)
     return hash;

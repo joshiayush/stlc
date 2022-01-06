@@ -27,18 +27,35 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <gtest/gtest.h>
+#ifndef CJSON_INCLUDE_UTILS_UTILS_H_
+#define CJSON_INCLUDE_UTILS_UTILS_H_
 
-#include "cjson/testAccessors.hh"
-#include "map/testMap.hh"
-#include "sstream/testAccessors.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
-#include "utils/testUtils.hh"
-#include "vector/testVector.hh"
+#include <sys/types.h>
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+#include "bool.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+bool_t IsAbsPath(const char* const path);
+
+void Split(char* const head, char* const tail, const char* const path);
+
+// char* _GetCurrentWorkingDir(char* const abspath, char* const buffer,
+//                             const size_t size);
+
+// #define GetCurrentWorkingDir(buffer, size) \
+//   _GetCurrentWorkingDir(__FILE__, buffer, size)
+
+// char* Join(char* const buffer, const char* const a, ...);
+
+// char* NormPath(char* const path);
+
+// char* AbsPath(char* const buffer, char* const path);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif  // CJSON_INCLUDE_UTILS_UTILS_H_

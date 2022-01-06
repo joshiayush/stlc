@@ -27,8 +27,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef INCLUDE_CJSON_H_
-#define INCLUDE_CJSON_H_
+#ifndef CJSON_INCLUDE_CJSON_H_
+#define CJSON_INCLUDE_CJSON_H_
 
 #include <sys/types.h>
 
@@ -36,6 +36,10 @@
 #include "data/map/map.h"
 #include "data/sstream/sstream.h"
 #include "data/vector/vector.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef void* json_null_t;
 typedef char* json_string_t;
@@ -89,7 +93,7 @@ typedef struct JSON {
 // This function assumes that the requested ``JSON`` instance has a type size of
 // ``0`` thus calls the function ``JSON_TypeSize(type, 0)`` with the given type
 // and the ``size`` as ``0``.
-JSON JSONType(JSON_type type);
+JSON JSONType(const JSON_type type);
 
 // Returns a ``JSON`` instance of the given ``type``, in case ``size`` is given
 // allocates ``size`` amount of memory in the free-store for the ``JSON``
@@ -97,7 +101,7 @@ JSON JSONType(JSON_type type);
 //
 // Uses the given ``size`` to allocate ``size`` bytes for either the ``Vector``
 // or the ``Map`` instance inside the ``JSON_value`` ``union``.
-JSON JSONTypeSize(JSON_type type, size_t size);
+JSON JSONTypeSize(const JSON_type type, const size_t size);
 
 // Returns a ``JSON`` instance containing ``null`` value.
 //
@@ -167,7 +171,17 @@ JSON JSONList(json_list_t* list);
 // to pass in dynamically allocated data.
 JSON JSONObject(json_object_t* map);
 
-// JSON* JSONAllocType(JSON_type type);
-// JSON* JSONAllocTypeSize(JSON_type type, size_t size);
+JSON* JSONAllocType(JSON_type type);
+JSON* JSONAllocTypeSize(JSON_type type, size_t size);
 
-#endif  // INCLUDE_CJSON_H_
+void JSONFree(JSON* const json);
+void JSONFreeDeep(JSON* const json);
+
+#ifdef __cplusplus
+}
+#endif
+
+#include "accessors.h"
+#include "modifiers.h"
+
+#endif  // CJSON_INCLUDE_CJSON_H_
