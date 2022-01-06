@@ -84,7 +84,7 @@ TEST_F(
     StringStreamIteratorsTest,
     StringStreamEndTestWithCStringWithEmbededNullByteWhenAllocatedWithStringStreamStrNAlloc) {
   const char* str = "Mohika,\0I miss your smile.";
-  const size_t strlen_ = 27;
+  const size_t strlen_ = 26;
   sstream = StringStreamStrNAlloc(str, strlen_);
   EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
   EXPECT_EQ(*(StringStreamEnd(&sstream) - 1), (const char)'.');
