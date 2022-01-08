@@ -45,20 +45,21 @@ class CJSONTest : public testing::Test {
 };
 
 TEST_F(CJSONTest, JSONStringifiyTestWithAListAndAObjectInstance) {
-  JSON json = JSONType(JSON_object);
+  JSON json = JSON_INIT_TYPE(Object);
 
-  JSON list = JSONType(JSON_list);
-  JSONListAddString(
-      &list,
+  JSON list = JSON_INIT_TYPE(List);
+  JSON_LIST_ADD_VAL(
+      String, &list,
       (const json_string_t) "Mohika says \"Fake people leave when you cry.\"");
-  JSONListAddDecimal(&list, 1.29);
-  JSONListAddNull(&list);
+  JSON_LIST_ADD_VAL(Decimal, &list, 1.29);
+  JSON_LIST_ADD(Null, &list);
 
-  JSON object = JSONType(JSON_object);
-  JSONObjectPutNull(&object, (const json_string_t) "Hope in my life");
-  JSONObjectPutDecimal(&object, (const json_string_t) "My chances of success",
-                       0.000000000000000);
-  JSONObjectPutString(&object, (const json_string_t) "My horoscope",
+  JSON object = JSON_INIT_TYPE(Object);
+  JSON_OBJECT_PUT(Null, &object, (const json_string_t) "Hope in my life");
+  JSON_OBJECT_PUT_VAL(Decimal, &object,
+                      (const json_string_t) "My chances of success",
+                      0.000000000000000);
+  JSON_OBJECT_PUT_VAL(String, &object, (const json_string_t) "My horoscope",
                       (const json_string_t) "Just die");
 
   JSONObjectPut(&json, (const json_string_t) "list", &list);

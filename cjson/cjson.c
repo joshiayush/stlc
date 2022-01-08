@@ -42,7 +42,7 @@
 // This function assumes that the requested ``JSON`` instance has a type size of
 // ``0`` thus calls the function ``JSON_TypeSize(type, 0)`` with the given type
 // and the ``size`` as ``0``.
-JSON JSONType(const JSON_type type) { return JSONTypeSize(type, 0); }
+JSON _JSONInitType(const JSON_type type) { return _JSONInitTypeSize(type, 0); }
 
 // Returns a ``JSON`` instance of the given ``type``, in case ``size`` is given
 // allocates ``size`` amount of memory in the free-store for the ``JSON``
@@ -50,28 +50,28 @@ JSON JSONType(const JSON_type type) { return JSONTypeSize(type, 0); }
 //
 // Uses the given ``size`` to allocate ``size`` bytes for either the ``Vector``
 // or the ``Map`` instance inside the ``JSON_value`` ``union``.
-JSON JSONTypeSize(const JSON_type type, const size_t size) {
+JSON _JSONInitTypeSize(const JSON_type type, const size_t size) {
   JSON json = {.type = type};
   switch (type) {
-    case JSON_null:
+    case JSON_Null:
       json.value.null = NULL;
       break;
-    case JSON_string:
+    case JSON_String:
       json.value.string = "";
       break;
-    case JSON_decimal:
+    case JSON_Decimal:
       json.value.decimal = 0.0;
       break;
-    case JSON_number:
+    case JSON_Number:
       json.value.number = 0;
       break;
-    case JSON_boolean:
+    case JSON_Boolean:
       json.value.boolean = FALSE;
       break;
-    case JSON_list:
+    case JSON_List:
       json.value.list = VectorAlloc(size);
       break;
-    case JSON_object:
+    case JSON_Object:
       json.value.map = MapAllocNStrAsKey(size);
       break;
   }
@@ -82,17 +82,18 @@ JSON JSONTypeSize(const JSON_type type, const size_t size) {
 //
 // Unlike the other allocation methods this method does not take in an explicit
 // argument reason being the ``JSON`` instance automatically assigned a ``null``
-// value inside function ``JSONTypeSize()`` as soon the ``type`` is inferred as
+// value inside function ``_JSONInitTypeSize()`` as soon the ``type`` is
+// inferred as
 // ``JSON_null``.
-JSON JSONNull() { return JSONType(JSON_null); }
+JSON _JSONInitNull() { return _JSONInitType(JSON_Null); }
 
 // Creates a ``JSON`` instance from a ``json_string_t`` type.
 //
 // Allocates free-store memory to store the comming ``string`` instance. Assigns
 // ``NULL`` to the ``json.value.string`` instance if dynamic-memory allocation
 // failed.
-JSON JSONString(const json_string_t string) {
-  JSON json = JSONType(JSON_string);
+JSON _JSONInitString(const json_string_t string) {
+  JSON json = _JSONInitType(JSON_String);
   size_t strlen_ = strlen(string);
   if ((json.value.string = (char*)malloc((strlen_ + 1) * sizeof(char))) == NULL)
     return json;
@@ -105,8 +106,8 @@ JSON JSONString(const json_string_t string) {
 // The given number is copied to the ``json.value.number`` instance of the
 // ``JSON`` instance and can be access as long as ``JSON`` instance is in the
 // memory.
-JSON JSONNumber(const json_number_t number) {
-  JSON json = JSONType(JSON_number);
+JSON _JSONInitNumber(const json_number_t number) {
+  JSON json = _JSONInitType(JSON_Number);
   json.value.number = number;
   return json;
 }
@@ -119,8 +120,8 @@ JSON JSONNumber(const json_number_t number) {
 //
 // This particular function is aimed to take in ``floating-point`` values of
 // type ``double``.
-JSON JSONDecimal(const json_decimal_t decimal) {
-  JSON json = JSONType(JSON_decimal);
+JSON _JSONInitDecimal(const json_decimal_t decimal) {
+  JSON json = _JSONInitType(JSON_Decimal);
   json.value.decimal = decimal;
   return json;
 }
@@ -131,8 +132,8 @@ JSON JSONDecimal(const json_decimal_t decimal) {
 // ``__uint8_t`` can be either ``0`` ("false") or any value greater than and
 // less than ``256`` to be stored as a ``JSON_boolean`` type data inside
 // ``json.value.boolean``.
-JSON JSONBool(const json_bool_t boolean) {
-  JSON json = JSONType(JSON_boolean);
+JSON _JSONInitBool(const json_bool_t boolean) {
+  JSON json = _JSONInitType(JSON_Boolean);
   json.value.boolean = boolean;
   return json;
 }
@@ -149,8 +150,8 @@ JSON JSONBool(const json_bool_t boolean) {
 // initial data dies because it was allocated in stack not in the free-store
 // then the ``JSON`` instance will lose that data too, so make sure to pass in
 // dynamically allocated data.
-JSON JSONList(json_list_t* list) {
-  JSON json = JSONType(JSON_list);
+JSON _JSONInitList(json_list_t* list) {
+  JSON json = _JSONInitType(JSON_List);
   VectorCopy(&json.value.list, list);
   return json;
 }
@@ -167,8 +168,8 @@ JSON JSONList(json_list_t* list) {
 // So if the initial data dies because it was allocated in stack not in the
 // free-store then the ``JSON`` instance will lose that data too, so make sure
 // to pass in dynamically allocated data.
-JSON JSONObject(json_object_t* map) {
-  JSON json = JSONType(JSON_object);
+JSON _JSONInitObject(json_object_t* map) {
+  JSON json = _JSONInitType(JSON_Object);
   MapCopy(&json.value.map, map);
   return json;
 }
@@ -180,25 +181,25 @@ JSON* JSONAllocType(JSON_type type) {
 JSON* JSONAllocTypeSize(JSON_type type, size_t size) {
   JSON* json = (JSON*)(malloc(size));
   switch (type) {
-    case JSON_null:
+    case JSON_Null:
       json->value.null = NULL;
       break;
-    case JSON_string:
+    case JSON_String:
       json->value.string = (char*)(malloc(size * sizeof(char)));
       break;
-    case JSON_decimal:
+    case JSON_Decimal:
       json->value.decimal = 0.0;
       break;
-    case JSON_number:
+    case JSON_Number:
       json->value.number = 0;
       break;
-    case JSON_boolean:
+    case JSON_Boolean:
       json->value.boolean = FALSE;
       break;
-    case JSON_list:
+    case JSON_List:
       json->value.list = VectorAlloc(size);
       break;
-    case JSON_object:
+    case JSON_Object:
       json->value.map = MapAllocNStrAsKey(size);
       break;
   }
@@ -206,25 +207,25 @@ JSON* JSONAllocTypeSize(JSON_type type, size_t size) {
 }
 
 void JSONFree(JSON* const json) {
-  if (json->type == JSON_string) {
+  if (json->type == JSON_String) {
     free(json->value.string);
-  } else if (json->type == JSON_list) {
+  } else if (json->type == JSON_List) {
     void* current = NULL;
     VectorIterator vector_it = VectorIteratorNew(&json->value.list);
     while ((current = VectorIteratorNext(&vector_it)))
       JSONFree((JSON*)current);
     VectorFree(&json->value.list);
-  } else if (json->type == JSON_object) {
+  } else if (json->type == JSON_Object) {
     MapEntry* current = NULL;
     MapIterator map_it = MapIteratorNew(&json->value.map);
     while ((current = MapIteratorNext(&map_it)))
       JSONFree((JSON*)current);
     MapFree(&json->value.map);
-  } else if (json->type == JSON_number) {
+  } else if (json->type == JSON_Number) {
     json->value.number = 0;
-  } else if (json->type == JSON_decimal) {
+  } else if (json->type == JSON_Decimal) {
     json->value.decimal = 0.0;
-  } else if (json->type = JSON_boolean) {
+  } else if (json->type = JSON_Boolean) {
     json->value.boolean = FALSE;
   } else {
     json->value.null = NULL;
@@ -232,25 +233,25 @@ void JSONFree(JSON* const json) {
 }
 
 void JSONFreeDeep(JSON* const json) {
-  if (json->type == JSON_string) {
+  if (json->type == JSON_String) {
     free(json->value.string);
-  } else if (json->type == JSON_list) {
+  } else if (json->type == JSON_List) {
     void* current = NULL;
     VectorIterator vector_it = VectorIteratorNew(&json->value.list);
     while ((current = VectorIteratorNext(&vector_it)))
       JSONFreeDeep((JSON*)current);
     VectorFreeDeep(&json->value.list);
-  } else if (json->type == JSON_object) {
+  } else if (json->type == JSON_Object) {
     MapEntry* current = NULL;
     MapIterator map_it = MapIteratorNew(&json->value.map);
     while ((current = MapIteratorNext(&map_it)))
       JSONFreeDeep((JSON*)current);
     MapFreeDeep(&json->value.map);
-  } else if (json->type == JSON_number) {
+  } else if (json->type == JSON_Number) {
     json->value.number = 0;
-  } else if (json->type == JSON_decimal) {
+  } else if (json->type == JSON_Decimal) {
     json->value.decimal = 0.0;
-  } else if (json->type = JSON_boolean) {
+  } else if (json->type = JSON_Boolean) {
     json->value.boolean = FALSE;
   } else {
     json->value.null = NULL;

@@ -37,23 +37,32 @@ extern "C" {
 #endif
 
 void JSONListAdd(JSON* const list, JSON* const value);
-void JSONListAddNull(JSON* const list);
-void JSONListAddNumber(JSON* const list, const json_number_t value);
-void JSONListAddDecimal(JSON* const list, const json_decimal_t value);
-void JSONListAddBool(JSON* const list, const json_bool_t value);
-void JSONListAddString(JSON* const list, const json_string_t data);
+void _JSONListAddNull(JSON* const list);
+void _JSONListAddNumber(JSON* const list, const json_number_t value);
+void _JSONListAddDecimal(JSON* const list, const json_decimal_t value);
+void _JSONListAddBool(JSON* const list, const json_bool_t value);
+void _JSONListAddString(JSON* const list, const json_string_t data);
+
+#define JSON_LIST_ADD(value_type, json_inst) _JSONListAdd##value_type(json_inst)
+#define JSON_LIST_ADD_VAL(value_type, json_inst, value) \
+  _JSONListAdd##value_type(json_inst, value)
 
 void JSONObjectPut(JSON* const object, const json_string_t key,
                    JSON* const value);
-void JSONObjectPutNull(JSON* const object, const json_string_t key);
-void JSONObjectPutNumber(JSON* const object, const json_string_t key,
-                         const json_number_t value);
-void JSONObjectPutDecimal(JSON* const object, const json_string_t key,
-                          const json_decimal_t value);
-void JSONObjectPutBool(JSON* const object, const json_string_t key,
-                       const json_bool_t value);
-void JSONObjectPutString(JSON* const object, const json_string_t key,
-                         const json_string_t data);
+void _JSONObjectPutNull(JSON* const object, const json_string_t key);
+void _JSONObjectPutNumber(JSON* const object, const json_string_t key,
+                          const json_number_t value);
+void _JSONObjectPutDecimal(JSON* const object, const json_string_t key,
+                           const json_decimal_t value);
+void _JSONObjectPutBool(JSON* const object, const json_string_t key,
+                        const json_bool_t value);
+void _JSONObjectPutString(JSON* const object, const json_string_t key,
+                          const json_string_t data);
+
+#define JSON_OBJECT_PUT(value_type, json_inst, key) \
+  _JSONObjectPut##value_type(json_inst, key)
+#define JSON_OBJECT_PUT_VAL(value_type, json_inst, key, value) \
+  _JSONObjectPut##value_type(json_inst, key, value)
 
 #ifdef __cplusplus
 }

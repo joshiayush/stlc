@@ -41,39 +41,44 @@ void JSONListAdd(JSON* const list, JSON* const value) {
   VectorPush(&list->value.list, (void*)value);
 }
 
-void JSONListAddNull(JSON* const list) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_null = JSONNull();
-  memcpy(json, &json_null, sizeof(JSON));
-  JSONListAdd(list, json);
+#define __json_copy_and_insert_into_json_list(json, obj_to_copy, list) \
+  do {                                                                 \
+    memcpy(json, &obj_to_copy, sizeof(JSON));                          \
+    JSONListAdd(list, json);                                           \
+  } while (0)
+
+#define __json_add_null_value_to_json_list(type, list)       \
+  do {                                                       \
+    JSON* json = (JSON*)(malloc(sizeof(JSON)));              \
+    JSON type = JSON_INIT(type);                             \
+    __json_copy_and_insert_into_json_list(json, type, list); \
+  } while (0)
+
+#define __json_add_value_to_json_list(type, list, value)     \
+  do {                                                       \
+    JSON* json = (JSON*)(malloc(sizeof(JSON)));              \
+    JSON type = JSON_INIT_VAL(type, value);                  \
+    __json_copy_and_insert_into_json_list(json, type, list); \
+  } while (0)
+
+void _JSONListAddNull(JSON* const list) {
+  __json_add_null_value_to_json_list(Null, list);
 }
 
-void JSONListAddNumber(JSON* const list, const json_number_t value) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_number = JSONNumber(value);
-  memcpy(json, &json_number, sizeof(JSON));
-  JSONListAdd(list, json);
+void _JSONListAddNumber(JSON* const list, const json_number_t value) {
+  __json_add_value_to_json_list(Number, list, value);
 }
 
-void JSONListAddDecimal(JSON* const list, const json_decimal_t value) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_decimal = JSONDecimal(value);
-  memcpy(json, &json_decimal, sizeof(JSON));
-  JSONListAdd(list, json);
+void _JSONListAddDecimal(JSON* const list, const json_decimal_t value) {
+  __json_add_value_to_json_list(Decimal, list, value);
 }
 
-void JSONListAddBool(JSON* const list, const json_bool_t value) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_boolean = JSONBool(value);
-  memcpy(json, &json_boolean, sizeof(JSON));
-  JSONListAdd(list, json);
+void _JSONListAddBool(JSON* const list, const json_bool_t value) {
+  __json_add_value_to_json_list(Bool, list, value);
 }
 
-void JSONListAddString(JSON* const list, const json_string_t data) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_string = JSONString(data);
-  memcpy(json, &json_string, sizeof(JSON));
-  JSONListAdd(list, json);
+void _JSONListAddString(JSON* const list, const json_string_t data) {
+  __json_add_value_to_json_list(String, list, data);
 }
 
 void JSONObjectPut(JSON* const object, const json_string_t const key,
@@ -81,41 +86,47 @@ void JSONObjectPut(JSON* const object, const json_string_t const key,
   MapPut(&object->value.map, (void*)key, (void*)value);
 }
 
-void JSONObjectPutNull(JSON* const object, const json_string_t const key) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_null = JSONNull();
-  memcpy(json, &json_null, sizeof(JSON));
-  JSONObjectPut(object, key, json);
+#define __json_copy_and_insert_into_json_object(json, obj_to_copy, key, \
+                                                object)                 \
+  do {                                                                  \
+    memcpy(json, &obj_to_copy, sizeof(JSON));                           \
+    JSONObjectPut(object, key, json);                                   \
+  } while (0)
+
+#define __json_add_null_value_to_json_object(type, key, object)       \
+  do {                                                                \
+    JSON* json = (JSON*)(malloc(sizeof(JSON)));                       \
+    JSON type = JSON_INIT(type);                                      \
+    __json_copy_and_insert_into_json_object(json, type, key, object); \
+  } while (0)
+
+#define __json_add_value_to_json_object(type, object, key, value)     \
+  do {                                                                \
+    JSON* json = (JSON*)(malloc(sizeof(JSON)));                       \
+    JSON type = JSON_INIT_VAL(type, value);                           \
+    __json_copy_and_insert_into_json_object(json, type, key, object); \
+  } while (0)
+
+void _JSONObjectPutNull(JSON* const object, const json_string_t const key) {
+  __json_add_null_value_to_json_object(Null, key, object);
 }
 
-void JSONObjectPutNumber(JSON* const object, const json_string_t const key,
-                         const json_number_t value) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_number = JSONNumber(value);
-  memcpy(json, &json_number, sizeof(JSON));
-  JSONObjectPut(object, key, json);
+void _JSONObjectPutNumber(JSON* const object, const json_string_t const key,
+                          const json_number_t value) {
+  __json_add_value_to_json_object(Number, object, key, value);
 }
 
-void JSONObjectPutDecimal(JSON* const object, const json_string_t const key,
-                          const json_decimal_t value) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_decimal = JSONDecimal(value);
-  memcpy(json, &json_decimal, sizeof(JSON));
-  JSONObjectPut(object, key, json);
+void _JSONObjectPutDecimal(JSON* const object, const json_string_t const key,
+                           const json_decimal_t value) {
+  __json_add_value_to_json_object(Decimal, object, key, value);
 }
 
-void JSONObjectPutBool(JSON* const object, const json_string_t const key,
-                       const json_bool_t value) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_boolean = JSONBool(value);
-  memcpy(json, &json_boolean, sizeof(JSON));
-  JSONObjectPut(object, key, json);
+void _JSONObjectPutBool(JSON* const object, const json_string_t const key,
+                        const json_bool_t value) {
+  __json_add_value_to_json_object(Bool, object, key, value);
 }
 
-void JSONObjectPutString(JSON* const object, const json_string_t const key,
-                         json_string_t const data) {
-  JSON* json = (JSON*)malloc(sizeof(JSON));
-  JSON json_string = JSONString(data);
-  memcpy(json, &json_string, sizeof(JSON));
-  JSONObjectPut(object, key, json);
+void _JSONObjectPutString(JSON* const object, const json_string_t const key,
+                          json_string_t const data) {
+  __json_add_value_to_json_object(String, object, key, data);
 }

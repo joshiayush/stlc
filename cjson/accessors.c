@@ -55,23 +55,23 @@ StringStream JSONStringify(JSON* const json, const bool_t prettify,
   }
 
   switch (json->type) {
-    case JSON_null:
+    case JSON_Null:
       StringStreamConcat(&stringified, JSON_NULL);
       break;
-    case JSON_string:
+    case JSON_String:
       StringStreamConcat(&stringified, "\"%s\"", json->value.string);
       break;
-    case JSON_number:
+    case JSON_Number:
       StringStreamConcat(&stringified, "%lld", json->value.number);
       break;
-    case JSON_decimal:
+    case JSON_Decimal:
       StringStreamConcat(&stringified, "%lf", json->value.decimal);
       break;
-    case JSON_boolean:
+    case JSON_Boolean:
       StringStreamConcat(&stringified, "%s",
                          json->value.boolean ? JSON_TRUE : JSON_FALSE);
       break;
-    case JSON_list: {
+    case JSON_List: {
       if (!json->value.list.size) {
         StringStreamConcat(&stringified, "[]%s", __place_endl_if_prettify);
         break;
@@ -99,7 +99,7 @@ StringStream JSONStringify(JSON* const json, const bool_t prettify,
       StringStreamConcat(&stringified, "]%s", __place_endl_if_prettify);
       break;
     }
-    case JSON_object: {
+    case JSON_Object: {
       if (!json->value.map.entrieslen) {
         StringStreamConcat(&stringified, "{}%s", __place_endl_if_prettify);
         break;

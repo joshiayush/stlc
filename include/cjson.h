@@ -53,13 +53,13 @@ typedef Map json_object_t;
 // This ``enum`` is used to identify the type of the ``JSON_value`` instance
 // currently holding in it.
 typedef enum JSON_type {
-  JSON_null = 0,
-  JSON_string = 1,
-  JSON_number = 2,
-  JSON_decimal = 3,
-  JSON_boolean = 4,
-  JSON_list = 5,
-  JSON_object = 6
+  JSON_Null = 0,
+  JSON_String = 1,
+  JSON_Number = 2,
+  JSON_Decimal = 3,
+  JSON_Boolean = 4,
+  JSON_List = 5,
+  JSON_Object = 6
 } JSON_type;
 
 // ``JSON_value`` union stores ``JSON`` style values.  ``union`` is preferred
@@ -93,7 +93,7 @@ typedef struct JSON {
 // This function assumes that the requested ``JSON`` instance has a type size of
 // ``0`` thus calls the function ``JSON_TypeSize(type, 0)`` with the given type
 // and the ``size`` as ``0``.
-JSON JSONType(const JSON_type type);
+JSON _JSONInitType(const JSON_type type);
 
 // Returns a ``JSON`` instance of the given ``type``, in case ``size`` is given
 // allocates ``size`` amount of memory in the free-store for the ``JSON``
@@ -101,29 +101,33 @@ JSON JSONType(const JSON_type type);
 //
 // Uses the given ``size`` to allocate ``size`` bytes for either the ``Vector``
 // or the ``Map`` instance inside the ``JSON_value`` ``union``.
-JSON JSONTypeSize(const JSON_type type, const size_t size);
+JSON _JSONInitTypeSize(const JSON_type type, const size_t size);
+
+#define JSON_INIT_TYPE(type) _JSONInitType(JSON_##type)
+#define JSON_INIT_TYPE_SIZE(type, size) _JSONInitTypeSize(JSON_##type, size)
 
 // Returns a ``JSON`` instance containing ``null`` value.
 //
 // Unlike the other allocation methods this method does not take in an explicit
 // argument reason being the ``JSON`` instance automatically assigned a ``null``
-// value inside function ``JSONTypeSize()`` as soon the ``type`` is inferred as
+// value inside function ``_JSONInitTypeSize()`` as soon the ``type`` is
+// inferred as
 // ``JSON_null``.
-JSON JSONNull();
+JSON _JSONInitNull();
 
 // Creates a ``JSON`` instance from a ``json_string_t`` type.
 //
 // Allocates free-store memory to store the comming ``string`` instance. Assigns
 // ``NULL`` to the ``json.value.string`` instance if dynamic-memory allocation
 // failed.
-JSON JSONString(const json_string_t string);
+JSON _JSONInitString(const json_string_t string);
 
 // Creates a ``JSON`` instance from a ``json_number_t`` type.
 //
 // The given number is copied to the ``json.value.number`` instance of the
 // ``JSON`` instance and can be access as long as ``JSON`` instance is in the
 // memory.
-JSON JSONNumber(const json_number_t number);
+JSON _JSONInitNumber(const json_number_t number);
 
 // Creates a ``JSON`` instance from a ``json_decimal_t`` type.
 //
@@ -133,7 +137,7 @@ JSON JSONNumber(const json_number_t number);
 //
 // This particular function is aimed to take in ``floating-point`` values of
 // type ``double``.
-JSON JSONDecimal(const json_decimal_t decimal);
+JSON _JSONInitDecimal(const json_decimal_t decimal);
 
 // Creates a ``JSON`` instance from a ``json_bool_t`` type.
 //
@@ -141,7 +145,7 @@ JSON JSONDecimal(const json_decimal_t decimal);
 // ``__uint8_t`` can be either ``0`` ("false") or any value greater than and
 // less than ``256`` to be stored as a ``JSON_boolean`` type data inside
 // ``json.value.boolean``.
-JSON JSONBool(const json_bool_t boolean);
+JSON _JSONInitBool(const json_bool_t boolean);
 
 // Creates a ``JSON`` instance from a ``json_list_t*`` pointer type.
 //
@@ -155,7 +159,7 @@ JSON JSONBool(const json_bool_t boolean);
 // initial data dies because it was allocated in stack not in the free-store
 // then the ``JSON`` instance will lose that data too, so make sure to pass in
 // dynamically allocated data.
-JSON JSONList(json_list_t* list);
+JSON _JSONInitList(json_list_t* list);
 
 // Creates a ``JSON`` instance from a ``json_object_t*`` pointer type.
 //
@@ -169,13 +173,16 @@ JSON JSONList(json_list_t* list);
 // So if the initial data dies because it was allocated in stack not in the
 // free-store then the ``JSON`` instance will lose that data too, so make sure
 // to pass in dynamically allocated data.
-JSON JSONObject(json_object_t* map);
+JSON _JSONInitObject(json_object_t* map);
 
 JSON* JSONAllocType(JSON_type type);
 JSON* JSONAllocTypeSize(JSON_type type, size_t size);
 
 void JSONFree(JSON* const json);
 void JSONFreeDeep(JSON* const json);
+
+#define JSON_INIT(type) _JSONInit##type()
+#define JSON_INIT_VAL(type, value) _JSONInit##type(value)
 
 #ifdef __cplusplus
 }
