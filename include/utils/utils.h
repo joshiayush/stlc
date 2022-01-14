@@ -38,21 +38,109 @@
 extern "C" {
 #endif
 
+// Returns a ``bool_t`` value in case the path given is an absolute path.
+// Unfortunately this does not support Windows specific paths yet.
+//
+// The given ``path`` is consider to be a absolute path if and only if that path
+// has its first element equals to ``/``.
+//
+// ```c
+// bool_t is_abs_path = IsAbsPath("/C/cjson/CMakeLists.txt");
+// ```
 bool_t IsAbsPath(const char* const path);
 
+// Splits the ``path`` into two separate components ``head`` and ``tail`` where
+// everything before the last root node ``/`` is considerd the ``head`` and
+// everything after the last root node ``/`` is considered the ``tail`` of that
+// path.
+//
+// Note: This function is not going to normalize the ``path`` before separating
+// it into components rather will just simply separate the ``head`` and the
+// ``tail`` component out of the ``path`` without normalizing it.  Use
+// ``NormaPath`` to normalize the path.
+//
+// ```c
+// char head[100], tail[100];
+// Split(head, tail, "/C/cjson/CMakeLists.txt");
+// ```
 void Split(char* const head, char* const tail, const char* const path);
 
-// char* _GetCurrentWorkingDir(char* const abspath, char* const buffer,
-//                             const size_t size);
+// Returns a pointer to the ``buffer`` buffer itself after copying the current
+// working directory path in it.  This function will only copy ``size`` bytes
+// from the current working directory to the ``buffer`` given so make sure to
+// create enough room for the ``buffer`` before actually storing a large current
+// working directory path in it.
+//
+// This function is private to the module and takes in a ``abspath`` argument
+// which is used to create the absolute path to the current working directory.
+//
+// ```c
+// char buffer[100];
+// buffer = _GetCurrentWorkingDir(__FILE__, buffer, sizeof(buffer) * 1);
+// ```
+char* _GetCurrentWorkingDir(char* const abspath, char* const buffer,
+                            const size_t size);
 
-// #define GetCurrentWorkingDir(buffer, size) \
-//   _GetCurrentWorkingDir(__FILE__, buffer, size)
+// Wrapper over the private function ``_GetCurrentWorkingDir()`` to provide a
+// ``__FILE__`` path when user wants the current working directory path.
+//
+// We can't get a absolute path to the current working directory unless we have
+// a absolute path to the file the program is running in.
+//
+// ```c
+// char buffer[100];
+// buffer = GetCurrentWorkingDir(buffer, sizeof(buffer) * 1);
+// ```
+#define GetCurrentWorkingDir(buffer, size) \
+  _GetCurrentWorkingDir(__FILE__, buffer, size)
 
-// char* Join(char* const buffer, const char* const a, ...);
+// Joins two or more pathname components, inserting ``/`` as needed.
+// Unfortunately, this will not work in Windows.
+//
+// Note: If any component is absolute path, all previous path components will be
+// discarded.  An empty last part will result in a path that ends with a
+// separator.
+//
+// ```c
+// char buffer[100];
+// buffer = Join(buffer, "/C/cjson", "CMakeLists.txt");
+// ```
+char* Join(char* const buffer, const char* const a, ...);
 
-// char* NormPath(char* const path);
+// Normalizes path, eliminating double slashes, dots, double dots, etc.
+//
+// ```c
+// char buffer[100];
+// strcpy(buffer, "/C/cjson/../cjson/./cjson/CMakeLists.txt");
+// buffer = NormPath(buffer);
+// ```
+char* NormPath(char* const path);
 
-// char* AbsPath(char* const buffer, char* const path);
+// Returns a pointer to the ``buffer`` after copying a absolute path to the
+// given ``path`` from the current working directory.  Basically this function
+// will just concatenate the current working directory with the given ``path``
+// and will normalize the path before returning the pointer to the resulting
+// path.
+//
+// ```abspath`` is the path to the file from where the function is called, using
+// this path we find the absolute path to the current working directory and
+// joins that with the given ``path``.
+//
+// ```c
+// char buffer[100];
+// buffer = _AbsPath(__FILE__, buffer, "utils.h");
+// ```
+char* _AbsPath(const char* const abspath, char* const buffer, char* const path);
+
+// Wrapper over the private function ``_AbsPath()`` to provide ``__FILE__`` as
+// its first argument when user wants to get the absolute path to the given
+// ``path``.
+//
+// ```c
+// char buffer[100];
+// buffer = AbsPath(buffer, "CMakeLists.txt");
+// ```
+#define AbsPath(buffer, path) _AbsPath(__FILE__, buffer, path)
 
 #ifdef __cplusplus
 }
