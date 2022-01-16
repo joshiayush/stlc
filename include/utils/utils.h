@@ -78,7 +78,7 @@ void Split(char* const head, char* const tail, const char* const path);
 // char buffer[100];
 // buffer = _GetCurrentWorkingDir(__FILE__, buffer, sizeof(buffer) * 1);
 // ```
-char* _GetCurrentWorkingDir(char* const abspath, char* const buffer,
+char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
                             const size_t size);
 
 // Wrapper over the private function ``_GetCurrentWorkingDir()`` to provide a
@@ -105,7 +105,8 @@ char* _GetCurrentWorkingDir(char* const abspath, char* const buffer,
 // char buffer[100];
 // buffer = Join(buffer, "/C/cjson", "CMakeLists.txt");
 // ```
-char* Join(char* const buffer, const char* const a, ...);
+char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
+           ...);
 
 // Normalizes path, eliminating double slashes, dots, double dots, etc.
 //
