@@ -37,7 +37,7 @@
 #include "data/sstream/sstream.h"
 
 // Concatenates a newly formatted string onto the existing string inside
-// ``StringStream`` instance and increments the ``length`` attribute.
+// `StringStream` instance and increments the `length` attribute.
 void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   va_list args;
   va_start(args, format);
@@ -46,9 +46,9 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
                                  avail * sizeof(char), format, args);
   va_end(args);
 
-  // ``vsnprintf()`` has overflow protection, so if this condition evaluates to
-  // true that means ``vsnprintf()`` did not concatenate the new string
-  // properly; this clause takes care of that.
+  // `vsnprintf()` has overflow protection, so if this condition evaluates to
+  // true that means `vsnprintf()` did not concatenate the new string properly;
+  // this clause takes care of that.
   if (StringStreamRealloc(sstream, sstream->length + format_size) ==
       SSTREAM_REALLOC_SUCCESS) {
     va_start(args, format);
@@ -61,12 +61,12 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }
 
-// Concatenates data of known length onto the existing ``data`` instance of
-// ``StringStream`` instance.  This function will re-allocate the ``data``
-// buffer if needed.
+// Concatenates data of known length onto the existing `data` instance of
+// `StringStream` instance.  This function will re-allocate the `data` buffer if
+// needed.
 //
-// The ``length`` property will decide how many bytes to copy from ``data`` to
-// ``sstream->data`` while ignoring the ``NULL`` bytes on the way.
+// The `length` property will decide how many bytes to copy from `data` to
+// `sstream->data` while ignoring the `NULL` bytes on the way.
 void StringStreamRead(StringStream* const sstream, const void* data,
                       const size_t length) {
   (void)StringStreamRealloc(sstream, sstream->length + length);
@@ -75,9 +75,9 @@ void StringStreamRead(StringStream* const sstream, const void* data,
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
 }
 
-// Impedes the position of the terminate character ``\0`` by ``length``, or if
-// the length is greater than the data length of ``StringStream`` instance,
-// places the terminator ``\0`` at beginning.
+// Impedes the position of the terminate character `\0` by `length`, or if the
+// length is greater than the data length of `StringStream` instance, places the
+// terminator `\0` at beginning.
 void StringStreamRetreat(StringStream* const sstream, const size_t length) {
   if ((sstream != NULL) && (!sstream->length || !sstream->capacity))
     return;

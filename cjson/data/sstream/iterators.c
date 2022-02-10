@@ -30,14 +30,14 @@
 #include "bytes.h"
 #include "data/sstream/sstream.h"
 
-// Returns a ``const char*`` to the beginning of the ``data`` instance of the
-// ``StringStream`` instance.
+// Returns a `const char*` to the beginning of the `data` instance of the
+// `StringStream` instance.
 const char* StringStreamBegin(const StringStream* const sstream) {
   return sstream->data;
 }
 
-// Returns a iterator to the end of the ``data`` instance of the
-// ``StringStream`` instance.
+// Returns a iterator to the end of the `data` instance of the `StringStream`
+// instance.
 const char* StringStreamEnd(const StringStream* const sstream) {
   return sstream->data + sstream->length;
 }
