@@ -32,6 +32,7 @@
 #include "cjson/testAccessors.hh"
 #include "map/testMap.hh"
 #include "sstream/testAccessors.hh"
+#include "sstream/testFileIO.hh"
 #include "sstream/testIterators.hh"
 #include "sstream/testModifiers.hh"
 #include "sstream/testSstream.hh"
