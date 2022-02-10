@@ -33,10 +33,12 @@
 
 #include "data/vector/vector.h"
 
-// Function to insert elmenet at a specific index inside the 'Vector' container.
+// Inserts elmenet at a specific index inside the `Vector` container.
 //
-// Function inserts element at a specific index inside the 'Vector' container
-// provided that the index is in bounds.
+// Inserts element at a specific index inside the `Vector` container provided
+// that the index is in bounds.
+//
+// Has no effect if the `idx` value is out-of-bounds.
 void VectorInsert(Vector* const vector, void* const elem, const size_t idx) {
   if (idx > vector->size)
     return;
@@ -48,20 +50,25 @@ void VectorInsert(Vector* const vector, void* const elem, const size_t idx) {
   ++(vector->size);
 }
 
-// Function to insert the given element at the very first index shifting the
-// rest of the array elements towards the last.
+// Inserts the given element at the very first index shifting the rest of the
+// array elements towards the last.
+//
+// Internally uses `VectorInsert()` with a `idx` value of `0`.
 void VectorUnshift(Vector* const vector, void* const elem) {
   VectorInsert(vector, elem, 0);
 }
 
-// Function to insert the given element at the very last index of the 'Vector'
-// buffer.
+// Insert the given element at the very last index of the `Vector` buffer.
+//
+// Internally uses `VectorInsert()` with a `idx` value of `vector->size`.
 void VectorPush(Vector* const vector, void* const elem) {
   VectorInsert(vector, elem, vector->size);
 }
 
-// Returns the address of the element located at the index 'idx' while
+// Returns the address of the element located at the index `idx` while
 // over-writing element's position.
+//
+// Returns a `NULL` pointer if the `idx` value is out-of-bounds.
 void* VectorDelete(Vector* const vector, const size_t idx) {
   if (idx >= vector->size)
     return (void*)0;
@@ -73,12 +80,16 @@ void* VectorDelete(Vector* const vector, const size_t idx) {
   return elem;
 }
 
-// Returns the very first element of a 'Vector' instance and then over writes
+// Returns the very first element of a `Vector` instance and then over writes
 // the memory block.
+//
+// Internally uses `VectorDelete()` with a `idx` value of `0`.
 void* VectorShift(Vector* const vector) { return VectorDelete(vector, 0); }
 
-// Returns the very last element of a 'Vector' instance and then over writes the
+// Returns the very last element of a `Vector` instance and then over writes the
 // memory block.
+//
+// Internally uses `VectorDelete()` with a `idx` value of `vector->size - 1`.
 void* VectorRemove(Vector* const vector) {
   return VectorDelete(vector, vector->size - 1);
 }

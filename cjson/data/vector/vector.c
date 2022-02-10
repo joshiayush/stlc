@@ -32,47 +32,53 @@
 #include <stdlib.h>
 #include <sys/types.h>
 
-// Computes the capacity of the ``Vector`` instance using the Python list resize
+// Computes the capacity of the `Vector` instance using the Python list resize
 // routine so that the following evaluates to true:
 //      0 <= size <= capacity
-static void _ComputeVectorBufferCapacity(const size_t size,
-                                         size_t* const capacity) {
+static void ComputeVectorBufferCapacity(const size_t size,
+                                        size_t* const capacity) {
   *capacity = (size >> 3) + (size < 9 ? 3 : 6);
   *capacity += size;
 }
 
-// Default dynamic array allocator in case the length is not known.
+// Returns an initialized instance of `Vector` of length `VECTOR_DEFAULT_SIZE`.
 //
-// This function will initialize a ``Vector`` container with a initial
-// ``length`` of ``VECTOR_DEFAULT_SIZE``.
+// `VECTOR_DEFAULT_SIZE` is used to compute the capacity of the `Vector`
+// instance.
+//
+// Memory blocks allocated for `Vector` instances are allocated using the
+// `capacity` calculated by the given `size` i.e., `VECTOR_DEFAULT_SIZE`.
 Vector VectorDefAlloc() { return VectorAlloc(VECTOR_DEFAULT_SIZE); }
 
-// Allocate ``Vector`` container of given size.
+// Returns an initialized instance of `Vector` of `length`.
+//
+// Memory blocks allocated for `Vector` instance will match the value of
+// `capacity` which we calculate using the function
+// `ComputeVectorBufferCapacity()`.
 Vector VectorAlloc(const size_t size) {
   Vector vector = {.data = (void*)0, .size = 0, .capacity = 0};
   size_t capacity;
-  _ComputeVectorBufferCapacity(size, &capacity);
+  ComputeVectorBufferCapacity(size, &capacity);
   if ((vector.data = (void**)malloc(capacity * sizeof(void*))))
     vector.capacity = capacity;
   return vector;
 }
 
-// Re-allocates the free store space occupied by the ``Vector`` container.
+// Re-allocates the free store space occupied by the `Vector` container.
 //
-// This function re-allocates the ``Vector`` instance either by expanding the
-// size in place (if available) or by moving the entire container to a new
-// address.
+// This function re-allocates the `Vector` instance either by expanding the size
+// in place (if available) or by moving the entire container to a new address.
 //
-// ``size`` is the new size of the container; if less than the capacity of the
-// container then this function will simply return the value of macro
-// ``VECTOR_RESIZE_NOT_REQUIRED`` or if greater than the capacity of the
-// container then will return ``VECTOR_RESIZE_SUCCESS`` on success or
-// ``VECTOR_RESIZE_FAILURE`` on failure.
+// Function returns:
+//  * `VECTOR_RESIZE_NOT_REQUIRED` if the given size is smaller than the
+//    capacity,
+//  * `VECTOR_RESIZE_SUCCESS` if the re-allocation was successful, or
+//  * `VECTOR_RESIZE_FAILURE` if the re-allocation failed.
 u_int8_t VectorResize(Vector* const vector, const size_t size) {
   if (size <= vector->capacity)
     return VECTOR_RESIZE_NOT_REQUIRED;
   size_t capacity;
-  _ComputeVectorBufferCapacity(size, &capacity);
+  ComputeVectorBufferCapacity(size, &capacity);
   void** data = vector->data;
   vector->data = (void**)realloc(vector->data, capacity * sizeof(void*));
   if (!vector->data) {
@@ -88,16 +94,16 @@ u_int8_t VectorResize(Vector* const vector, const size_t size) {
   return VECTOR_RESIZE_SUCCESS;
 }
 
-// Copies ``src`` to ``dest``.
+// Copies `src` to `dest`.
 //
 // This function will not make the copies of the values stored inside of the
-// ``src`` vector but will create a new list of pointers pointing to the values
-// inside ``src`` vector.
+// `src` vector but will create a new list of pointers pointing to the values
+// inside `src` vector.
 //
-// This is mainly used when ``src`` instance is stored in the ``stack`` while
-// the values inside of it are stored in the ``free-store`` and you don't want
-// to lose the memory when ``src`` goes out of scope; thus it's better to copy
-// the entire ``src`` vector into a new vector that is dynamically allocated.
+// This is mainly used when `src` instance is stored in the `stack` while
+// the values inside of it are stored in the `free-store` and you don't want
+// to lose the memory when `src` goes out of scope; thus it's better to copy
+// the entire `src` vector into a new vector that is dynamically allocated.
 u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
   if (src->size > dest->size)
     if (VectorResize(dest, src->size) == VECTOR_RESIZE_FAILURE)
@@ -107,20 +113,19 @@ u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
   return VECTOR_COPY_SUCCESS;
 }
 
-// Clears up the ``Vector`` container and allocates fresh space for data
-// elements.
+// Clears up the `Vector` container and allocates fresh space for data elements.
+//
+// It does not free the free-store occupied by the `Vector` elements use
+// `VectorFreeDeep()` for it.
 void VectorClear(Vector* const vector) {
   free(vector->data);
   vector->data = (void**)malloc(vector->capacity * sizeof(void*));
 }
 
-// Frees up the free store space occupied by the ``Vector`` container.
+// Frees up the free-store space occupied by the `Vector` container.
 //
-// This function frees up the free store space occupied by the ``Vector``
-// container.
-//
-// Note: This function does not free up the space occupied by the container
-// elements in the free store.
+// It does not free the free-store occupied by the `Vector` elements use
+// `VectorFreeDeep()` for it.
 void VectorFree(Vector* const vector) {
   vector->size = 0;
   vector->capacity = 0;
@@ -128,16 +133,16 @@ void VectorFree(Vector* const vector) {
   vector->data = (void*)0;
 }
 
-// Frees up the free store space occupied by the ``Vector`` container.
+// Frees up the free store space occupied by the `Vector` container.
 //
-// This function frees up the free store space occupied by the ``Vector``
-// container and the elements in the ``Vector`` container so if you use this
-// function keep this in mind that you``ll also lose access to the elements
-// somewhere else in the free store pointed by the ``Vector`` container, like
+// This function frees up the free store space occupied by the `Vector`
+// container and the elements in the `Vector` container so if you use this
+// function keep this in mind that you`ll also lose access to the elements
+// somewhere else in the free store pointed by the `Vector` container, like
 // "lose lose".
 //
 // THE MAIN CAVEAT of using this function is that the elements stored in this
-// ``vector`` must be dynamically allocated otherwise you might get a error:
+// `vector` must be dynamically allocated otherwise you might get a error:
 //          free(): double free detected in tcache 2
 //          Aborted (core dumped)
 void VectorFreeDeep(Vector* const vector) {

@@ -34,16 +34,20 @@
 
 #include "data/vector/vector.h"
 
-// Sets the value in a 'Vector' instance provided that the 'idx' value given is
+// Sets the value in a `Vector` instance provided that the `idx` value given is
 // in bounds.
+//
+// Has no effect on the `Vector` instance if the `idx` value is out of bounds.
 void VectorSet(Vector* const vector, void* const elem, const size_t idx) {
   if (idx > vector->capacity)
     return;
   vector->data[idx] = elem;
 }
 
-// Returns a 'const void*' to the element present at the given index i.e.,
-// 'idx'.
+// Returns a `const void*` to the element present at the given index i.e.,
+// `idx`.
+//
+// Will return `NULL` if the `idx` value is out of bounds.
 const void* VectorGet(const Vector* const vector, const size_t idx) {
   return idx > vector->size ? NULL : vector->data[idx];
 }

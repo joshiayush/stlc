@@ -33,11 +33,11 @@
 
 #include "data/map/map.h"
 
-// Traverses through the ``Map`` instance and executes the given ``predicate``
-// on each pair of the ``Map`` instance.
+// Traverses through the `Map` instance and executes the given `predicate` on
+// each pair of the `Map` instance.
 //
 // The given predicate must conform to the signature of the
-// ``TraversePredicate`` type and must not try to update its pointers.
+// `TraversePredicate` type and must not try to update its pointers.
 void MapTraverse(Map *const map, TraversePredicate predicate) {
   for (size_t i = 0; i < map->bucketslen; ++i) {
     MapEntry *current = *(map->buckets + i);
@@ -48,12 +48,12 @@ void MapTraverse(Map *const map, TraversePredicate predicate) {
   }
 }
 
-// Traverses through the ``Map`` instance and executes the given ``predicate``
-// on each pair of the ``Map`` instance.
+// Traverses through the `Map` instance and executes the given `predicate` on
+// each pair of the `Map` instance.
 //
 // This should be very reminiscent of what we did in function
-// ``void MapTraverse(Map *const, TraversePredicate)`` except for the fact that
-// this ``predicate`` also takes in a ``Map`` instance as its first parameter.
+// `void MapTraverse(Map *const, TraversePredicate)` except for the fact that
+// this `predicate` also takes in a `Map` instance as its first parameter.
 void MapTraverseWithMapInstance(Map *const map,
                                 TraverseWithMapInstancePredicate predicate) {
   for (size_t i = 0; i < map->bucketslen; ++i) {

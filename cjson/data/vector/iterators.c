@@ -34,7 +34,7 @@
 #include "bool.h"
 #include "data/vector/vector.h"
 
-// Creates a new 'VectorIterator' instance using a 'Vector' instance.
+// Creates a new `VectorIterator` instance using a `Vector` instance.
 VectorIterator VectorIteratorNew(Vector *const vector) {
   VectorIterator vector_itr;
   vector_itr.data = vector;
@@ -47,17 +47,17 @@ void *VectorIteratorNext(VectorIterator *itr) {
                                         : (void *)0;
 }
 
-// Executes the given predicate on each element of the 'Vector' instance.
+// Executes the given predicate on each element of the `Vector` instance.
 void VectorMap(Vector *const vector, void (*pred)(const void *const elem)) {
   for (size_t i = 0; i < vector->size; ++i)
     pred(vector->data[i]);
 }
 
-// Checks if for any value in the 'Vector' instance the given predicate
+// Checks if for any value in the `Vector` instance the given predicate
 // evaluates to true or not.
 //
 // Elements can be of any type that evaluates to true when used as an expression
-// inside of the 'if' clause.
+// inside of the `if` clause.
 bool_t VectorAny(Vector *const vector, bool_t (*pred)(const void *const elem)) {
   for (size_t i = 0; i < vector->size; ++i)
     if (pred(vector->data[i]))
@@ -65,11 +65,11 @@ bool_t VectorAny(Vector *const vector, bool_t (*pred)(const void *const elem)) {
   return FALSE;
 }
 
-// Checks if for all of the values in the 'Vector' instance the given predicate
+// Checks if for all of the values in the `Vector` instance the given predicate
 // evaluates to true or not.
 //
 // Elements can be of any type that evaluates to true when used as an expression
-// inside of the 'if' clause.
+// inside of the `if` clause.
 bool_t VectorAll(Vector *const vector, bool_t (*pred)(const void *const elem)) {
   for (size_t i = 0; i < vector->size; ++i)
     if (!pred(vector->data[i]))

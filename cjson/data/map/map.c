@@ -36,10 +36,10 @@
 
 #include "data/map/ops.h"
 
-// Creates a ``MapEntry`` instance with the given key-value pairs and a hash.
+// Creates a `MapEntry` instance with the given key-value pairs and a hash.
 //
-// Allocates a ``MapEntry`` instance in the free-store and fills that memory
-// with the given values.  Remember to free the returned ``MapEntry`` instance
+// Allocates a `MapEntry` instance in the free-store and fills that memory
+// with the given values.  Remember to free the returned `MapEntry` instance
 // when not needed.
 MapEntry* MapAllocEntryWithHash(void* key, void* value, const hash_t hash) {
   MapEntry* mapentry = (MapEntry*)malloc(sizeof(MapEntry));
@@ -50,39 +50,34 @@ MapEntry* MapAllocEntryWithHash(void* key, void* value, const hash_t hash) {
   return mapentry;
 }
 
-// Allocates a ``Map`` instance of a default bucket length of
-// ``MAP_DEFAULT_BUCKET_LEN`` provided that the ``hash`` function to generate a
-// hash and a ``keycmp`` function to compare two distinct keys inside a ``Map``
-// instance is given.
+// Allocates a `Map` instance of a default bucket length of
+// `MAP_DEFAULT_BUCKET_LEN` provided the `hash` function to generate a hash and
+// a `keycmp` function to compare two distinct keys inside a `Map` instance is
+// given.
 //
-// While allocating a ``Map`` instance you can also use the built-in hash
-// generator function ``Hash()`` to generate a hash value from a ``key``
-// regardless of its data type and also the built-in key compare function
-// ``KeyCmp()`` to compare two distinct keys regardless of their data type but
-// both of the keys must have the same data type and the size occupied by the
-// type in the memory must be explicitly provided.
+// While allocating a `Map` instance you can also use the built-in hash
+// generator function `Hash()` to generate a hash value from a `key` regardless
+// of its data type and also the built-in key compare function `KeyCmp()` to
+// compare two distinct keys.
 Map MapAlloc(hash_f hash, keycmp_f keycmp) {
   return MapAllocNBuckets(MAP_DEFAULT_BUCKET_LEN, hash, keycmp);
 }
 
-// Allocates a ``Map`` instance of the given ``bucketslen`` provided that the
-// ``hash`` function to generate a hash and a ``keycmp`` function to compare two
-// distinct keys inside a ``Map`` instance is given.
+// Allocates a `Map` instance of the given `bucketslen` provided the `hash`
+// function to generate a hash and a `keycmp` function to compare two distinct
+// keys inside a `Map` instance.
 //
-// While allocating a ``Map`` instance you can also use the built-in hash
-// generator function ``Hash()`` to generate a hash value from a ``key``
-// regardless of its data type and also the built-in key compare function
-// ``KeyCmp()`` to compare two distinct keys regardless of their data type but
-// both of the keys must have the same data type and the size occupied by the
-// type in the memory must be explicitly provided.
+// While allocating a `Map` instance you can also use the built-in hash
+// generator function `Hash()` to generate a hash value from a `key` regardless
+// of its data type and also the built-in key compare function `KeyCmp()` to
+// compare two distinct keys.
 Map MapAllocNBuckets(size_t bucketslen, hash_f hash, keycmp_f keycmp) {
   if (bucketslen == 0)
     bucketslen = MAP_DEFAULT_BUCKET_LEN;
-  Map map = {.bucketslen = bucketslen,
-             .entrieslen = 0,
-             .buckets = (void*)0,
-             .hash = hash,
-             .keycmp = keycmp};
+  // clang-format off
+  Map map = {.bucketslen = bucketslen, .entrieslen = 0,
+             .buckets = (void*)0, .hash = hash, .keycmp = keycmp};
+  // clang-format on
   if ((map.buckets = (MapEntry**)(malloc(bucketslen * sizeof(MapEntry*)))) ==
       NULL)
     return map;
@@ -91,20 +86,18 @@ Map MapAllocNBuckets(size_t bucketslen, hash_f hash, keycmp_f keycmp) {
   return map;
 }
 
-// Allocates a ``Map`` instance when the number of entries that are going to be
-// in our bucket is given.
+// Allocates a `Map` instance when the number of entries that are going to be in
+// our bucket is given.
 //
-// Explicitly providing the number of entries in the entire ``Map`` instance is
-// helpful to keep the ``MAX_LOAD_FACTOR`` below 0.75 by increasing the amount
-// of buckets our ``Map`` instance can hold thus minimizing the chances of
+// Explicitly providing the number of entries in the entire `Map` instance is
+// helpful to keep the `MAX_LOAD_FACTOR` below 0.75 by increasing the amount of
+// buckets our `Map` instance can hold, thus minimizing the chances of
 // collision.
 //
-// While allocating a ``Map`` instance you can also use the built-in hash
-// generator function ``Hash()`` to generate a hash value from a ``key``
-// regardless of its data type and also the built-in key compare function
-// ``KeyCmp()`` to compare two distinct keys regardless of their data type but
-// both of the keys must have the same data type and the size occupied by the
-// type in the memory must be explicitly provided.
+// While allocating a `Map` instance you can also use the built-in hash
+// generator function `Hash()` to generate a hash value from a `key` regardless
+// of its data type and also the built-in key compare function `KeyCmp()` to
+// compare two distinct keys.
 Map MapAllocNEntries(const size_t entrieslen, hash_f hash, keycmp_f keycmp) {
   double bucketslen = MAP_DEFAULT_BUCKET_LEN;
   while (((double)entrieslen / bucketslen) > MAX_LOAD_FACTOR)
@@ -112,18 +105,17 @@ Map MapAllocNEntries(const size_t entrieslen, hash_f hash, keycmp_f keycmp) {
   return MapAllocNBuckets((size_t)bucketslen, hash, keycmp);
 }
 
-// Reallocates a ``Map`` instance by extending the ``bucketslen`` until the
+// Re-allocates a `Map` instance by extending the `bucketslen` until the
 // following does not evaluates to true:
 //
 //                      #Entries
 //      LoadFactor > ~~~~~~~~~~~~~~
 //                      #Buckets
 //
-// Calling this function will result in a new ``Map`` instance which would be
-// the exact copy of the previous ``Map`` instance except for the
-// ``bucketslen``.
+// Calling this function will result in a new `Map` instance which would be
+// the exact copy of the previous `Map` instance except for the `bucketslen`.
 //
-// We want to re-allocate the ``Map`` instance and extend the number of buckets
+// We want to re-allocate the `Map` instance and extend the number of buckets
 // it currently has so to combat the chances of collisions.
 void MapRealloc(Map* map) {
   Map map_ = MapAllocNEntries(map->entrieslen, map->hash, map->keycmp);
@@ -143,17 +135,16 @@ void MapRealloc(Map* map) {
   map->bucketslen = bucketslen;
 }
 
-// Copies ``src`` to ``dest``.
+// Copies `src` to `dest`.
 //
 // This function will not make the copies of the values stored inside of the
-// ``src`` hash map but will create a new bucket list of pointers pointing to
-// the values inside ``src`` hash map.
+// `src` hash map but will create a new bucket list of pointers pointing to the
+// values inside `src` hash map.
 //
-// This is mainly used when ``src`` instance is stored in the ``stack`` while
-// the values inside of it are stored in the ``free-store`` and you don't want
-// to lose the memory when ``src`` goes out of scope; thus it's better to copy
-// the entire ``src`` hash map bucket into a new bucket that is dynamically
-// allocated.
+// This is mainly used when `src` instance is stored in the `stack` while the
+// values inside of it are stored in the `free-store` and you don't want to lose
+// the memory when `src` goes out of scope; thus it's better to copy the entire
+// `src` hash map bucket into a new bucket that is dynamically allocated.
 void MapCopy(Map* const dest, Map* const src) {
   if (src->entrieslen > dest->entrieslen) {
     dest->entrieslen = src->entrieslen;
@@ -163,15 +154,15 @@ void MapCopy(Map* const dest, Map* const src) {
     *(dest->buckets + i) = *(src->buckets + i);
 }
 
-// Frees up a ``Map`` instance and the entries associated with it.
+// Frees up a `Map` instance and the entries associated with it.
 //
 // This function is resposible for clearning up the free-store occupied by your
-// ``Map`` instance after calling this function the ``Map`` data reference
-// passed becomes empty.
+// `Map` instance after calling this function the `Map` data reference passed
+// becomes empty.
 void MapFree(Map* const map) {
   for (size_t i = 0; i < map->bucketslen; ++i) {
     if (*(map->buckets + i)) {
-      _MapFreeEntry(*(map->buckets + i));
+      MapFreeEntryImpl(*(map->buckets + i));
       free(*(map->buckets + i));
     }
   }
@@ -180,18 +171,17 @@ void MapFree(Map* const map) {
   free(map->buckets);
 }
 
-// Frees up a ``Map`` instance and the entries associated with it with their
-// ``key-value`` pairs.
+// Frees up a `Map` instance and the entries associated with it with their
+// `key-value` pairs.
 //
 // This function is resposible for clearning up the free-store occupied by your
-// ``Map`` instance after calling this function the ``Map`` data reference
-// passed becomes empty and the values stored as ``key-value`` pairs inside of
-// the ``Map`` instance will be destroyed forever.  So there is no way back to
-// the ``key-value`` pairs once you call this function.
+// `Map` instance after calling this function the `Map` data reference passed
+// becomes empty and the values stored as `key-value` pairs inside of the `Map`
+// instance will be destroyed forever.
 void MapFreeDeep(Map* const map) {
   for (size_t i = 0; i < map->bucketslen; ++i) {
     if (map->buckets[i]) {
-      _MapFreeEntryDeep(*(map->buckets + i));
+      MapFreeEntryDeepImpl(*(map->buckets + i));
       free(*(map->buckets + i));
     }
   }
@@ -202,38 +192,37 @@ void MapFreeDeep(Map* const map) {
 
 // Private function to free up the space occupied by the entries in a bucket.
 //
-// Takes in a ``MapEntry`` instance but frees up all the other entries linked
+// Takes in a `MapEntry` instance but frees up all the other entries linked
 // with that map entry and leaves the map entry given intially unchanged.
 //
 // Only the neighbours are freed using this function not the head node you still
 // need to free the head node by yourself.  This function is an implementation
-// detail you should not use it as it is not the part of the public API.
-void _MapFreeEntry(MapEntry* const mapentry) {
+// detail, you should not use it as it is not the part of the public API.
+void MapFreeEntryImpl(MapEntry* const mapentry) {
   if (mapentry == NULL)
     return;
   if (mapentry->next) {
-    _MapFreeEntry(mapentry->next);
+    MapFreeEntryImpl(mapentry->next);
     free(mapentry->next);
   }
 }
 
 // Private function to free up the space occupied by the entries and their
-// respective ``key-value`` pairs in a bucket.
+// respective `key-value` pairs in a bucket.
 //
-// Takes in a ``MapEntry`` instance but frees up all the other entries linked
+// Takes in a `MapEntry` instance but frees up all the other entries linked
 // with that map entry and leaves the map entry given intially unchanged.
 //
 // Only the neighbours are freed using this function not the head node you still
 // need to free the head node by yourself.  This function is an implementation
-// detail you should not use it as it is not the part of the public API.
+// detail, you should not use it as it is not the part of the public API.
 //
-// Although the ``key-value`` pair stored inside of the initial ``MapEntry``
-// will always get destroyed from the free-store but not the ``MapEntry``
-// container.
-void _MapFreeEntryDeep(MapEntry* const mapentry) {
+// The `key-value` pair stored inside of the initial `MapEntry` will always get
+// destroyed from the free-store but not the `MapEntry` container.
+void MapFreeEntryDeepImpl(MapEntry* const mapentry) {
   if (mapentry) {
     if (mapentry->next) {
-      _MapFreeEntryDeep(mapentry->next);
+      MapFreeEntryDeepImpl(mapentry->next);
       free(mapentry->next);
     }
     free(mapentry->key);
@@ -241,22 +230,22 @@ void _MapFreeEntryDeep(MapEntry* const mapentry) {
   }
 }
 
-// Returns a ``Map`` instance with the built-in support for hash generation and
-// key comparison regardless of their data types.
+// Returns a `Map` instance with the built-in support for hash generation and
+// key comparison.  Key must always be a string data and the value could be
+// anything.
 Map MapAllocStrAsKey() { return MapAlloc(Hash, KeyCmp); }
 
-// Returns a ``Map`` instance with the number of given ``entrieslen`` entries
-// and with the built-in support for hash generation and key comparison
-// regardless of their data types.
+// Returns a `Map` instance with the number of given `entrieslen` entries and
+// with the built-in support for hash generation and key comparison.
 Map MapAllocNStrAsKey(const size_t entrieslen) {
   return MapAllocNEntries(entrieslen, Hash, KeyCmp);
 }
 
-// Creates a hash from a ``key`` of ``string`` data type.
+// Creates a hash from a `key` of `string` data type.
 //
-// This functionality allow us to place a ``key`` inside our ``Map`` provided
-// that the given ``key`` is a ``string`` data type.  We read ``keylen`` bytes
-// from the given ``key`` and accumulate a ``hash`` value.
+// This functionality allow us to place a `key` inside our `Map` provided that
+// the given `key` is a `string` data type.  We read `keylen` bytes from the
+// given `key` and accumulate a `hash` value.
 hash_t Hash(const void* const key) {
   hash_t hash = 0;
   if (key == NULL)
@@ -268,10 +257,10 @@ hash_t Hash(const void* const key) {
   return hash;
 }
 
-// Compares the eqaulity of two ``keys`` of ``string`` data type.
+// Compares the eqaulity of two `keys` of `string` data type.
 //
-// We compare ``key1`` with ``key2`` to create a result.  Key should be of
-// ``string`` data type and must have a ``NULL`` terminator character.
+// We compare `key1` with `key2` to create a result.  Key should be of `string`
+// data type and must have a `NULL` terminator character.
 bool_t KeyCmp(const void* key1, const void* key2) {
   if (key1 == NULL && key2 == NULL)
     return TRUE;

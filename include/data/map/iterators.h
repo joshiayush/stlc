@@ -32,34 +32,35 @@
 
 #include "data/map/map.h"
 
-// Defines a ``function pointer`` type to take in a ``function pointer`` by
+// Defines a `function pointer` type to take in a `function pointer` by
 // reference.  Used in function
-// ``void MapTraverse(Map *const, TraversePredicate)`` as its predicate.
+// `void MapTraverse(Map *const, TraversePredicate)` as its predicate.
 typedef void (*TraversePredicate)(void *const key, void *const value);
 
-// Defines a ``function pointer`` type to take in a ``function pointer`` by
+// Defines a `function pointer` type to take in a `function pointer` by
 // reference.  Used in function
-// ``void MapTraverseWithMapInstance(Map *map,
-//                                   TraverseWithMapInstancePredicate
-//                                   predicate)``
-// as its predicate.
+// `void MapTraverseWithMapInstance(Map *map,
+//                                  TraverseWithMapInstancePredicate
+//                                  predicate)`
+// as its predicate.  The only difference with `TraversePredicate` type is that
+// it also takes in an extra argument i.e., the `Map` instance.
 typedef void (*TraverseWithMapInstancePredicate)(Map *const map,
                                                  void *const key,
                                                  void *const value);
 
-// Traverses through the ``Map`` instance and executes the given ``predicate``
-// on each pair of the ``Map`` instance.
+// Traverses through the `Map` instance and executes the given `predicate` on
+// each pair of the `Map` instance.
 //
 // The given predicate must conform to the signature of the
-// ``TraversePredicate`` type and must not try to update its pointers.
+// `TraversePredicate` type and must not try to update its pointers.
 void MapTraverse(Map *const map, TraversePredicate predicate);
 
-// Traverses through the ``Map`` instance and executes the given ``predicate``
-// on each pair of the ``Map`` instance.
+// Traverses through the `Map` instance and executes the given `predicate` on
+// each pair of the `Map` instance.
 //
 // This should be very reminiscent of what we did in function
-// ``void MapTraverse(Map *const, TraversePredicate)`` except for the fact that
-// this ``predicate`` also takes in a ``Map`` instance as its first parameter.
+// `void MapTraverse(Map *const, TraversePredicate)` except for the fact that
+// this `predicate` also takes in a `Map` instance as its first parameter.
 void MapTraverseWithMapInstance(Map *const map,
                                 TraverseWithMapInstancePredicate predicate);
 

@@ -41,17 +41,16 @@
 // for the element in the map.
 size_t CalculateIndex(hash_t hash, size_t n) { return hash & (n - 1); }
 
-// Injects the given set of key-value pair to the given ``Map`` instance if
+// Injects the given set of key-value pair to the given `Map` instance if
 // already exists, overrides it.
 //
 // Generates a hash value using the given key and finds the position of a new
-// ``MapEntry`` instance in the ``buckets`` linked list.  To combat collision we
-// extend the already saved ``MapEntry`` by hooking it up with the new
-// ``MapEntry`` instance while keeping the order sorted based on the hash
-// computed.
+// `MapEntry` instance in the `buckets` linked list.  To combat collision we
+// extend the already saved `MapEntry` by hooking it up with the new `MapEntry`
+// instance while keeping the order sorted based on the hash computed.
 //
-// Resizes the ``Map`` instance in case the load factor exceeds the
-// ``MAX_LOAD_FACTOR``.
+// Resizes the `Map` instance in case the load factor exceeds the
+// `MAX_LOAD_FACTOR`.
 void MapPut(Map *map, void *const key, void *const value) {
   hash_t hash = map->hash(key);
   size_t idx = CalculateIndex(hash, map->bucketslen);
@@ -79,33 +78,30 @@ void MapPut(Map *map, void *const key, void *const value) {
     MapRealloc(map);
 }
 
-// Returns a ``void*`` to the value mapped by the given ``key``.
+// Returns a `void*` to the value mapped by the given `key`.
 //
-// Traverse through the entries of the bucket at the computed ``idx`` value and
-// searches for a ``hash`` value that matches the computed ``hash`` value.  If
-// we find a value that is greater than the ``hash`` computed; not equal but
-// greater than then we immediately return ``NULL`` as having a value greater
-// than the computed ``hash`` using the ``key`` can only be possible when we
-// have traversed long enough but did not find any ``hash`` value equals to the
-// computed ``hash``.
+// Traverse through the entries of the bucket at the computed `idx` value and
+// searches for a `hash` value that matches the computed `hash` value.  If we
+// find a value that is greater than the `hash` computed; not equal but greater
+// than then we immediately return `NULL` as having a value greater than the
+// computed `hash` using the `key` can only be possible when we have traversed
+// long enough but did not find any `hash` value equals to the computed `hash`.
 //
 // This should be very reminiscent of what we are doing in function
-// ``MapEntry *MapGetEntry(Map *const map, void *const key)``.
+// `MapEntry *MapGetEntry(Map *const map, void *const key)`.
 void *MapGet(Map *const map, void *const key) {
   MapEntry *mapentry = MapGetEntry(map, key);
   return mapentry ? mapentry->value : NULL;
 }
 
-// Returns a ``MapEntry*`` to the ``MapEntry`` instance that holds the given
-// ``key``.
+// Returns a `MapEntry*` to the `MapEntry` instance that holds the given `key`.
 //
-// Traverse through the entries of the bucket at the computed ``idx`` value and
-// searches for a ``hash`` value that matches the computed ``hash`` value.  If
-// we find a value that is greater than the ``hash`` computed; not equal but
-// greater than then we immediately return ``NULL`` as having a value greater
-// than the computed ``hash`` using the ``key`` can only be possible when we
-// have traversed long enough but did not find any ``hash`` value equals to the
-// computed ``hash``.
+// Traverse through the entries of the bucket at the computed `idx` value and
+// searches for a `hash` value that matches the computed `hash` value.  If we
+// find a value that is greater than the `hash` computed; not equal but greater
+// than then we immediately return `NULL` as having a value greater than the
+// computed `hash` using the `key` can only be possible when we have traversed
+// long enough but did not find any `hash` value equals to the computed `hash`.
 MapEntry *MapGetEntry(Map *const map, void *const key) {
   hash_t hash = map->hash(key);
   size_t idx = CalculateIndex(hash, map->bucketslen);
@@ -126,18 +122,17 @@ MapEntry *MapGetEntry(Map *const map, void *const key) {
   return current;
 }
 
-// Returns a ``void*`` and removes to/the value mapped by the given ``key``.
+// Returns a `void*` and removes to/the value mapped by the given `key`.
 //
-// ``MapEntry`` with the associated key i.e., ``key`` will be deleted from the
-// free-store while returning a ``void*`` to the value mapped with the given
-// ``key``.
+// `MapEntry` with the associated key i.e., `key` will be deleted from the
+// free-store while returning a `void*` to the value mapped with the given
+// `key`.
 //
-// This should be very reminiscent of what we are doing in function
-// ``MapEntry *MapGetEntry(Map *const map, void *const key)`` except after
-// locating the entry in the ``buckets`` list we free the memory occupied by
-// that ``MapEntry``.  This function is not responsible to free up the
-// free-store occupied by the value inside of the ``MapEntry`` the caller should
-// take care of that.
+// This should be very reminiscent of what we are doing in function `MapEntry
+// *MapGetEntry(Map *const map, void *const key)` except after locating the
+// entry in the `buckets` list we free the memory occupied by that `MapEntry`.
+// This function is not responsible to free up the free-store occupied by the
+// value inside of the `MapEntry` the caller should take care of that.
 void *MapRemove(Map *const map, void *const key) {
   hash_t hash = map->hash(key);
   size_t idx = CalculateIndex(hash, map->bucketslen);

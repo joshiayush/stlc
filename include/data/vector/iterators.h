@@ -39,15 +39,15 @@
 extern "C" {
 #endif
 
-// 'VectorIterator' creates a iterator using the 'Vector' instance.
+// `VectorIterator` creates a iterator using the `Vector` instance.
 typedef struct VectorIterator {
   Vector *data;
-  // 'cur_idx' holds the current position of the iterator inside the
-  // 'VectorIterator' instance.
+  // `cur_idx` holds the current position of the iterator inside the
+  // `VectorIterator` instance.
   size_t cur_idx;
 } VectorIterator;
 
-// Creates a new 'VectorIterator' instance using a 'Vector' instance.
+// Creates a new `VectorIterator` instance using a `Vector` instance.
 VectorIterator VectorIteratorNew(Vector *const vector);
 
 void *VectorIteratorNext(VectorIterator *it);
@@ -59,21 +59,21 @@ void *VectorIteratorNext(VectorIterator *it);
       pred((type *)vector->data[i]);                                  \
   }
 
-// Executes the given predicate on each element of the 'Vector' instance.
+// Executes the given predicate on each element of the `Vector` instance.
 void VectorMap(Vector *const vector, void (*pred)(const void *const elem));
 
-// Checks if for any value in the 'Vector' instance the given predicate
+// Checks if for any value in the `Vector` instance the given predicate
 // evaluates to true or not.
 //
 // Elements can be of any type that evaluates to true when used as an expression
-// inside of the 'if' clause.
+// inside of the `if` clause.
 bool_t VectorAny(Vector *const vector, bool_t (*pred)(const void *const elem));
 
-// Checks if for all of the values in the 'Vector' instance the given predicate
+// Checks if for all of the values in the `Vector` instance the given predicate
 // evaluates to true or not.
 //
 // Elements can be of any type that evaluates to true when used as an expression
-// inside of the 'if' clause.
+// inside of the `if` clause.
 bool_t VectorAll(Vector *const vector, bool_t (*pred)(const void *const elem));
 
 #ifdef __cplusplus
