@@ -35,6 +35,12 @@
 #include "bool.h"
 #include "data/map/map.h"
 
+// Calculates the index of element in the map.
+//
+// Uses `key hash` and the `length` of the bucket to determine the hash value
+// for the element in the map.
+size_t CalculateIndex(hash_t hash, size_t n) { return hash & (n - 1); }
+
 // Injects the given set of key-value pair to the given ``Map`` instance if
 // already exists, overrides it.
 //
@@ -48,7 +54,7 @@
 // ``MAX_LOAD_FACTOR``.
 void MapPut(Map *map, void *const key, void *const value) {
   hash_t hash = map->hash(key);
-  size_t idx = hash % map->bucketslen;
+  size_t idx = CalculateIndex(hash, map->bucketslen);
 
   MapEntry *mapentry = MapAllocEntryWithHash(key, value, hash);
 
@@ -102,7 +108,7 @@ void *MapGet(Map *const map, void *const key) {
 // computed ``hash``.
 MapEntry *MapGetEntry(Map *const map, void *const key) {
   hash_t hash = map->hash(key);
-  size_t idx = hash % map->bucketslen;
+  size_t idx = CalculateIndex(hash, map->bucketslen);
 
   if (map->buckets[idx] == NULL)
     return NULL;
@@ -134,7 +140,7 @@ MapEntry *MapGetEntry(Map *const map, void *const key) {
 // take care of that.
 void *MapRemove(Map *const map, void *const key) {
   hash_t hash = map->hash(key);
-  size_t idx = hash % map->bucketslen;
+  size_t idx = CalculateIndex(hash, map->bucketslen);
 
   if (map->buckets[idx] == NULL)
     return NULL;
