@@ -114,8 +114,8 @@ u_int8_t StringStreamRealloc(StringStream* const sstream, const size_t length) {
   size_t capacity;
   ComputeStringStreamBufferCapacity(length, &capacity);
   char* data = sstream->data;
-  sstream->data = (char*)realloc(sstream->data, capacity * sizeof(char));
-  if (!sstream->data) {
+  if (!(sstream->data =
+            (char*)realloc(sstream->data, capacity * sizeof(char)))) {
     if (!(sstream->data = (char*)malloc(capacity * sizeof(char)))) {
       sstream->data = data;
       return SSTREAM_REALLOC_FAILURE;
