@@ -41,36 +41,35 @@
 extern "C" {
 #endif
 
-typedef void* json_null_t;
-typedef char* json_string_t;
-typedef int64_t json_number_t;
-typedef double json_decimal_t;
-typedef bool_t json_bool_t;
-typedef Vector json_list_t;
-typedef Map json_object_t;
+// clang-format off
+typedef void*     json_null_t;
+typedef char*     json_string_t;
+typedef bool_t    json_bool_t;
+typedef int64_t   json_number_t;
+typedef double    json_decimal_t;
+typedef Vector    json_list_t;
+typedef Map       json_object_t;
+// clang-format on
 
 // ``JSON_type`` stores the different ``JSON`` types that we can possibly have.
 // This ``enum`` is used to identify the type of the ``JSON_value`` instance
 // currently holding in it.
+// clang-format off
 typedef enum JSON_type {
-  JSON_Null = 0,
-  JSON_String = 1,
-  JSON_Number = 2,
-  JSON_Decimal = 3,
-  JSON_Boolean = 4,
-  JSON_List = 5,
-  JSON_Object = 6
+  JSON_Null = 0, JSON_String = 1, JSON_Number = 2, JSON_Decimal = 3,
+  JSON_Boolean = 4, JSON_List = 5, JSON_Object = 6
 } JSON_type;
+// clang-format on
 
 // ``JSON_value`` union stores ``JSON`` style values.  ``union`` is preferred
 // over a ``struct`` to save memory.  Only one the value at a time can be stored
 // while the others will be currupted.
 typedef union JSON_value {
   json_null_t null;
+  json_bool_t boolean;
   json_string_t string;
   json_number_t number;
   json_decimal_t decimal;
-  json_bool_t boolean;
   json_list_t list;
   json_object_t map;
 } JSON_value;

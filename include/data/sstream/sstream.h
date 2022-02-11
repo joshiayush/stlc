@@ -65,21 +65,21 @@ typedef struct StringStream {
 //
 // Memory blocks allocated for `StringStream` instances are allocated using the
 // `capacity` calculated by the given `length` i.e., `SSTREAM_DEFAULT_SIZE`.
-StringStream StringStreamDefAlloc();
+StringStream StringStreamAlloc();
 
 // Returns a initialized `StringStream` instance of given length.
 //
 // Memory blocks allocated for `StringStream` instance will match the value of
 // `capacity` which we calculate using the function
 // `ComputeStringStreamBufferCapacity()`.
-StringStream StringStreamAlloc(const size_t length);
+StringStream StringStreamNAlloc(const size_t length);
 
 // Returns a initialized `StringStream` instance from a `const char*` C-String.
 //
 // The length of the `StringStream` instance will be the number of items from
 // the first element to the first NULL byte in the string.
 //
-// Use `StringStreamNAlloc` to allocate a `StringStream` instance with a
+// Use `StringStreamStrNAlloc` to allocate a `StringStream` instance with a
 // C-String containing `NULL` bytes in between.
 StringStream StringStreamStrAlloc(const char* string);
 

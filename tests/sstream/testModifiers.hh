@@ -49,7 +49,7 @@ TEST_F(StringStreamModifiersTest,
        StringStreamConcatTestWithAEmptyStringStreamInstance) {
   const char* teststr_ = "Mohika is really sweet";
 
-  sstream = StringStreamDefAlloc();
+  sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -103,7 +103,7 @@ TEST_F(StringStreamModifiersTest,
 
 TEST_F(StringStreamModifiersTest,
        StringStreamReadTestWithADefaultAllocatedStringStreamInstance) {
-  sstream = StringStreamDefAlloc();
+  sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -132,7 +132,7 @@ TEST_F(StringStreamModifiersTest,
   const char* readstr =
       "Mohika is really sweet :) and talented with a charisma of 100%.";
 
-  sstream = StringStreamAlloc(std::strlen(readstr));
+  sstream = StringStreamNAlloc(std::strlen(readstr));
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;

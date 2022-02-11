@@ -51,8 +51,8 @@ static void ComputeStringStreamBufferCapacity(const size_t length,
 //
 // Memory blocks allocated for `StringStream` instances are allocated using the
 // `capacity` calculated by the given `length` i.e., `SSTREAM_DEFAULT_SIZE`.
-StringStream StringStreamDefAlloc() {
-  return StringStreamAlloc(SSTREAM_DEFAULT_SIZE);
+StringStream StringStreamAlloc() {
+  return StringStreamNAlloc(SSTREAM_DEFAULT_SIZE);
 }
 
 // Returns a initialized `StringStream` instance of given length.
@@ -60,7 +60,7 @@ StringStream StringStreamDefAlloc() {
 // Memory blocks allocated for `StringStream` instance will match the value of
 // `capacity` which we calculate using the function
 // `ComputeStringStreamBufferCapacity()`.
-StringStream StringStreamAlloc(const size_t length) {
+StringStream StringStreamNAlloc(const size_t length) {
   StringStream sstream = {.data = (void*)0, .length = 0, .capacity = 0};
   size_t capacity;
   ComputeStringStreamBufferCapacity(length, &capacity);
@@ -88,7 +88,7 @@ StringStream StringStreamStrAlloc(const char* string) {
 // Copies all the characters from the given C-String to the `data` member inside
 // `StringStream` instance regardless of any `NULL` byte on the way.
 StringStream StringStreamStrNAlloc(const char* string, const size_t length) {
-  StringStream sstream = StringStreamAlloc(length);
+  StringStream sstream = StringStreamNAlloc(length);
   if (sstream.capacity) {
     memcpy(sstream.data, string, length * sizeof(char));
     sstream.length = length;

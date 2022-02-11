@@ -44,7 +44,7 @@ class GetStringStreamAvailableSpaceTest : public ::testing::Test {
 
 TEST_F(GetStringStreamAvailableSpaceTest,
        TestProtectedMacroWhenStringStreamDefAllocIsUsed) {
-  sstream = StringStreamDefAlloc();
+  sstream = StringStreamAlloc();
   ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
             sstream.capacity - sstream.length - 1);
 }
@@ -52,7 +52,7 @@ TEST_F(GetStringStreamAvailableSpaceTest,
 TEST_F(GetStringStreamAvailableSpaceTest,
        TestProtectedMacroWhenStringStreamAllocIsUsed) {
   const size_t strlen_ = 2147483648;
-  sstream = StringStreamAlloc(strlen_);
+  sstream = StringStreamNAlloc(strlen_);
   ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
             sstream.capacity - sstream.length - 1);
 }

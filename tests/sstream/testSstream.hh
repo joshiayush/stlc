@@ -52,7 +52,7 @@ class StringStreamTest : public ::testing::Test {
 };
 
 TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
-  sstream = StringStreamDefAlloc();
+  sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -62,7 +62,7 @@ TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
 }
 
 TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitrarySstreamLength) {
-  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -118,7 +118,7 @@ TEST_F(StringStreamTest,
 }
 
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
-  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -132,7 +132,7 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
 }
 
 TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
-  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -150,7 +150,7 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
 
 TEST_F(StringStreamTest,
        StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamDefAlloc) {
-  sstream = StringStreamDefAlloc();
+  sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
@@ -166,7 +166,7 @@ TEST_F(StringStreamTest,
 
 TEST_F(StringStreamTest,
        StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamAlloc) {
-  sstream = StringStreamAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;

@@ -47,11 +47,11 @@ StringStream JSONStringify(JSON* const json, const bool_t prettify,
 #define __place_endl_if_prettify ((prettify) ? (endl) : (""))
 
   if (prettify && is_dict_valid) {
-    stringified = StringStreamAlloc(4 * init_tab_pos);
+    stringified = StringStreamNAlloc(4 * init_tab_pos);
     for (size_t i = 0; i < init_tab_pos; ++i)
       StringStreamConcat(&stringified, JSON_TAB);
   } else {
-    stringified = StringStreamDefAlloc();
+    stringified = StringStreamAlloc();
   }
 
   switch (json->type) {
