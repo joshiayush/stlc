@@ -38,26 +38,26 @@
 
 static const char kPathSeparator = '/';
 
-// Returns a ``bool_t`` value in case the path given is an absolute path.
-// Unfortunately this does not support Windows specific paths.
+// Returns a `bool_t` value in case the path given is an absolute path.
+// Unfortunately this does not support Windows specific paths yet.
 //
-// The given ``path`` is consider to be a absolute path if and only if that path
-// has its first element equals to ``/``.
+// The given `path` is consider to be a absolute path if and only if that path
+// has its first element equals to `/`.
 //
 // ```c
 // bool_t is_abs_path = IsAbsPath("/C/cjson/CMakeLists.txt");
 // ```
 bool_t IsAbsPath(const char* const path) { return *path == kPathSeparator; }
 
-// Splits the ``path`` into two separate components ``head`` and ``tail`` where
-// everything before the last root node ``/`` is considerd the ``head`` and
-// everything after the last root node ``/`` is considered the ``tail`` of that
+// Splits the `path` into two separate components `head` and `tail` where
+// everything before the last root node `/` is considerd the `head` and
+// everything after the last root node `/` is considered the `tail` of that
 // path.
 //
-// Note: This function is not going to normalize the ``path`` before separating
-// it into components rather will just simply separate the ``head`` and the
-// ``tail`` component out of the ``path`` without normalizing it.  Use
-// ``NormaPath`` to normalize the path.
+// Note: This function is not going to normalize the `path` before separating it
+// into components rather will just simply separate the `head` and the `tail`
+// component out of the `path` without normalizing it.  Use `NormaPath` to
+// normalize the path.
 //
 // ```c
 // char head[100], tail[100];
@@ -86,13 +86,13 @@ void Split(char* const head, char* const tail, const char* const path) {
   tail[(pathlen - (node_r_idx + 1))] = '\0';
 }
 
-// Returns a pointer to the ``buffer`` buffer itself after copying the current
-// working directory path in it.  This function will only copy ``size`` bytes
-// from the current working directory to the ``buffer`` given so make sure to
-// create enough room for the ``buffer`` before actually storing a large current
-// working directory path in it.
+// Returns a pointer to the `buffer` buffer itself after copying the current
+// working directory path in it.  This function will only copy `size` bytes from
+// the current working directory to the `buffer` given so make sure to create
+// enough room for the `buffer` before actually storing a large current working
+// directory path in it.
 //
-// This function is private to the module and takes in a ``abspath`` argument
+// This function is private to the module and takes in a `abspath` argument
 // which is used to create the absolute path to the current working directory.
 //
 // ```c
@@ -110,7 +110,7 @@ char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
   return buffer;
 }
 
-// Joins two or more pathname components, inserting ``/`` as needed.
+// Joins two or more pathname components, inserting `/` as needed.
 // Unfortunately, this will not work in Windows.
 //
 // Note: If any component is absolute path, all previous path components will be
@@ -164,15 +164,14 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
 // ```
 char* NormPath(char* const path) { return path; }
 
-// Returns a pointer to the ``buffer`` after copying a absolute path to the
-// given ``path`` from the current working directory.  Basically this function
-// will just concatenate the current working directory with the given ``path``
-// and will normalize the path before returning the pointer to the resulting
-// path.
+// Returns a pointer to the `buffer` after copying a absolute path to the given
+// `path` from the current working directory.  Basically this function will just
+// concatenate the current working directory with the given `path` and will
+// normalize the path before returning the pointer to the resulting path.
 //
-// ```abspath`` is the path to the file from where the function is called, using
+// `abspath` is the path to the file from where the function is called, using
 // this path we find the absolute path to the current working directory and
-// joins that with the given ``path``.
+// joins that with the given `path`.
 //
 // ```c
 // char buffer[100];
