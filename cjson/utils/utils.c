@@ -36,6 +36,8 @@
 #include <string.h>
 #include <sys/types.h>
 
+#include "bytes.h"
+
 static const char kPathSeparator = '/';
 
 // Returns a `bool_t` value in case the path given is an absolute path.
@@ -69,12 +71,12 @@ void Split(char* const head, char* const tail, const char* const path) {
     return;
   }
   strncpy(head, path, node_r_idx + 1);
-  head[(node_r_idx + 1)] = '\0';
+  head[(node_r_idx + 1)] = nullchr;
   if (node_r_idx != 0)
-    head[node_r_idx] = '\0';
+    head[node_r_idx] = nullchr;
   for (size_t i = 0; i < (pathlen - (node_r_idx + 1)); ++i)
     tail[i] = path[(node_r_idx + 1) + i];
-  tail[(pathlen - (node_r_idx + 1))] = '\0';
+  tail[(pathlen - (node_r_idx + 1))] = nullchr;
 }
 
 // Returns a pointer to the `buffer` buffer itself after copying the current
@@ -105,7 +107,7 @@ char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
 char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
            ...) {
   for (size_t i = 0; i < bufsize; ++i)
-    buffer[i] = '\0';
+    buffer[i] = nullchr;
   va_list args;
   va_start(args, paths);
   for (u_int64_t i = 0; i < paths; ++i) {
@@ -116,7 +118,7 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
     const char* p = va_arg(args, char*);
     if (IsAbsPath(p)) {
       for (size_t i = 0; i < bufsize; ++i)
-        buffer[i] = '\0';
+        buffer[i] = nullchr;
       strcat(buffer, p);
     } else {
       strcat(buffer, p);
