@@ -43,10 +43,6 @@ static const char kPathSeparator = '/';
 //
 // The given `path` is consider to be a absolute path if and only if that path
 // has its first element equals to `/`.
-//
-// ```c
-// bool_t is_abs_path = IsAbsPath("/C/cjson/CMakeLists.txt");
-// ```
 bool_t IsAbsPath(const char* const path) { return *path == kPathSeparator; }
 
 // Splits the `path` into two separate components `head` and `tail` where
@@ -58,11 +54,6 @@ bool_t IsAbsPath(const char* const path) { return *path == kPathSeparator; }
 // into components rather will just simply separate the `head` and the `tail`
 // component out of the `path` without normalizing it.  Use `NormaPath` to
 // normalize the path.
-//
-// ```c
-// char head[100], tail[100];
-// Split(head, tail, "/C/cjson/CMakeLists.txt");
-// ```
 void Split(char* const head, char* const tail, const char* const path) {
   size_t node_r_idx = __SIZE_MAX__;
   size_t pathlen = strlen(path);
@@ -94,11 +85,6 @@ void Split(char* const head, char* const tail, const char* const path) {
 //
 // This function is private to the module and takes in a `abspath` argument
 // which is used to create the absolute path to the current working directory.
-//
-// ```c
-// char buffer[100];
-// buffer = _GetCurrentWorkingDir(__FILE__, buffer, sizeof(buffer) * 1);
-// ```
 char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
                             const size_t size) {
   char* head = (char*)malloc(sizeof(char) * size);
@@ -116,11 +102,6 @@ char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
 // Note: If any component is absolute path, all previous path components will be
 // discarded.  An empty last part will result in a path that ends with a
 // separator.
-//
-// ```c
-// char buffer[100];
-// buffer = Join(buffer, "/C/cjson", "CMakeLists.txt");
-// ```
 char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
            ...) {
   for (size_t i = 0; i < bufsize; ++i)
@@ -156,12 +137,6 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
 }
 
 // Normalizes path, eliminating double slashes, dots, double dots, etc.
-//
-// ```c
-// char buffer[100];
-// strcpy(buffer, "/C/cjson/../cjson/./cjson/CMakeLists.txt");
-// buffer = NormPath(buffer);
-// ```
 char* NormPath(char* const path) { return path; }
 
 // Returns a pointer to the `buffer` after copying a absolute path to the given
@@ -172,11 +147,6 @@ char* NormPath(char* const path) { return path; }
 // `abspath` is the path to the file from where the function is called, using
 // this path we find the absolute path to the current working directory and
 // joins that with the given `path`.
-//
-// ```c
-// char buffer[100];
-// buffer = _AbsPath(__FILE__, buffer, "utils.h");
-// ```
 char* _AbsPath(const char* const abspath, char* const buffer,
                char* const path) {
   return buffer;
