@@ -38,18 +38,92 @@ TEST(UtilsFunctionTest, TestIsAbsPathFunction) {
   EXPECT_TRUE(IsAbsPath(__FILE__));
 }
 
-TEST(UtilsFunctionTest, TestSplitFunction) {
+class UtilitySplitFunctionTest : public ::testing::Test {
+ protected:
   char head[100];
   char tail[100];
+};
 
+TEST_F(UtilitySplitFunctionTest, TestWhenOnlyRootNodeIsGiven) {
   const char* path = "/";
   Split(head, tail, path);
 
-  EXPECT_EQ(std::strncmp(head, path, std::strlen(path)), 0);
+  EXPECT_EQ(std::strcmp(head, path), 0);
   EXPECT_EQ(*tail, (const char)'\0');
+}
 
-  const char* current_file_path = __FILE__;
-  Split(head, tail, current_file_path);
+TEST_F(UtilitySplitFunctionTest, TestWhenOnlyFileIsGiven) {
+  const char* path = "CMakeLists.txt";
+  Split(head, tail, path);
 
-  EXPECT_EQ(std::strncmp(head, path, std::strlen(current_file_path) - 12), 0);
+  EXPECT_EQ(*head, (const char)'\0');
+  EXPECT_EQ(std::strcmp(tail, path), 0);
+}
+
+TEST_F(UtilitySplitFunctionTest, TestWhenCurrentFilePathIsUsed) {
+  const char* path = "/C/cjson/tests/utils/testUtils.hh";
+  Split(head, tail, path);
+
+  EXPECT_EQ(std::strcmp(head, "/C/cjson/tests/utils"), 0);
+  EXPECT_EQ(std::strcmp(tail, "testUtils.hh"), 0);
+}
+
+class UtilityProtectedGetCurrentWorkingDirTest : public ::testing::Test {
+ protected:
+  char buffer[100];
+};
+
+TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
+       TestWhenOnlyRootNodeIsGivenAsAbspath) {
+  const char* dir = "/";
+
+  char* cwd_ = _GetCurrentWorkingDir(dir, buffer, sizeof(buffer));
+
+  EXPECT_EQ(std::strcmp(buffer, dir), 0);
+  EXPECT_EQ(std::strcmp(buffer, cwd_), 0);
+}
+
+TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
+       TestWhenOnlyFileIsUsedAsAbspath) {
+  const char* dir = "CMakeLists.txt";
+  const char* cwd = "";
+
+  char* cwd_ = _GetCurrentWorkingDir(dir, buffer, sizeof(buffer));
+
+  EXPECT_EQ(std::strcmp(buffer, cwd), 0);
+  EXPECT_EQ(std::strcmp(buffer, cwd_), 0);
+}
+
+TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
+       TestWhenCurrentFilePathIsUsedAsAbspath) {
+  const char* dir = "/C/cjson/tests/utils/testUtils.hh";
+  const char* cwd = "/C/cjson/tests/utils";
+
+  char* cwd_ = _GetCurrentWorkingDir(dir, buffer, sizeof(buffer));
+
+  EXPECT_EQ(std::strcmp(buffer, cwd), 0);
+  EXPECT_EQ(std::strcmp(buffer, cwd_), 0);
+}
+
+TEST_F(UtilityProtectedGetCurrentWorkingDirTest, TestWhenFILEMacroIsUsed) {
+  char head[100], tail[100];
+  Split(head, tail, __FILE__);
+
+  char* cwd_ = GetCurrentWorkingDir(buffer, sizeof(buffer));
+
+  EXPECT_EQ(std::strcmp(buffer, head), 0);
+  EXPECT_EQ(std::strcmp(cwd_, buffer), 0);
+}
+
+class UtilityJoinFunctionTest : public ::testing::Test {
+ protected:
+  char buffer[100];
+};
+
+TEST_F(UtilityJoinFunctionTest, TestJoinFunctionWhenOneFilePathIsUsed) {
+  const char* joined_path =
+      Join(sizeof(buffer), buffer, 4, "C", "cjson", "/cjson", "CMakeLists.txt");
+
+  EXPECT_EQ(std::strcmp(buffer, "/cjson/CMakeLists.txt"), 0)
+      << "buffer: " << buffer << '\n';
 }
