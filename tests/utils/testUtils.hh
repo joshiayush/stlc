@@ -120,6 +120,11 @@ class UtilityJoinFunctionTest : public ::testing::Test {
   char buffer[100];
 };
 
+TEST_F(UtilityJoinFunctionTest, TestJoinFunctionWithMultipleAbsPaths) {
+  const char* joined_path = Join(sizeof(buffer), buffer, 2, "/C", "/cjson");
+  EXPECT_EQ(std::strcmp(buffer, "/cjson"), 0) << "buffer: " << buffer << '\n';
+}
+
 TEST_F(UtilityJoinFunctionTest, TestJoinFunctionWhenOneFilePathIsUsed) {
   const char* joined_path =
       Join(sizeof(buffer), buffer, 4, "C", "cjson", "/cjson", "CMakeLists.txt");
