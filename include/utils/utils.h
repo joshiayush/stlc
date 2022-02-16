@@ -42,7 +42,7 @@ extern "C" {
 // Unfortunately this does not support Windows specific paths yet.
 //
 // The given `path` is consider to be a absolute path if and only if that path
-// has its first element equals to `/`.
+// has `/` as its first element.
 bool_t IsAbsPath(const char* const path);
 
 // Splits the `path` into two separate components `head` and `tail` where
