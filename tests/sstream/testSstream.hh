@@ -77,7 +77,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointer) {
       "understanding :(.\"";
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(std::strcmp(sstream.data, teststr), 0);
+  ASSERT_EQ(std::strcmp(sstream.data, teststr), 0) << sstream.data;
   ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
