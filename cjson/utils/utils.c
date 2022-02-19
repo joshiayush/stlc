@@ -49,8 +49,7 @@ bool_t IsAbsPath(const char* const path) { return *path == kPathSeparator; }
 
 // Splits the `path` into two separate components `head` and `tail` where
 // everything before the last root node `/` is considerd the `head` and
-// everything after the last root node `/` is considered the `tail` of that
-// path.
+// everything after is considered the `tail` of that path.
 //
 // Note: This function is not going to normalize the `path` before separating it
 // into components rather will just simply separate the `head` and the `tail`
