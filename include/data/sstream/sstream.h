@@ -102,7 +102,7 @@ StringStream StringStreamStrNAlloc(const char* string, const size_t n);
 //    capacity,
 //  * `SSTREAM_REALLOC_SUCCESS` if the re-allocation was successful, or
 //  * `SSTREAM_REALLOC_FAILURE` if the re-allocation failed.
-__uint8_t StringStreamRealloc(StringStream* const sstream, const size_t length);
+u_int8_t StringStreamRealloc(StringStream* const sstream, const size_t length);
 
 // Deallocates the memory occupied by the `StringStream` instance.
 void StringStreamDealloc(StringStream* const sstream);
