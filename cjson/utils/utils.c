@@ -83,6 +83,17 @@ char** SplitStr(const char* str, const char* sep) {
   return comps;
 }
 
+// Joins the list of `strings` into a single string at `sep`.
+void JoinStr(char* const buffer, const char* sep, const char* const* const strs,
+             size_t nstrs) {
+  (*buffer) = '\0';
+  for (size_t i = 0; i < nstrs; ++i) {
+    if (i > 0)
+      strcat(buffer, sep);
+    strcat(buffer, strs[i]);
+  }
+}
+
 static const char kPathSeparator = '/';
 
 // Returns a `bool_t` value in case the path given is an absolute path.

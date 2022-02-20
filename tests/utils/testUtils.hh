@@ -47,6 +47,16 @@ TEST(UtilitySplitStrFunction, TestUtilitySplitStr) {
   std::free(comps);
 }
 
+TEST(UtilityJoinStrFunction, TestUtilityJoinStr) {
+  char joined_str[100];
+  const char* const comps[] = {"foo", "bar", "foo", "buzz"};
+  JoinStr(joined_str, "/", comps, 4);
+  const char* exp_joined_str = "foo/bar/foo/buzz";
+  EXPECT_EQ(
+      std::strncmp(joined_str, exp_joined_str, std::strlen(exp_joined_str)), 0)
+      << "joined_str: " << joined_str << "\nexp_joined_str: " << exp_joined_str;
+}
+
 TEST(UtilsFunctionTest, TestIsAbsPathFunction) {
   EXPECT_TRUE(IsAbsPath("/"));
   EXPECT_TRUE(IsAbsPath(__FILE__));

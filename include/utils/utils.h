@@ -47,6 +47,10 @@ extern "C" {
 // and the returned array of pointers too.
 char** SplitStr(const char* str, const char* const sep);
 
+// Joins the list of `strings` into a single string at `sep`.
+void JoinStr(char* const buffer, const char* sep, const char* const* const strs,
+             size_t nstrs);
+
 // Returns a `bool_t` value in case the path given is an absolute path.
 // Unfortunately this does not support Windows specific paths yet.
 //
