@@ -38,6 +38,51 @@
 
 #include "bytes.h"
 
+// Splits a string at `sep`.
+//
+// Returns a heap-allocated array of pointers containing components separated at
+// `sep`.
+//
+// Caller must free the component string inside the returned array of pointers
+// and the returned array of pointers too.
+char** SplitStr(const char* str, const char* sep) {
+  size_t ncomps = 0;
+  size_t seplen = strlen(sep);
+  size_t strlen_ = strlen(str);
+  for (size_t i = 0; i < strlen_; ++i) {
+    if ((strncmp((str + i), sep, seplen) == 0))
+      ++ncomps;
+  }
+  if (strncmp((str + strlen_ - seplen), sep, seplen) == 0)
+    --ncomps;
+  char** comps = (char**)calloc(ncomps, sizeof(char*));
+  const char* beg = NULL;
+  const char* end = NULL;
+  size_t comp_pos = 0;
+  for (size_t i = 0; i < strlen_; ++i) {
+    if (ncomps == comp_pos)
+      break;
+    if (end)
+      beg = (end++ + 1);
+    else
+      beg = (str + i);
+    for (size_t j = 0; j < strlen_; ++j) {
+      if (end && (strncmp(end, sep, seplen) == 0))
+        break;
+      end = (beg + j);
+    }
+    if ((end - beg) <= 0)
+      continue;
+    char* str_ = (char*)malloc((end - beg) * sizeof(char));
+    char* ptr = str_;
+    for (beg; beg != end; ++beg)
+      *ptr++ = *beg;
+    *ptr = '\0';
+    comps[comp_pos++] = str_;
+  }
+  return comps;
+}
+
 static const char kPathSeparator = '/';
 
 // Returns a `bool_t` value in case the path given is an absolute path.
@@ -138,7 +183,19 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
 }
 
 // Normalizes path, eliminating double slashes, dots, double dots, etc.
-char* NormPath(char* const path) { return path; }
+char* NormPath(char* const path) {
+  const char* empty = "";
+  const char* dot = ".";
+  const char* dotdot = "..";
+  const char* sep = "/";
+
+  if (strcmp(path, empty) == 0) {
+    strcpy(path, dot);
+    return path;
+  }
+
+  return path;
+}
 
 // Returns a pointer to the `buffer` after copying a absolute path to the given
 // `path` from the current working directory.  Basically this function will just

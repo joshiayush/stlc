@@ -38,6 +38,15 @@
 extern "C" {
 #endif
 
+// Splits a string at `sep`.
+//
+// Returns a heap-allocated array of pointers containing components separated at
+// `sep`.
+//
+// Caller must free the component string inside the returned array of pointers
+// and the returned array of pointers too.
+char** SplitStr(const char* str, const char* const sep);
+
 // Returns a `bool_t` value in case the path given is an absolute path.
 // Unfortunately this does not support Windows specific paths yet.
 //
