@@ -253,7 +253,7 @@ hash_t Hash(const void* const key) {
   const char* key_ = (char*)key;
   size_t keylen = strlen(key_);
   for (size_t i = 0; i < keylen; ++i)
-    hash = (((hash_t)(*(key_ + i))) + (31 * hash));
+    hash = (((hash_t)(*(key_ + i))) + (0x1F * hash));
   return hash;
 }
 

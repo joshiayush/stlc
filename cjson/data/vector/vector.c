@@ -37,7 +37,7 @@
 //      0 <= size <= capacity
 static void ComputeVectorBufferCapacity(const size_t size,
                                         size_t* const capacity) {
-  *capacity = (size >> 3) + (size < 9 ? 3 : 6);
+  *capacity = (size >> 0x03) + (size < 0x09 ? 0x03 : 0x06);
   *capacity += size;
 }
 

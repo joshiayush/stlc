@@ -40,7 +40,7 @@
 //      0 <= length <= capacity
 static void ComputeStringStreamBufferCapacity(const size_t length,
                                               size_t* const capacity) {
-  *capacity = (length >> 3) + (length < 9 ? 3 : 6);
+  *capacity = (length >> 0x03) + (length < 0x09 ? 0x03 : 0x06);
   *capacity += length;
 }
 

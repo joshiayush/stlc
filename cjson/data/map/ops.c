@@ -39,7 +39,7 @@
 //
 // Uses `key hash` and the `length` of the bucket to determine the hash value
 // for the element in the map.
-size_t CalculateIndex(hash_t hash, size_t n) { return hash & (n - 1); }
+size_t CalculateIndex(hash_t hash, size_t n) { return hash & (n - 0x01); }
 
 // Injects the given set of key-value pair to the given `Map` instance if
 // already exists, overrides it.
