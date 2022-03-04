@@ -92,6 +92,7 @@ StringStream StringStreamStrNAlloc(const char* string, const size_t length) {
   if (sstream.capacity) {
     memcpy(sstream.data, string, length * sizeof(char));
     sstream.length = length;
+    _TERMINATE_STRING_STREAM_BUFFER(sstream);
   }
   return sstream;
 }
