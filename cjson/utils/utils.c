@@ -89,7 +89,7 @@ char** SplitStr(const char* str, const char* sep) {
     // If `end` pointer is not pointing to a `NULL` value then our new beginning
     // must start from `end + seplen`.
     if (end)
-      beg = (end++ + 1);
+      beg = (end++ + seplen);
     else
       beg =
           (str + i);  // Otherwise, our new beginning must start from `str + i`.
