@@ -146,7 +146,14 @@ static const char kPathSeparator = '/';
 //
 // The given `path` is consider to be a absolute path if and only if that path
 // has `/` as its first element.
-bool_t IsAbsPath(const char* const path) { return *path == kPathSeparator; }
+bool_t IsAbsPath(const char* const path) {
+#ifdef CJSON_OS_WINDOWS
+  if ((*path >= 0x41 && *path <= 0x5A) || (*path >= 0x61 && *path <= 0x7A))
+    return *(path + 1) == ':' && *(path + 2) == kPathSeparator;
+#else
+  return *path == kPathSeparator;
+#endif
+}
 
 // Splits the `path` into two separate components `head` and `tail` where
 // everything before the last root node `/` is considerd the `head` and
