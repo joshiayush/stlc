@@ -125,10 +125,11 @@ char** SplitStr(const char* str, const char* sep) {
 // Joins the list of `strings` into a single string at `sep`.
 void JoinStr(char* const buffer, const char* sep, const char* const* const strs,
              size_t nstrs) {
-  (*buffer) = '\0';
+  (*buffer) = '\0';  // Reset the buffer.
   for (size_t i = 0; i < nstrs; ++i) {
     if (i > 0)
-      strcat(buffer, sep);
+      strcat(buffer, sep);  // Only append the separator if we have added at
+                            // least one component to the `buffer`.
     strcat(buffer, strs[i]);
   }
 }
