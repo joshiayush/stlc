@@ -33,7 +33,7 @@
 
 #include "utils/utils.h"
 
-TEST(UtilitySplitStrFunction, WhenSingleCharacterIsUsedAsSeparator) {
+TEST(UtilitySplitStrFunctionTest, WhenSingleCharacterIsUsedAsSeparator) {
   char** comps = SplitStr("/foo/bar/foo/buzz/", "/");
   const char* exp_splited_comps[] = {"foo", "bar", "foo", "buzz"};
   for (size_t i = 0; i < 4; ++i) {
@@ -47,7 +47,7 @@ TEST(UtilitySplitStrFunction, WhenSingleCharacterIsUsedAsSeparator) {
   std::free(comps);
 }
 
-TEST(UtilitySplitStrFunction, WhenMultipleCharactersAreUsedAsSeparator) {
+TEST(UtilitySplitStrFunctionTest, WhenMultipleCharactersAreUsedAsSeparator) {
   char** comps = SplitStr("//foo//bar//foo//buzz//", "//");
   const char* exp_splited_comps[] = {"foo", "bar", "foo", "buzz"};
   for (size_t i = 0; i < 4; ++i) {
