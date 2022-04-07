@@ -169,17 +169,17 @@ TEST_F(ProtectedGetCurrentWorkingDirFunctionTest, TestWhenFILEMacroIsUsed) {
   EXPECT_EQ(std::strcmp(cwd_, buffer), 0);
 }
 
-class UtilityJoinFunctionTest : public ::testing::Test {
+class JoinFunctionTest : public ::testing::Test {
  protected:
   char buffer[100];
 };
 
-TEST_F(UtilityJoinFunctionTest, TestJoinFunctionWithMultipleAbsPaths) {
+TEST_F(JoinFunctionTest, WhenMultipleAbsPathsAreGiven) {
   const char* joined_path = Join(sizeof(buffer), buffer, 2, "/C", "/cjson");
   EXPECT_EQ(std::strcmp(buffer, "/cjson"), 0) << "buffer: " << buffer << '\n';
 }
 
-TEST_F(UtilityJoinFunctionTest, TestJoinFunctionWhenOneFilePathIsUsed) {
+TEST_F(JoinFunctionTest, WhenOneFilePathIsUsedAfterAAbsPath) {
   const char* joined_path =
       Join(sizeof(buffer), buffer, 4, "C", "cjson", "/cjson", "CMakeLists.txt");
 
