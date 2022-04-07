@@ -123,13 +123,13 @@ TEST_F(SplitFunctionTest, WhenANormalFilePathIsUsed) {
   EXPECT_EQ(std::strcmp(tail, "buzz.hh"), 0);
 }
 
-class UtilityProtectedGetCurrentWorkingDirTest : public ::testing::Test {
+class ProtectedGetCurrentWorkingDirFunctionTest : public ::testing::Test {
  protected:
   char buffer[100];
 };
 
-TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
-       TestWhenOnlyRootNodeIsGivenAsAbspath) {
+TEST_F(ProtectedGetCurrentWorkingDirFunctionTest,
+       WhenOnlyRootNodeIsGivenAsAbspath) {
   const char* dir = "/";
 
   char* cwd_ = _GetCurrentWorkingDir(dir, buffer, sizeof(buffer));
@@ -138,8 +138,7 @@ TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
   EXPECT_EQ(std::strcmp(buffer, cwd_), 0);
 }
 
-TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
-       TestWhenOnlyFileIsUsedAsAbspath) {
+TEST_F(ProtectedGetCurrentWorkingDirFunctionTest, WhenOnlyFileIsUsedAsAbspath) {
   const char* dir = "CMakeLists.txt";
   const char* cwd = "";
 
@@ -149,10 +148,10 @@ TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
   EXPECT_EQ(std::strcmp(buffer, cwd_), 0);
 }
 
-TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
-       TestWhenCurrentFilePathIsUsedAsAbspath) {
-  const char* dir = "/C/cjson/tests/utils/testUtils.hh";
-  const char* cwd = "/C/cjson/tests/utils";
+TEST_F(ProtectedGetCurrentWorkingDirFunctionTest,
+       WhenANormalFilePathIsUsedAsAbspath) {
+  const char* dir = "/foo/bar/foo/buzz.hh";
+  const char* cwd = "/foo/bar/foo";
 
   char* cwd_ = _GetCurrentWorkingDir(dir, buffer, sizeof(buffer));
 
@@ -160,7 +159,7 @@ TEST_F(UtilityProtectedGetCurrentWorkingDirTest,
   EXPECT_EQ(std::strcmp(buffer, cwd_), 0);
 }
 
-TEST_F(UtilityProtectedGetCurrentWorkingDirTest, TestWhenFILEMacroIsUsed) {
+TEST_F(ProtectedGetCurrentWorkingDirFunctionTest, TestWhenFILEMacroIsUsed) {
   char head[100], tail[100];
   Split(head, tail, __FILE__);
 
