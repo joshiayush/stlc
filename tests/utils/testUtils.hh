@@ -41,7 +41,7 @@ TEST(UtilitySplitStrFunction, WhenSingleCharacterIsUsedAsSeparator) {
                            std::strlen(exp_splited_comps[i])),
               0)
         << "comps[" << i << "]: " << comps[i] << "\nexp_splited_comps[" << i
-        << "]: " << exp_splited_comps[i];
+        << "]: " << exp_splited_comps[i] << '\n';
     std::free(*(comps + i));
   }
   std::free(comps);
@@ -55,7 +55,7 @@ TEST(UtilitySplitStrFunction, WhenMultipleCharactersAreUsedAsSeparator) {
                            std::strlen(exp_splited_comps[i])),
               0)
         << "comps[" << i << "]: " << comps[i] << "\nexp_splited_comps[" << i
-        << "]: " << exp_splited_comps[i];
+        << "]: " << exp_splited_comps[i] << '\n';
     std::free(*(comps + i));
   }
   std::free(comps);
@@ -68,7 +68,8 @@ TEST(UtilityJoinStrFunction, TestUtilityJoinStr) {
   const char* exp_joined_str = "foo/bar/foo/buzz";
   EXPECT_EQ(
       std::strncmp(joined_str, exp_joined_str, std::strlen(exp_joined_str)), 0)
-      << "joined_str: " << joined_str << "\nexp_joined_str: " << exp_joined_str;
+      << "joined_str: " << joined_str << "\nexp_joined_str: " << exp_joined_str
+      << '\n';
 }
 
 TEST(UtilsFunctionTest, TestIsAbsPathFunction) {
