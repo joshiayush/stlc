@@ -245,10 +245,8 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
     if (IsAbsPath(p)) {
       for (size_t i = 0; i < bufsize; ++i)
         buffer[i] = nullchr;
-      strcat(buffer, p);
-    } else {
-      strcat(buffer, p);
     }
+    strcat(buffer, p);
     size_t buflen = strlen(buffer);
     size_t j = 0;
     for (; j < buflen; ++j) {
