@@ -242,10 +242,13 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
     strcat(buffer, "/");
 #endif
     const char* p = va_arg(args, char*);
+    // If the component we just took out is a absolute node then we must reset
+    // the buffer with null bytes so to overwrite the previous path.
     if (IsAbsPath(p)) {
       for (size_t i = 0; i < bufsize; ++i)
         buffer[i] = nullchr;
     }
+    // Append the component onto the given buffer.
     strcat(buffer, p);
     size_t buflen = strlen(buffer);
     size_t j = 0;
