@@ -166,21 +166,40 @@ bool_t IsAbsPath(const char* const path) {
 void Split(char* const head, char* const tail, const char* const path) {
   size_t node_r_idx = __SIZE_MAX__;
   size_t pathlen = strlen(path);
+
+  // We always want to start from the end of the `path` string and we want to
+  // find the first character which is `kPathSeparator` so that we can remember
+  // the position of the last `kPathSeparator` from the beginning in
+  // `node_r_idx`.
   for (size_t i = pathlen - 1; i >= 0 && i != __SIZE_MAX__; --i) {
     if (path[i] == kPathSeparator) {
-      node_r_idx = i;
+      node_r_idx = i;  // We only want the last position of `kPathSeparator` in
+                       // the given `path` string.
       break;
     }
   }
+
+  // If we couldn't find a `kPathSeparator` in the given `path` string then we
+  // know that the head component is missing so we just copy the whole `path`
+  // string to the `tail` component and leave `head` component empty.
   if (node_r_idx == __SIZE_MAX__) {
     strcpy(head, "");
     strcpy(tail, path);
     return;
   }
+
+  // If we successfully found a `kPathSeparator` in the given `path` string then
+  // we copy everything upto `node_r_idx + 1` into the `head` component.
   strncpy(head, path, node_r_idx + 1);
-  head[(node_r_idx + 1)] = nullchr;
+  head[(node_r_idx + 1)] = nullchr;  // Append a `end-of-string` character.
+
+  // Once we have taked out our `head` we don't want the node at the end of it
+  // so we just overwrite the last character with a `end-of-string` character.
   if (node_r_idx != 0)
     head[node_r_idx] = nullchr;
+
+  // Now we want to copy everything after the last `kPathSeparator` into the
+  // `tail` component.
   for (size_t i = 0; i < (pathlen - (node_r_idx + 1)); ++i)
     tail[i] = path[(node_r_idx + 1) + i];
   tail[(pathlen - (node_r_idx + 1))] = nullchr;
