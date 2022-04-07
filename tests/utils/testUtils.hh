@@ -61,7 +61,7 @@ TEST(UtilitySplitStrFunction, WhenMultipleCharactersAreUsedAsSeparator) {
   std::free(comps);
 }
 
-TEST(UtilityJoinStrFunction, TestUtilityJoinStr) {
+TEST(UtilityJoinStrFunctionTest, WhenSingleCharacterIsUsedAsSeparator) {
   char joined_str[100];
   const char* const comps[] = {"foo", "bar", "foo", "buzz"};
   JoinStr(joined_str, "/", comps, 4);
