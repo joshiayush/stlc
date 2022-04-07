@@ -186,3 +186,31 @@ TEST_F(JoinFunctionTest, WhenOneFilePathIsUsedAfterAAbsPath) {
   EXPECT_EQ(std::strcmp(buffer, "/cjson/CMakeLists.txt"), 0)
       << "buffer: " << buffer << '\n';
 }
+
+class NormalizeFunctionTest : public ::testing::Test {
+ protected:
+  char buffer[100];
+};
+
+TEST_F(NormalizeFunctionTest, WhenNormalPathIsUsed) {
+  const char* path = "/foo/bar/foo/buzz.hh";
+  strcpy(buffer, path);
+  Normalize(buffer);
+  EXPECT_EQ(std::strcmp(buffer, path), 0) << "buffer: " << buffer << '\n';
+}
+
+TEST_F(NormalizeFunctionTest, WhenSingleDotIsUsedInPath) {
+  const char* path = "/foo/./bar/foo/buzz.hh";
+  strcpy(buffer, path);
+  Normalize(buffer);
+  EXPECT_EQ(std::strcmp(buffer, "/foo/bar/foo/buzz.hh"), 0)
+      << "buffer: " << buffer << '\n';
+}
+
+TEST_F(NormalizeFunctionTest, WhenDoubleDotsAreUsedInPath) {
+  const char* path = "/foo/../bar/foo/buzz.hh";
+  strcpy(buffer, path);
+  Normalize(buffer);
+  EXPECT_EQ(std::strcmp(buffer, "/bar/foo/buzz.hh"), 0)
+      << "buffer: " << buffer << '\n';
+}
