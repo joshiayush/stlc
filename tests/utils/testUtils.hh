@@ -93,13 +93,13 @@ TEST(IsAbsPathTest, TestForBothWindowsAndNixStylePaths) {
 #endif
 }
 
-class UtilitySplitFunctionTest : public ::testing::Test {
+class SplitFunctionTest : public ::testing::Test {
  protected:
   char head[100];
   char tail[100];
 };
 
-TEST_F(UtilitySplitFunctionTest, TestWhenOnlyRootNodeIsGiven) {
+TEST_F(SplitFunctionTest, WhenOnlyRootNodeIsGiven) {
   const char* path = "/";
   Split(head, tail, path);
 
@@ -107,7 +107,7 @@ TEST_F(UtilitySplitFunctionTest, TestWhenOnlyRootNodeIsGiven) {
   EXPECT_EQ(*tail, (const char)'\0');
 }
 
-TEST_F(UtilitySplitFunctionTest, TestWhenOnlyFileIsGiven) {
+TEST_F(SplitFunctionTest, WhenOnlyFileIsGiven) {
   const char* path = "CMakeLists.txt";
   Split(head, tail, path);
 
@@ -115,12 +115,12 @@ TEST_F(UtilitySplitFunctionTest, TestWhenOnlyFileIsGiven) {
   EXPECT_EQ(std::strcmp(tail, path), 0);
 }
 
-TEST_F(UtilitySplitFunctionTest, TestWhenCurrentFilePathIsUsed) {
-  const char* path = "/C/cjson/tests/utils/testUtils.hh";
+TEST_F(SplitFunctionTest, WhenANormalFilePathIsUsed) {
+  const char* path = "/foo/bar/foo/buzz.hh";
   Split(head, tail, path);
 
-  EXPECT_EQ(std::strcmp(head, "/C/cjson/tests/utils"), 0);
-  EXPECT_EQ(std::strcmp(tail, "testUtils.hh"), 0);
+  EXPECT_EQ(std::strcmp(head, "/foo/bar/foo"), 0);
+  EXPECT_EQ(std::strcmp(tail, "buzz.hh"), 0);
 }
 
 class UtilityProtectedGetCurrentWorkingDirTest : public ::testing::Test {
