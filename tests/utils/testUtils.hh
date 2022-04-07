@@ -83,9 +83,14 @@ TEST(UtilityJoinStrFunctionTest, WhenMultipleCharactersAreUsedAsSeparator) {
       << '\n';
 }
 
-TEST(UtilsFunctionTest, TestIsAbsPathFunction) {
+TEST(IsAbsPathTest, TestForBothWindowsAndNixStylePaths) {
+#ifdef CJSON_OS_WINDOWS
+  EXPECT_TRUE(IsAbsPath("C:\\"));
+  EXPECT_TRUE(IsAbsPath("C:\\foo\\bar\\buzz"));
+#else
   EXPECT_TRUE(IsAbsPath("/"));
-  EXPECT_TRUE(IsAbsPath(__FILE__));
+  EXPECT_TRUE(IsAbsPath("/foo/bar/buzz"));
+#endif
 }
 
 class UtilitySplitFunctionTest : public ::testing::Test {
