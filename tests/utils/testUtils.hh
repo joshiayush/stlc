@@ -33,8 +33,22 @@
 
 #include "utils/utils.h"
 
-TEST(UtilitySplitStrFunction, TestUtilitySplitStr) {
+TEST(UtilitySplitStrFunction, WhenSingleCharacterIsUsedAsSeparator) {
   char** comps = SplitStr("/foo/bar/foo/buzz/", "/");
+  const char* exp_splited_comps[] = {"foo", "bar", "foo", "buzz"};
+  for (size_t i = 0; i < 4; ++i) {
+    EXPECT_EQ(std::strncmp(comps[i], exp_splited_comps[i],
+                           std::strlen(exp_splited_comps[i])),
+              0)
+        << "comps[" << i << "]: " << comps[i] << "\nexp_splited_comps[" << i
+        << "]: " << exp_splited_comps[i];
+    std::free(*(comps + i));
+  }
+  std::free(comps);
+}
+
+TEST(UtilitySplitStrFunction, WhenMultipleCharactersAreUsedAsSeparator) {
+  char** comps = SplitStr("//foo//bar//foo//buzz//", "//");
   const char* exp_splited_comps[] = {"foo", "bar", "foo", "buzz"};
   for (size_t i = 0; i < 4; ++i) {
     EXPECT_EQ(std::strncmp(comps[i], exp_splited_comps[i],
