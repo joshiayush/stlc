@@ -97,7 +97,7 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
            ...);
 
 // Normalizes path, eliminating double slashes, dots, double dots, etc.
-char* NormPath(char* const path);
+char* Normalize(char* const path);
 
 // Returns a pointer to the `buffer` after copying a absolute path to the given
 // `path` from the current working directory.  Basically this function will just

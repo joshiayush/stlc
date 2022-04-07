@@ -119,7 +119,7 @@ char** SplitStr(const char* str, const char* sep) {
     // Save the address of the dynamic memory where our current component lies.
     comps[comp_pos++] = str_;
   }
-
+  comps[ncomps] = NULL;  // At the end append a `NULL` pointer.
   return comps;
 }
 
@@ -266,16 +266,54 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
 }
 
 // Normalizes path, eliminating double slashes, dots, double dots, etc.
-char* NormPath(char* const path) {
+char* Normalize(char* path) {
   const char* empty = "";
   const char* dot = ".";
   const char* dotdot = "..";
+#ifdef CJSON_OS_WINDOWS
+  const char* sep = "\\";
+#else
   const char* sep = "/";
+#endif
 
   // Path becomes dot (.) in case the given `path` is empty.
   if (strcmp(path, empty) == 0) {
     strcpy(path, dot);
     return path;
+  }
+
+#ifdef CJSON_OS_WINDOWS
+  char** comps = SplitStr(path, "\\");
+#else
+  char** comps = SplitStr(path, "/");
+#endif
+
+  size_t ncomps = 0;
+  for (const char** ptr = comps; *ptr != NULL; ++ptr)
+    ++ncomps;
+  char** new_comps = (char**)calloc(ncomps, sizeof(char*));
+  char** ptr = new_comps;
+  while (*comps != NULL) {
+    if (strcmp(*comps, dot) == 0 || strcmp(*comps, empty) == 0) {
+      ++comps;
+      continue;
+    } else if (strcmp(*comps, dotdot) != 0) {
+      *ptr++ = *comps;
+    } else {
+      *ptr-- = NULL;
+    }
+    ++comps;
+  }
+
+  size_t pathlen = strlen(path);
+  for (size_t i = 0; i < pathlen; ++i)
+    path[i] = '\0';
+
+  for (size_t i = 0; i < ncomps; ++i) {
+    if (new_comps[i] == NULL)
+      continue;
+    strcat(path, sep);
+    strcat(path, new_comps[i]);
   }
 
   return path;
