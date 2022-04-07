@@ -225,10 +225,9 @@ char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
 }
 
 // Joins two or more pathname components, inserting `/` as needed.
-// Unfortunately, this will not work in Windows.
 //
-// Note: If any component is absolute path, all previous path components will be
-// discarded.  An empty last part will result in a path that ends with a
+// Note: If any component is a absolute path, all previous path components will
+// be discarded.  An empty last part will result in a path that ends with a
 // separator.
 char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
            ...) {
@@ -237,10 +236,11 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
   va_list args;
   va_start(args, paths);
   for (u_int64_t i = 0; i < paths; ++i) {
-    if (kPathSeparator == '/')
-      strcat(buffer, "/");
-    else
-      strcat(buffer, "\\");
+#ifdef CJSON_OS_WINDOWS
+    strcat(buffer, "\\");
+#else
+    strcat(buffer, "/");
+#endif
     const char* p = va_arg(args, char*);
     if (IsAbsPath(p)) {
       for (size_t i = 0; i < bufsize; ++i)
