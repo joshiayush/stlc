@@ -37,6 +37,7 @@
 #include <sys/types.h>
 
 #include "bytes.h"
+#include "internal/arch.h"
 
 // Splits a string at `sep`.
 //
@@ -134,7 +135,11 @@ void JoinStr(char* const buffer, const char* sep, const char* const* const strs,
   }
 }
 
+#ifdef CJSON_OS_WINDOWS
+static const char kPathSeparator = '\\';
+#else
 static const char kPathSeparator = '/';
+#endif
 
 // Returns a `bool_t` value in case the path given is an absolute path.
 // Unfortunately this does not support Windows specific paths yet.
