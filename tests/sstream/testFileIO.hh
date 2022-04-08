@@ -10,7 +10,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors Inc. nor the names of its
+//     * Neither the name of The cjson authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -50,7 +50,7 @@ class StringStreamFileIOTest : public ::testing::Test {
 
 // clang-format off
 const char* kFileCopyRightText =
-    "// Copyright 2021, The cjson authors Inc. All rights reserved.\n"
+    "// Copyright 2021, The cjson authors. All rights reserved.\n"
     "//\n"
     "// Redistribution and use in source and binary forms, with or without\n"
     "// modification, are permitted provided that the following conditions are\n"
@@ -62,7 +62,7 @@ const char* kFileCopyRightText =
     "// copyright notice, this list of conditions and the following disclaimer\n"
     "// in the documentation and/or other materials provided with the\n"
     "// distribution.\n"
-    "//     * Neither the name of The cjson authors Inc. nor the names of its\n"
+    "//     * Neither the name of The cjson authors. nor the names of its\n"
     "// contributors may be used to endorse or promote products derived from\n"
     "// this software without specific prior written permission.\n"
     "//\n"
