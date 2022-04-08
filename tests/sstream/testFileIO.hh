@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors Inc. All rights reserved.
+// Copyright 2021, The cjson authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
