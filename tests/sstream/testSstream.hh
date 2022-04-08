@@ -51,7 +51,7 @@ class StringStreamTest : public ::testing::Test {
   StringStream sstream;
 };
 
-TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
+TEST_F(StringStreamTest, WhenAllocatedWithDefAlloc) {
   sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -61,7 +61,7 @@ TEST_F(StringStreamTest, StringStreamDefAllocFunctionTest) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitrarySstreamLength) {
+TEST_F(StringStreamTest, WhenAllocatedWithAllocWithArbitrarySstreamLength) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -71,7 +71,7 @@ TEST_F(StringStreamTest, StringStreamAllocFunctionWithArbitrarySstreamLength) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointer) {
+TEST_F(StringStreamTest, WhenAllocatedWithAllocWithConstCharPointer) {
   const char* teststr =
       "Mohika says \"I'm that exam question that everyone left without "
       "understanding :(.\"";
@@ -86,7 +86,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocFunctionWithConstCharPointer) {
 }
 
 TEST_F(StringStreamTest,
-       StringStreamStrAllocFunctionWithConstCharPointerWithEmbededNullByte) {
+       WhenAllocatedWithAllocWithConstCharPointerAndEmbededNullBytes) {
   const char* teststr =
       "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
       "\0without\0understanding\0:(.\"";
@@ -101,7 +101,7 @@ TEST_F(StringStreamTest,
 }
 
 TEST_F(StringStreamTest,
-       StringStreamStrNAllocFunctionWithConstCharPointerWithEmbededNullByte) {
+       WhenAllocatedWithNAllocWithConstCharPointerAndEmbededNullBytes) {
   const char* teststr =
       "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
       "\0without\0understanding\0:(\";"
@@ -117,7 +117,7 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
+TEST_F(StringStreamTest, WhenReallocatedWithHalfOfTheActaulCapacity) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -131,7 +131,7 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocNotRequired) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
+TEST_F(StringStreamTest, WhenReallocatedWithTwiceOfTheActaulCapacity) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -148,8 +148,7 @@ TEST_F(StringStreamTest, StringStreamReallocFunctionTestForReallocSuccess) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest,
-       StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamDefAlloc) {
+TEST_F(StringStreamTest, WhenDeallocatedADefAllocatedSstream) {
   sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -164,8 +163,7 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-TEST_F(StringStreamTest,
-       StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamAlloc) {
+TEST_F(StringStreamTest, WhenDeallocatedANonDefaultAllocatedSstream) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -180,8 +178,7 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-TEST_F(StringStreamTest,
-       StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamStrNAlloc) {
+TEST_F(StringStreamTest, WhenDeallocatedAStrNAllocatedSstream) {
   const char* teststr =
       "Mohika says \"I'm that exam question that everyone left without "
       "understanding :(\"; I did not get a chance to even attempt that exam "
@@ -202,9 +199,7 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-TEST_F(
-    StringStreamTest,
-    StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamStrAllocWithEmbededNullByte) {
+TEST_F(StringStreamTest, WhenDeallocatedAStrAllocWithEmbededNullBytes) {
   const char* teststr =
       "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
       "\0without\0understanding\0:(.\"";
@@ -223,9 +218,8 @@ TEST_F(
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-TEST_F(
-    StringStreamTest,
-    StringStreamDeallocFunctionTestWhenAllocatedWithStringStreamNAllocWithEmbededNullByte) {
+TEST_F(StringStreamTest,
+       WhenDeallocatedANAllocatedSstreamWithEmbededNullBytes) {
   const char* teststr =
       "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
       "\0without\0understanding\0:(\";"
