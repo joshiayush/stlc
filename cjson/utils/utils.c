@@ -289,7 +289,7 @@ char* Normalize(char* path) {
 #endif
 
   size_t ncomps = 0;
-  for (const char** ptr = comps; *ptr != NULL; ++ptr)
+  for (const char** ptr = (const char**)comps; *ptr != NULL; ++ptr)
     ++ncomps;
   char** new_comps = (char**)calloc(ncomps, sizeof(char*));
   char** ptr = new_comps;
@@ -315,6 +315,10 @@ char* Normalize(char* path) {
     strcat(path, sep);
     strcat(path, new_comps[i]);
   }
+
+  for (char** ptr = comps; *ptr != NULL; ++ptr)
+    free(*ptr);
+  free(new_comps);
 
   return path;
 }
