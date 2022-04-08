@@ -288,18 +288,31 @@ char* Normalize(char* path) {
   char** comps = SplitStr(path, "/");
 #endif
 
+  // We need to calculate the number of components we have in our path string so
+  // to later allocate a buffer of the right size to store our new components
+  // for normalized path string.
   size_t ncomps = 0;
   for (const char** ptr = (const char**)comps; *ptr != NULL; ++ptr)
     ++ncomps;
+
+  // Now allocate `ncomps` block of memory each of size (char*) to store our
+  // normalized components.
   char** new_comps = (char**)calloc(ncomps, sizeof(char*));
   char** ptr = new_comps;
   while (*comps != NULL) {
     if (strcmp(*comps, dot) == 0 || strcmp(*comps, empty) == 0) {
+      // If the component is just a `dot` or a `empty` string then we just skip
+      // it.
       ++comps;
       continue;
     } else if (strcmp(*comps, dotdot) != 0) {
+      // If the component is not a `dotdot` then we just copy the address to the
+      // `new_comps`.
       *ptr++ = *comps;
     } else {
+      // If the component is a `dotdot` then we have to go back one component so
+      // that we can store the comming component after `dotdot` into its right
+      // place.
       *ptr-- = NULL;
     }
     ++comps;
@@ -307,11 +320,12 @@ char* Normalize(char* path) {
 
   size_t pathlen = strlen(path);
   for (size_t i = 0; i < pathlen; ++i)
-    path[i] = '\0';
+    path[i] = '\0';  // Rest path to null bytes.
 
   for (size_t i = 0; i < ncomps; ++i) {
     if (new_comps[i] == NULL)
       continue;
+    // Append separator and new components in our `path` string.
     strcat(path, sep);
     strcat(path, new_comps[i]);
   }
