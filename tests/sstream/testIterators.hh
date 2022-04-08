@@ -48,12 +48,14 @@ class StringStreamIteratorsTest : public ::testing::Test {
   StringStream sstream;
 };
 
-TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithNullByte) {
+class StringStreamBeginTest : public StringStreamIteratorsTest {};
+
+TEST_F(StringStreamBeginTest, WhenANullByteIsUsedAsAnArgumentToStrAlloc) {
   sstream = StringStreamStrAlloc("\0");
   EXPECT_EQ(*StringStreamBegin(&sstream), (const char)'\0');
 }
 
-TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithCString) {
+TEST_F(StringStreamBeginTest, WhenCStringIsUsedAsAnArgumentToStrAlloc) {
   const char* str = "Mohika, I miss your smile.";
   sstream = StringStreamStrAlloc(str);
   const char* begin = StringStreamBegin(&sstream);
@@ -61,28 +63,29 @@ TEST_F(StringStreamIteratorsTest, StringStreamBeginTestWithCString) {
   EXPECT_EQ(std::strncmp(begin, str, sstream.length), 0);
 }
 
-TEST_F(StringStreamIteratorsTest, StringStreamEndTestWithNullByte) {
+class StringStreamEndTest : public StringStreamIteratorsTest {};
+
+TEST_F(StringStreamEndTest, WhenNullByteIsUsedAsAnArgumentToStrAlloc) {
   sstream = StringStreamStrAlloc("\0");
   EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
 }
 
-TEST_F(StringStreamIteratorsTest, StringStreamEndTestWithCString) {
+TEST_F(StringStreamEndTest, WhenCStringIsUsedAsAnArgumentToStrAlloc) {
   const char* str = "Mohika, I miss your smile.";
   sstream = StringStreamStrAlloc(str);
   EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
 }
 
-TEST_F(StringStreamIteratorsTest,
-       StringStreamEndTestWithCStringWithEmbededNullByte) {
+TEST_F(StringStreamEndTest,
+       WhenCStringWithEmbededNullBytesIsUsedAsAnArgumentToStrAlloc) {
   const char* str = "Mohika,\0I miss your smile.";
   sstream = StringStreamStrAlloc(str);
   EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
   EXPECT_EQ(*(StringStreamEnd(&sstream) - 1), (const char)',');
 }
 
-TEST_F(
-    StringStreamIteratorsTest,
-    StringStreamEndTestWithCStringWithEmbededNullByteWhenAllocatedWithStringStreamStrNAlloc) {
+TEST_F(StringStreamEndTest,
+       WhenCStringWithEmbededNullByteAsAnAgrumentToStrNAllocIsUsed) {
   const char* str = "Mohika,\0I miss your smile.";
   const size_t strlen_ = 26;
   sstream = StringStreamStrNAlloc(str, strlen_);
