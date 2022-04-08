@@ -214,3 +214,16 @@ TEST_F(NormalizeFunctionTest, WhenDoubleDotsAreUsedInPath) {
   EXPECT_EQ(std::strcmp(buffer, "/bar/foo/buzz.hh"), 0)
       << "buffer: " << buffer << '\n';
 }
+
+class ProtectedAbsPathFuntionTest : public ::testing::Test {
+ protected:
+  char buffer[100];
+};
+
+TEST_F(ProtectedAbsPathFuntionTest, WhenCurrentFileNameIsUsed) {
+  char path[100];
+  strcpy(path, "foo.hh");
+  char* abs_path = _AbsPath("/foo/bar/foo/buzz.hh", buffer, path);
+  EXPECT_EQ(std::strcmp(buffer, "/foo/bar/foo/foo.hh"), 0)
+      << "buffer: " << buffer << '\n';
+}
