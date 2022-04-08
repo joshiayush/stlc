@@ -45,8 +45,9 @@ class StringStreamModifiersTest : public ::testing::Test {
   StringStream sstream;
 };
 
-TEST_F(StringStreamModifiersTest,
-       StringStreamConcatTestWithAEmptyStringStreamInstance) {
+class StringStreamConcatTest : public StringStreamModifiersTest {};
+
+TEST_F(StringStreamConcatTest, WhenUsedAEmptyStringStreamInstance) {
   const char* teststr_ = "Mohika is really sweet";
 
   sstream = StringStreamAlloc();
@@ -72,8 +73,7 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamModifiersTest,
-       StringStreamConcatTestWithAStrAllocatedStringStreamInstance) {
+TEST_F(StringStreamConcatTest, WhenUsedAStrAllocatedStringStreamInstance) {
   const char* teststr_ = "Mohika";
 
   sstream = StringStreamStrAlloc(teststr_);
@@ -101,8 +101,9 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamModifiersTest,
-       StringStreamReadTestWithADefaultAllocatedStringStreamInstance) {
+class StringStreamReadTest : public StringStreamModifiersTest {};
+
+TEST_F(StringStreamReadTest, WhenADefaultAllocatedStringStreamInstanceIsUsed) {
   sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, (void*)0);
   ASSERT_EQ(sstream.length, 0);
@@ -127,8 +128,7 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamModifiersTest,
-       StringStreamReadTestWithAAllocatedStringStreamInstance) {
+TEST_F(StringStreamReadTest, WhenANAllocatedStringStreamInstanceIsUsed) {
   const char* readstr =
       "Mohika is really sweet :) and talented with a charisma of 100%.";
 
@@ -154,8 +154,7 @@ TEST_F(StringStreamModifiersTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamModifiersTest,
-       StringStreamReadTestWithAStrAllocatedStringStreamInstance) {
+TEST_F(StringStreamReadTest, WhenAStrAllocatedStringStreamInstanceIsUsed) {
   const char* teststr_ = "Mohika";
 
   sstream = StringStreamStrAlloc(teststr_);
