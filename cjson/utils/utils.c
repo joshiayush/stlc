@@ -347,5 +347,14 @@ char* Normalize(char* path) {
 // joins that with the given `path`.
 char* _AbsPath(const char* const abspath, char* const buffer,
                char* const path) {
-  return buffer;
+  size_t size = 0;
+  for (const char* ptr = abspath; *ptr != '\0'; ++ptr)
+    ++size;
+  char* head = (char*)malloc(sizeof(char) * size);
+  char* tail = (char*)malloc(sizeof(char) * size);
+  Split(head, tail, abspath);
+  Join(size, buffer, 2, head, path);
+  free(head);
+  free(tail);
+  return Normalize(buffer);
 }
