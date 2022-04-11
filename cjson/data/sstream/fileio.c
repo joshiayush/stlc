@@ -59,6 +59,8 @@ void StringStreamReadFile(StringStream* const sstream, FILE* const file,
 // Writes `StringStream` data from position `begin` to `end` in the given file.
 void StringStreamWriteFile(StringStream* const sstream, FILE* const file,
                            size_t begin, size_t end) {
+  if (sstream == NULL || file == NULL)
+    return;
   if (begin >= sstream->length)
     return;
   if (!end)
