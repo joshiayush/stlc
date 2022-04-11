@@ -39,7 +39,10 @@
 
 class StringStreamModifiersTest : public ::testing::Test {
  protected:
-  void TearDown() override { StringStreamDealloc(&sstream); }
+  void TearDown() override {
+    if (sstream.data != NULL)
+      StringStreamDealloc(&sstream);
+  }
 
  protected:
   StringStream sstream;
@@ -61,12 +64,7 @@ TEST_F(StringStreamConcatTest, WhenUsedAEmptyStringStreamInstance) {
   StringStreamConcat(&sstream, "%s %s", teststr_, "and charming :).");
   const char* data_ = "Mohika is really sweet and charming :).";
 
-  ASSERT_EQ(std::strcmp(sstream.data, data_), 0)
-      << "Expected equality of these values:\n"
-      << "  sstream.data\n"
-      << "    Which is: " << sstream.data << "\n"
-      << "  data_\n"
-      << "    Which is: " << data_;
+  ASSERT_STREQ(sstream.data, data_);
   ASSERT_EQ(sstream.length, 39);
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
@@ -89,12 +87,7 @@ TEST_F(StringStreamConcatTest, WhenUsedAStrAllocatedStringStreamInstance) {
   const char* data_ =
       "Mohika is really sweet :) and talented with a charisma of 100%.";
 
-  ASSERT_EQ(std::strcmp(sstream.data, data_), 0)
-      << "Expected equality of these values:\n"
-      << "  sstream.data\n"
-      << "    Which is: " << sstream.data << "\n"
-      << "  data_\n"
-      << "    Which is: " << data_;
+  ASSERT_STREQ(sstream.data, data_);
   ASSERT_EQ(sstream.length, 63);
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
@@ -116,12 +109,7 @@ TEST_F(StringStreamReadTest, WhenADefaultAllocatedStringStreamInstanceIsUsed) {
       "Mohika is really sweet :) and talented with a charisma of 100%.";
   StringStreamRead(&sstream, readstr, std::strlen(readstr));
 
-  ASSERT_EQ(std::strcmp(sstream.data, readstr), 0)
-      << "Expected equality of these values:\n"
-      << "  sstream.data\n"
-      << "    Which is: " << sstream.data << "\n"
-      << "  data_\n"
-      << "    Which is: " << readstr;
+  ASSERT_STREQ(sstream.data, readstr);
   ASSERT_EQ(sstream.length, std::strlen(readstr));
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
@@ -142,12 +130,7 @@ TEST_F(StringStreamReadTest, WhenANAllocatedStringStreamInstanceIsUsed) {
 
   StringStreamRead(&sstream, readstr, std::strlen(readstr));
 
-  ASSERT_EQ(std::strcmp(sstream.data, readstr), 0)
-      << "Expected equality of these values:\n"
-      << "  sstream.data\n"
-      << "    Which is: " << sstream.data << "\n"
-      << "  readstr\n"
-      << "    Which is: " << readstr;
+  ASSERT_STREQ(sstream.data, readstr);
   ASSERT_EQ(sstream.length, std::strlen(readstr));
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       std::strlen(readstr), capacity);
@@ -173,12 +156,7 @@ TEST_F(StringStreamReadTest, WhenAStrAllocatedStringStreamInstanceIsUsed) {
       "Mohika, the happiest people don't have the best of everything, they "
       "just make the best of everything.";
 
-  ASSERT_EQ(std::strcmp(sstream.data, data_), 0)
-      << "Expected equality of these values:\n"
-      << "  sstream.data\n"
-      << "    Which is: " << sstream.data << "\n"
-      << "  data_\n"
-      << "    Which is: " << data_;
+  ASSERT_STREQ(sstream.data, data_);
   ASSERT_EQ(sstream.length, std::strlen(data_));
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
