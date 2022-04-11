@@ -79,7 +79,9 @@ const char* kFileCopyRightText =
     "// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n";
 // clang-format on
 
-TEST_F(StringStreamFileIOTest, WhenStringStreamInstanceIsNull) {
+class StringStreamReadFileTest : public StringStreamFileIOTest {};
+
+TEST_F(StringStreamReadFileTest, WhenStringStreamInstanceIsNull) {
   std::FILE* file = std::fopen(__FILE__, "r");
   StringStreamReadFile(NULL, file, 0);
   std::fclose(file);
@@ -88,21 +90,22 @@ TEST_F(StringStreamFileIOTest, WhenStringStreamInstanceIsNull) {
   ASSERT_EQ(sstream.data, nullptr);
 }
 
-TEST_F(StringStreamFileIOTest, WhenFILEInstanceIsNull) {
+TEST_F(StringStreamReadFileTest, WhenFILEInstanceIsNull) {
   StringStreamReadFile(&sstream, NULL, 0);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
   ASSERT_EQ(sstream.data, nullptr);
 }
 
-TEST_F(StringStreamFileIOTest, WhenTestedTheFileCopyRightTextIsReadCorrectly) {
+TEST_F(StringStreamReadFileTest,
+       WhenTestedTheFileCopyRightTextIsReadCorrectly) {
   std::FILE* file = std::fopen(__FILE__, "r");
   StringStreamReadFile(&sstream, file, std::strlen(kFileCopyRightText));
   std::fclose(file);
   EXPECT_STREQ(sstream.data, kFileCopyRightText);
 }
 
-TEST_F(StringStreamFileIOTest, WhenTestedIfTheCurrentFileIsReadCorrectly) {
+TEST_F(StringStreamReadFileTest, WhenTestedIfTheCurrentFileIsReadCorrectly) {
   std::FILE* file = std::fopen(__FILE__, "r");
   StringStreamReadFile(&sstream, file, 0);
   ASSERT_NE(sstream.length, 0);
