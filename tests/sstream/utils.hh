@@ -38,7 +38,7 @@ namespace utils {
 // list resize routine that is identical to static function
 // ``_ComputeStringStreamBufferCapacity()`` inside module ``sstream.c``.
 void ComputeStringStreamBufferCapacity(const size_t& length, size_t& capacity) {
-  capacity = (length >> 3) + (length < 9 ? 3 : 6);
+  capacity = (length >> 0x03) + (length < 0x09 ? 0x03 : 0x06);
   capacity += length;
 }
 }  // namespace utils
