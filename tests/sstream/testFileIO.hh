@@ -79,17 +79,40 @@ const char* kFileCopyRightText =
     "// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.\n";
 // clang-format on
 
-TEST_F(StringStreamFileIOTest,
-       StringStreamFileIOTestWithCFileCopyRightMessage) {
+TEST_F(StringStreamFileIOTest, WhenStringStreamInstanceIsNull) {
+  std::FILE* file = std::fopen(__FILE__, "r");
+  StringStreamReadFile(NULL, file, 0);
+  std::fclose(file);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
+  ASSERT_EQ(sstream.data, nullptr);
+}
+
+TEST_F(StringStreamFileIOTest, WhenFILEInstanceIsNull) {
+  StringStreamReadFile(&sstream, NULL, 0);
+  ASSERT_EQ(sstream.length, 0);
+  ASSERT_EQ(sstream.capacity, 0);
+  ASSERT_EQ(sstream.data, nullptr);
+}
+
+TEST_F(StringStreamFileIOTest, WhenTestedTheFileCopyRightTextIsReadCorrectly) {
+  std::FILE* file = std::fopen(__FILE__, "r");
+  StringStreamReadFile(&sstream, file, std::strlen(kFileCopyRightText));
+  std::fclose(file);
+  EXPECT_STREQ(sstream.data, kFileCopyRightText);
+}
+
+TEST_F(StringStreamFileIOTest, WhenTestedIfTheCurrentFileIsReadCorrectly) {
   std::FILE* file = std::fopen(__FILE__, "r");
   StringStreamReadFile(&sstream, file, 0);
+  ASSERT_NE(sstream.length, 0);
+  ASSERT_NE(sstream.capacity, 0);
+  ASSERT_NE(sstream.data, nullptr);
+  std::fseek(file, 0L, SEEK_SET);
+  char* current_file_content = new char[sstream.length];
+  std::fread(current_file_content, sizeof(char), sstream.length, file);
   std::fclose(file);
-  EXPECT_EQ(std::strncmp(sstream.data, kFileCopyRightText,
-                         std::strlen(kFileCopyRightText)),
-            0)
-      << "Actual data\n"
-      << sstream.data << "\nExpected data\n"
-      << kFileCopyRightText;
+  ASSERT_STREQ(sstream.data, current_file_content);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTFILEIO_HH_
