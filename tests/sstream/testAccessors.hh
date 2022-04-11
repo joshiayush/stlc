@@ -36,7 +36,10 @@
 
 class GetStringStreamAvailableSpaceTest : public ::testing::Test {
  protected:
-  void TearDown() override { StringStreamDealloc(&sstream); }
+  void TearDown() override {
+    if (sstream.data != NULL)
+      StringStreamDealloc(&sstream);
+  }
 
  protected:
   StringStream sstream;
