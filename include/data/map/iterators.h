@@ -32,6 +32,10 @@
 
 #include "data/map/map.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // Defines a `function pointer` type to take in a `function pointer` by
 // reference.  Used in function
 // `void MapTraverse(Map *const, TraversePredicate)` as its predicate.
@@ -73,5 +77,9 @@ typedef struct MapIterator {
 MapIterator MapIteratorNew(Map *const map);
 
 MapEntry *MapIteratorNext(MapIterator *const it);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif  // CJSON_INCLUDE_DATA_MAP_ITERATORS_H_
