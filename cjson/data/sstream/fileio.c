@@ -42,6 +42,8 @@
 // function will read the entire file.
 void StringStreamReadFile(StringStream* const sstream, FILE* const file,
                           size_t length) {
+  if (sstream == NULL || file == NULL)
+    return;
   if (length == 0) {
     size_t orig_cur_pos = ftell(file);
     fseek(file, 0L, SEEK_END);
