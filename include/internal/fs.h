@@ -27,29 +27,16 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_UTILS_UTILS_H_
-#define CJSON_INCLUDE_UTILS_UTILS_H_
+#ifndef CJSON_INCLUDE_INTERNAL_FS_H_
+#define CJSON_INCLUDE_INTERNAL_FS_H_
 
-#include <sys/types.h>
+#include <stdint.h>
 
 #include "bool.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-// Splits a string at `sep`.
-//
-// Returns a heap-allocated array of pointers containing components separated at
-// `sep`.
-//
-// Caller must free the component string inside the returned array of pointers
-// and the returned array of pointers too.
-char** SplitStr(const char* str, const char* const sep);
-
-// Joins the list of `strings` into a single string at `sep`.
-void JoinStr(char* const buffer, const char* sep, const char* const* const strs,
-             size_t nstrs);
 
 // Returns a `bool_t` value in case the path given is an absolute path.
 // Unfortunately this does not support Windows specific paths yet.
@@ -117,4 +104,4 @@ char* _AbsPath(const char* const abspath, char* const buffer, char* const path);
 }
 #endif
 
-#endif  // CJSON_INCLUDE_UTILS_UTILS_H_
+#endif  // CJSON_INCLUDE_INTERNAL_FS_H_

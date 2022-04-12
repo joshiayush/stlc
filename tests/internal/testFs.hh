@@ -31,57 +31,7 @@
 
 #include <cstring>
 
-#include "utils/utils.h"
-
-TEST(UtilitySplitStrFunctionTest, WhenSingleCharacterIsUsedAsSeparator) {
-  char** comps = SplitStr("/foo/bar/foo/buzz/", "/");
-  const char* exp_splited_comps[] = {"foo", "bar", "foo", "buzz"};
-  for (size_t i = 0; i < 4; ++i) {
-    EXPECT_EQ(std::strncmp(comps[i], exp_splited_comps[i],
-                           std::strlen(exp_splited_comps[i])),
-              0)
-        << "comps[" << i << "]: " << comps[i] << "\nexp_splited_comps[" << i
-        << "]: " << exp_splited_comps[i] << '\n';
-    std::free(*(comps + i));
-  }
-  std::free(comps);
-}
-
-TEST(UtilitySplitStrFunctionTest, WhenMultipleCharactersAreUsedAsSeparator) {
-  char** comps = SplitStr("//foo//bar//foo//buzz//", "//");
-  const char* exp_splited_comps[] = {"foo", "bar", "foo", "buzz"};
-  for (size_t i = 0; i < 4; ++i) {
-    EXPECT_EQ(std::strncmp(comps[i], exp_splited_comps[i],
-                           std::strlen(exp_splited_comps[i])),
-              0)
-        << "comps[" << i << "]: " << comps[i] << "\nexp_splited_comps[" << i
-        << "]: " << exp_splited_comps[i] << '\n';
-    std::free(*(comps + i));
-  }
-  std::free(comps);
-}
-
-TEST(UtilityJoinStrFunctionTest, WhenSingleCharacterIsUsedAsSeparator) {
-  char joined_str[100];
-  const char* const comps[] = {"foo", "bar", "foo", "buzz"};
-  JoinStr(joined_str, "/", comps, 4);
-  const char* exp_joined_str = "foo/bar/foo/buzz";
-  EXPECT_EQ(
-      std::strncmp(joined_str, exp_joined_str, std::strlen(exp_joined_str)), 0)
-      << "joined_str: " << joined_str << "\nexp_joined_str: " << exp_joined_str
-      << '\n';
-}
-
-TEST(UtilityJoinStrFunctionTest, WhenMultipleCharactersAreUsedAsSeparator) {
-  char joined_str[100];
-  const char* const comps[] = {"foo", "bar", "foo", "buzz"};
-  JoinStr(joined_str, "//", comps, 4);
-  const char* exp_joined_str = "foo//bar//foo//buzz";
-  EXPECT_EQ(
-      std::strncmp(joined_str, exp_joined_str, std::strlen(exp_joined_str)), 0)
-      << "joined_str: " << joined_str << "\nexp_joined_str: " << exp_joined_str
-      << '\n';
-}
+#include "internal/fs.h"
 
 TEST(IsAbsPathTest, TestForBothWindowsAndNixStylePaths) {
 #ifdef CJSON_OS_WINDOWS

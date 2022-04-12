@@ -27,20 +27,30 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <gtest/gtest.h>
+#ifndef CJSON_INCLUDE_INTERNAL_STRING_H_
+#define CJSON_INCLUDE_INTERNAL_STRING_H_
 
-#include "cjson/testAccessors.hh"
-#include "internal/testFs.hh"
-#include "internal/testString.hh"
-#include "map/testMap.hh"
-#include "sstream/testAccessors.hh"
-#include "sstream/testFileIO.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
-#include "vector/testVector.hh"
+#include <sys/types.h>
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+// Splits a string at `sep`.
+//
+// Returns a heap-allocated array of pointers containing components separated at
+// `sep`.
+//
+// Caller must free the component string inside the returned array of pointers
+// and the returned array of pointers too.
+char** SplitStr(const char* str, const char* const sep);
+
+// Joins the list of `strings` into a single string at `sep`.
+void JoinStr(char* const buffer, const char* sep, const char* const* const strs,
+             size_t nstrs);
+
+#ifdef __cplusplus
 }
+#endif
+
+#endif  // CJSON_INTERNAL_STRING_H_
