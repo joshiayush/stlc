@@ -33,41 +33,96 @@
 #include <gtest/gtest.h>
 
 #include "data/vector/vector.h"
+#include "utils.hh"
 
 #define _ARBITRARY_VECTOR_TESTING_LENGTH 2147489
 
 class VectorTest : public ::testing::Test {
  protected:
-  // Computes the capacity of the ``Vector`` instance using the Python list
-  // resize routine that is identical to static function
-  // ``_ComputeVectorBufferCapacity()`` inside module ``sstream.c``.
-  void _ComputeVectorBufferCapacity(const size_t& size, size_t& capacity) {
-    capacity = (size >> 3) + (size < 9 ? 3 : 6);
-    capacity += size;
+  void TearDown() override {
+    if (vector.data != nullptr)
+      VectorFree(&vector);
   }
-
-  void TearDown() override { VectorFree(&vector); }
 
  protected:
   Vector vector;
 };
 
-TEST_F(VectorTest, VectorDefAllocFunctionWithDefaultLengthTest) {
+class VectorDefAllocTest : public VectorTest {};
+
+TEST_F(VectorDefAllocTest, WhenAllocatedWithDefAlloc) {
   vector = VectorDefAlloc();
-  ASSERT_NE(vector.data, (void*)0);
+  ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  _ComputeVectorBufferCapacity(VECTOR_DEFAULT_SIZE, capacity);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      VECTOR_DEFAULT_SIZE, capacity);
   ASSERT_EQ(vector.capacity, capacity);
 }
 
-TEST_F(VectorTest, VectorAllocFunctionWithArbitraryVectorLengthTest) {
-  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
-  ASSERT_NE(vector.data, (void*)0);
+class VectorAllocTest : public VectorTest {};
+
+TEST_F(VectorAllocTest, WhenAllocatedWithAllocAndZeroAsSize) {
+  vector = VectorAlloc(0);
+  ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  _ComputeVectorBufferCapacity(_ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(vector.capacity, capacity);
+}
+
+TEST_F(VectorAllocTest, WhenAllocatedWithAllocAndAArbitrarySize) {
+  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      _ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+}
+
+class VectorResizeTest : public VectorTest {};
+
+TEST_F(VectorResizeTest, WhenZeroIsUsedAsSize) {
+  vector = VectorAlloc(0);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  // Even a size of zero should result in a capacity equals to 3.
+  ASSERT_EQ(vector.capacity, capacity);
+  // A size of zero still results in a capacity of 3 so `VectorResize()` must
+  // return `VECTOR_RESIZE_NOT_REQUIRED` when called with a size of zero.
+  ASSERT_EQ(VectorResize(&vector, 0), VECTOR_RESIZE_NOT_REQUIRED);
+}
+
+TEST_F(VectorResizeTest, WhenAArbitraryNumberIsUsedAsSizeForVectorResize) {
+  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      _ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  // In this test we test if `VectorResize()` returns
+  // `VECTOR_RESIZE_NOT_REQUIRED` when vector's size and size to
+  // `VectorResize()` are the same.
+  ASSERT_EQ(VectorResize(&vector, _ARBITRARY_VECTOR_TESTING_LENGTH),
+            VECTOR_RESIZE_NOT_REQUIRED);
+}
+
+TEST_F(VectorResizeTest,
+       WhenDoubleOfArbitraryNumberIsUsedAsSizeForVectorResize) {
+  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      _ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  ASSERT_EQ(VectorResize(&vector, _ARBITRARY_VECTOR_TESTING_LENGTH * 2),
+            VECTOR_RESIZE_SUCCESS);
 }
 
 #endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
