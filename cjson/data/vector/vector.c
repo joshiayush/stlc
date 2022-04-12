@@ -110,6 +110,7 @@ u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
       return VECTOR_COPY_FAILURE;
   for (size_t i = 0; i < src->size; ++i)
     *(dest->data + i) = *(src->data + i);
+  dest->size = src->size;
   return VECTOR_COPY_SUCCESS;
 }
 
