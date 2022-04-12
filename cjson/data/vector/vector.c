@@ -121,6 +121,8 @@ u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
 void VectorClear(Vector* const vector) {
   free(vector->data);
   vector->data = (void**)malloc(vector->capacity * sizeof(void*));
+  vector->size = 0;
+  ComputeVectorBufferCapacity(vector->size, &vector->capacity);
 }
 
 // Frees up the free-store space occupied by the `Vector` container.
