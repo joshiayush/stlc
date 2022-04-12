@@ -168,6 +168,10 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
       VECTOR_DEFAULT_SIZE, capacity);
   ASSERT_EQ(dest.capacity, capacity);
   ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
+  ASSERT_EQ(dest.size, vector.size);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(dest.size,
+                                                             capacity);
+  ASSERT_EQ(dest.capacity, capacity);
   for (size_t i = 0; i < dest.size; ++i)
     ASSERT_EQ(*(int*)(dest.data[i]), *(int*)(vector.data[i]));
   std::free(array);
