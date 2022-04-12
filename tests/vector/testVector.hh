@@ -180,6 +180,31 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
 
 class VectorClearTest : public VectorTest {};
 
+TEST_F(VectorClearTest, WhenElementsAreNotStoredInTheFreeStore) {
+  size_t vector_size = 10;
+  vector = VectorAlloc(vector_size);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+                                                             capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  size_t array[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+  for (size_t i = 0; i < vector_size; ++i)
+    VectorPush(&vector, &array[i]);
+  VectorClear(&vector);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector.size,
+                                                             capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+
+  // Check if the elements are still stored in the stack after calling
+  // `VectorClear()`.
+  for (size_t i = 0; i < vector_size; ++i)
+    ASSERT_EQ(array[i], i);
+}
+
 TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
   size_t vector_size = 10;
   vector = VectorAlloc(vector_size);
