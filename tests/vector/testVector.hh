@@ -157,7 +157,7 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
-  for (size_t i = 0; i < vector_size; i++)
+  for (size_t i = 0; i < vector_size; ++i)
     array[i] = i;
   for (size_t i = 0; i < vector_size; ++i)
     VectorPush(&vector, &array[i]);
@@ -176,6 +176,36 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
     ASSERT_EQ(*(int*)(dest.data[i]), *(int*)(vector.data[i]));
   std::free(array);
   VectorFree(&dest);
+}
+
+class VectorClearTest : public VectorTest {};
+
+TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
+  size_t vector_size = 10;
+  vector = VectorAlloc(vector_size);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+                                                             capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
+  for (size_t i = 0; i < vector_size; ++i)
+    array[i] = i;
+  for (size_t i = 0; i < vector_size; ++i)
+    VectorPush(&vector, &array[i]);
+  VectorClear(&vector);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector.size,
+                                                             capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+
+  // Check if the elements are still stored in the free store after calling
+  // `VectorClear()`.
+  for (size_t i = 0; i < vector_size; ++i)
+    ASSERT_EQ(array[i], i);
+  std::free(array);
 }
 
 #endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
