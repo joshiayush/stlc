@@ -125,4 +125,23 @@ TEST_F(VectorResizeTest,
             VECTOR_RESIZE_SUCCESS);
 }
 
+class VectorCopyTest : public VectorTest {};
+
+TEST_F(VectorCopyTest, WhenZeroIsUsedAsSrcSize) {
+  vector = VectorAlloc(0);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  // Even a size of zero should result in a capacity equals to 3.
+  ASSERT_EQ(vector.capacity, capacity);
+  Vector dest = VectorAlloc(0);
+  ASSERT_NE(dest.data, nullptr);
+  ASSERT_EQ(dest.size, 0);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  // Even a size of zero should result in a capacity equals to 3.
+  ASSERT_EQ(dest.capacity, capacity);
+  ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
+}
+
 #endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
