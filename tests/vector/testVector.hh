@@ -144,6 +144,7 @@ TEST_F(VectorCopyTest, WhenZeroIsUsedAsSrcSize) {
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(dest.capacity, capacity);
   ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
+  VectorFree(&dest);
 }
 
 TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
