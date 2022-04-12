@@ -32,6 +32,8 @@
 
 #include <gtest/gtest.h>
 
+#include <cstdlib>
+
 #include "data/vector/vector.h"
 #include "utils.hh"
 
@@ -142,6 +144,33 @@ TEST_F(VectorCopyTest, WhenZeroIsUsedAsSrcSize) {
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(dest.capacity, capacity);
   ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
+}
+
+TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
+  size_t vector_size = 10;
+  vector = VectorAlloc(vector_size);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+                                                             capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
+  for (size_t i = 0; i < vector_size; i++)
+    array[i] = i;
+  for (size_t i = 0; i < vector_size; ++i)
+    VectorPush(&vector, &array[i]);
+  Vector dest = VectorDefAlloc();
+  ASSERT_NE(dest.data, nullptr);
+  ASSERT_EQ(dest.size, 0);
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      VECTOR_DEFAULT_SIZE, capacity);
+  ASSERT_EQ(dest.capacity, capacity);
+  ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
+  for (size_t i = 0; i < dest.size; ++i)
+    ASSERT_EQ(*(int*)(dest.data[i]), *(int*)(vector.data[i]));
+  std::free(array);
+  VectorFree(&dest);
 }
 
 #endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
