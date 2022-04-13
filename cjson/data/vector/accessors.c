@@ -39,7 +39,7 @@
 //
 // Has no effect on the `Vector` instance if the `idx` value is out of bounds.
 void VectorSet(Vector* const vector, void* const elem, const size_t idx) {
-  if (idx > vector->capacity)
+  if (idx > vector->size)
     return;
   vector->data[idx] = elem;
 }
