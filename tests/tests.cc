@@ -45,6 +45,7 @@
 
 /* Header files including tests for `vector` API. */
 #include "vector/testAccessors.hh"
+#include "vector/testModifiers.hh"
 #include "vector/testVector.hh"
 
 /* Header files including tests for `cjson` API. */
