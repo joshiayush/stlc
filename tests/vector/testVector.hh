@@ -233,4 +233,20 @@ TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
   std::free(array);
 }
 
+class VectorFreeTest : public VectorTest {};
+
+TEST_F(VectorFreeTest, WhenVectorIsAllocatedUsingDefAlloc) {
+  vector = VectorDefAlloc();
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      VECTOR_DEFAULT_SIZE, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  VectorFree(&vector);
+  ASSERT_EQ(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  ASSERT_EQ(vector.capacity, 0);
+}
+
 #endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
