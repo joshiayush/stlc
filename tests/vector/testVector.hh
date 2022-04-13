@@ -249,4 +249,26 @@ TEST_F(VectorFreeTest, WhenVectorIsAllocatedUsingDefAlloc) {
   ASSERT_EQ(vector.capacity, 0);
 }
 
+class VectorFreeDeepTest : public VectorTest {};
+
+TEST_F(VectorFreeDeepTest, WhenVectorIsCopiedFromADynamicallyAllocatedArray) {
+  size_t vector_size = 10;
+  vector = VectorAlloc(vector_size);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+                                                             capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  for (size_t i = 0; i < vector_size; ++i) {
+    size_t* element = (size_t*)malloc(sizeof(size_t) * 1);
+    *element = i;
+    VectorPush(&vector, element);
+  }
+  VectorFreeDeep(&vector);
+  ASSERT_EQ(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  ASSERT_EQ(vector.capacity, 0);
+}
+
 #endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
