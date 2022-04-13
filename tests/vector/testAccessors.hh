@@ -62,15 +62,32 @@ TEST_F(VectorSetTest, WhenVectorInstanceIsNull) {
 
 TEST_F(VectorSetTest, WhenElementIndexIsGreaterThanVectorSize) {
   vector = VectorDefAlloc();
-  size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
-  *element = 10;
-  VectorSet(&vector, element, vector.size + 1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
   cjson::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
+  size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
+  *element = 10;
+  VectorSet(&vector, element, vector.size + 1);
   ASSERT_EQ(vector.capacity, capacity);
+  std::free(element);
+}
+
+TEST_F(VectorSetTest, WhenIndexIsInBounds) {
+  vector = VectorDefAlloc();
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity = 0;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      VECTOR_DEFAULT_SIZE, capacity);
+  size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
+  *element = 10;
+  VectorPush(&vector, element);
+  EXPECT_EQ(*(size_t*)VectorGet(&vector, 0), *element);
+  *element = 20;
+  VectorSet(&vector, element, 0);
+  EXPECT_EQ(*(size_t*)VectorGet(&vector, 0), *element);
   std::free(element);
 }
 
