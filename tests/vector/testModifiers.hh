@@ -128,4 +128,32 @@ TEST_F(VectorPushTest, WhenPushedInSomeValues) {
   std::free(element3);
 }
 
+class VectorUnshiftTest : public VectorModifiersTest {};
+
+TEST_F(VectorUnshiftTest, WhenPushedInSomeValues) {
+  vector = VectorDefAlloc();
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity = 0;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      VECTOR_DEFAULT_SIZE, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  size_t* element1 = (size_t*)std::malloc(sizeof(size_t) * 1);
+  *element1 = 10;
+  VectorUnshift(&vector, element1);
+  size_t* element2 = (size_t*)std::malloc(sizeof(size_t) * 1);
+  *element2 = 20;
+  VectorUnshift(&vector, element2);
+  size_t* element3 = (size_t*)std::malloc(sizeof(size_t) * 1);
+  *element3 = 30;
+  VectorUnshift(&vector, element3);
+  ASSERT_EQ(vector.size, 3);
+  ASSERT_EQ(*(size_t*)VectorGet(&vector, 0), 30);
+  ASSERT_EQ(*(size_t*)VectorGet(&vector, 1), 20);
+  ASSERT_EQ(*(size_t*)VectorGet(&vector, 2), 10);
+  std::free(element1);
+  std::free(element2);
+  std::free(element3);
+}
+
 #endif  // CJSON_TESTS_VECTOR_TESTMODIFIERS_HH_
