@@ -29,6 +29,7 @@
 
 #include "data/vector/modifiers.h"
 
+#include <stdio.h>
 #include <sys/types.h>
 
 #include "data/vector/vector.h"
@@ -40,7 +41,7 @@
 //
 // Has no effect if the `idx` value is out-of-bounds.
 void VectorInsert(Vector* const vector, void* const elem, const size_t idx) {
-  if (idx > vector->size)
+  if (vector == NULL || idx > vector->size)
     return;
   if (vector->size == vector->capacity)
     VectorResize(vector, vector->size + 1);
@@ -70,12 +71,12 @@ void VectorPush(Vector* const vector, void* const elem) {
 //
 // Returns a `NULL` pointer if the `idx` value is out-of-bounds.
 void* VectorDelete(Vector* const vector, const size_t idx) {
-  if (idx >= vector->size)
-    return (void*)0;
+  if (vector == NULL || idx >= vector->size)
+    return NULL;
   void* elem = vector->data[idx];
   for (size_t i = idx + 1; i < vector->size; ++i)
     vector->data[i - 1] = vector->data[i];
-  vector->data[vector->size - 1] = (void*)0;
+  vector->data[vector->size - 1] = NULL;
   --(vector->size);
   return elem;
 }
