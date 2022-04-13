@@ -69,8 +69,8 @@ TEST_F(VectorSetTest, WhenElementIndexIsGreaterThanVectorSize) {
       VECTOR_DEFAULT_SIZE, capacity);
   size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
   *element = 10;
-  VectorSet(&vector, element, vector.size + 1);
   ASSERT_EQ(vector.capacity, capacity);
+  VectorSet(&vector, element, vector.size + 1);
   std::free(element);
 }
 
@@ -89,6 +89,12 @@ TEST_F(VectorSetTest, WhenIndexIsInBounds) {
   VectorSet(&vector, element, 0);
   EXPECT_EQ(*(size_t*)VectorGet(&vector, 0), *element);
   std::free(element);
+}
+
+class VectorGetTest : public VectorAccessorsTest {};
+
+TEST_F(VectorGetTest, WhenVectorInstanceIsNull) {
+  EXPECT_EQ((nullptr_t*)VectorGet(NULL, 0), nullptr);
 }
 
 #endif  // CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
