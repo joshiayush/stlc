@@ -27,30 +27,51 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
+#define CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
+
 #include <gtest/gtest.h>
 
-/* Header files including tests for `internal` API. */
-#include "internal/testFs.hh"
-#include "internal/testString.hh"
+#include <cstdint>
+#include <cstdlib>
 
-/* Header files including tests for `map` API. */
-#include "map/testMap.hh"
+#include "data/vector/vector.h"
+#include "utils.hh"
 
-/* Header files including tests for `sstream` API. */
-#include "sstream/testAccessors.hh"
-#include "sstream/testFileIO.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testSstream.hh"
+class VectorAccessorsTest : public ::testing::Test {
+ protected:
+  void TearDown() override {
+    if (vector.data != nullptr) {
+      VectorFree(&vector);
+    }
+  }
 
-/* Header files including tests for `vector` API. */
-#include "vector/testAccessors.hh"
-#include "vector/testVector.hh"
+ protected:
+  Vector vector;
+};
 
-/* Header files including tests for `cjson` API. */
-#include "cjson/testAccessors.hh"
+class VectorSetTest : public VectorAccessorsTest {};
 
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+// This test must not raise "segmentation fault" error as giving `NULL` pointer
+// as a vector instance must make the function `VectorSet()` immediately return
+// without de-referencing anything.
+TEST_F(VectorSetTest, WhenVectorInstanceIsNull) {
+  VectorSet(NULL, 0, 0);
+  EXPECT_TRUE(true);
 }
+
+TEST_F(VectorSetTest, WhenElementIndexIsGreaterThanVectorSize) {
+  vector = VectorDefAlloc();
+  size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
+  *element = 10;
+  VectorSet(&vector, element, vector.size + 1);
+  ASSERT_NE(vector.data, nullptr);
+  ASSERT_EQ(vector.size, 0);
+  size_t capacity = 0;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+      VECTOR_DEFAULT_SIZE, capacity);
+  ASSERT_EQ(vector.capacity, capacity);
+  std::free(element);
+}
+
+#endif  // CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
