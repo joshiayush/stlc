@@ -81,10 +81,7 @@ TEST_F(CJSONTest, JSONStringifiyTestWithAListAndAObjectInstance) {
 
   StringStream json_actual_data = JSONStringify(&json, TRUE, 4, TRUE);
 
-  ASSERT_EQ(std::strcmp(json_actual_data.data, json_expected_output), 0)
-      << "Recieved stringified data:\n"
-      << json_actual_data.data << "Expeceted stringified data:\n"
-      << json_expected_output;
+  ASSERT_STREQ(json_actual_data.data, json_expected_output);
 }
 
 #endif  // CJSON_TESTS_TESTACCESSORS_HH_
