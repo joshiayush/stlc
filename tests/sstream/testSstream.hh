@@ -54,6 +54,7 @@ class StringStreamTest : public ::testing::Test {
 TEST_F(StringStreamTest, WhenAllocatedWithDefAlloc) {
   sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, nullptr);
+  ASSERT_EQ(*sstream.data, '\0');
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
@@ -64,6 +65,7 @@ TEST_F(StringStreamTest, WhenAllocatedWithDefAlloc) {
 TEST_F(StringStreamTest, WhenAllocatedWithAllocWithArbitrarySstreamLength) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
+  ASSERT_EQ(*sstream.data, '\0');
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(

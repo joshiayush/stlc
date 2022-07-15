@@ -34,9 +34,9 @@ namespace cjson {
 namespace testing {
 namespace sstream {
 namespace utils {
-// Computes the capacity of the ``StringStream`` instance using the Python
-// list resize routine that is identical to static function
-// ``_ComputeStringStreamBufferCapacity()`` inside module ``sstream.c``.
+// Computes the capacity of the `StringStream` instance using the Python list
+// resize routine that is identical to static function
+// `_ComputeStringStreamBufferCapacity()` inside module `sstream.c`.
 void ComputeStringStreamBufferCapacity(const size_t& length, size_t& capacity) {
   capacity = (length >> 0x03) + (length < 0x09 ? 0x03 : 0x06);
   capacity += length;

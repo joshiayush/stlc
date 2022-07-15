@@ -34,11 +34,11 @@
 
 #define SSTREAM_DEFAULT_SIZE (1 << 2)
 
-// clang-format off
-#define SSTREAM_REALLOC_FAILURE       0
-#define SSTREAM_REALLOC_SUCCESS       !SSTREAM_REALLOC_FAILURE
-#define SSTREAM_REALLOC_NOT_REQUIRED  ((SSTREAM_REALLOC_FAILURE | SSTREAM_REALLOC_SUCCESS) << SSTREAM_REALLOC_SUCCESS)
-// clang-format on
+#define SSTREAM_REALLOC_FAILURE 0
+#define SSTREAM_REALLOC_SUCCESS !SSTREAM_REALLOC_FAILURE
+#define SSTREAM_REALLOC_NOT_REQUIRED                   \
+  ((SSTREAM_REALLOC_FAILURE | SSTREAM_REALLOC_SUCCESS) \
+   << SSTREAM_REALLOC_SUCCESS)
 
 #ifdef __cplusplus
 extern "C" {
@@ -51,6 +51,7 @@ extern "C" {
 typedef struct StringStream {
   char* data;
   size_t length;
+
   // data contains space for `capacity` elements.  The number currently in use
   // is length. Invariants:
   //     0 <= length <= capacity
