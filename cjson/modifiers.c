@@ -83,7 +83,7 @@ void _JSON_ListAddString(JSON* const list, const json_string_t data) {
 
 void JSON_ObjectPut(JSON* const object, const json_string_t const key,
                     JSON* const value) {
-  MapPut(&object->value.map, (void*)key, (void*)value);
+  MapPut(&object->value.object, (void*)key, (void*)value);
 }
 
 #define __json_copy_and_insert_into_json_object(json, obj_to_copy, key, \

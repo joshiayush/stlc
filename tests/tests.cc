@@ -50,6 +50,7 @@
 
 /* Header files including tests for `cjson` API. */
 #include "cjson/testAccessors.hh"
+#include "cjson/testCjson.hh"
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

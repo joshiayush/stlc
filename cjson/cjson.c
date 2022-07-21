@@ -71,7 +71,7 @@ JSON JSON_InitTypeSize(const JSON_type type, const size_t size) {
       json.value.list = VectorAlloc(size);
       break;
     case JSON_Object:
-      json.value.map = MapAllocNStrAsKey(size);
+      json.value.object = MapAllocNStrAsKey(size);
       break;
   }
   return json;
@@ -166,9 +166,9 @@ JSON JSON_InitListImpl(json_list_t* list) {
 // So if the initial data dies because it was allocated in stack not in the
 // free-store then the `JSON` instance will lose that data too, so make sure
 // to pass in dynamically allocated data.
-JSON JSON_InitObjectImpl(json_object_t* map) {
+JSON JSON_InitObjectImpl(json_object_t* object) {
   JSON json = JSON_INIT_TYPE(Object);
-  MapCopy(&json.value.map, map);
+  MapCopy(&json.value.object, object);
   return json;
 }
 
@@ -198,7 +198,7 @@ JSON* JSON_AllocTypeSize(JSON_type type, size_t size) {
       json->value.list = VectorAlloc(size);
       break;
     case JSON_Object:
-      json->value.map = MapAllocNStrAsKey(size);
+      json->value.object = MapAllocNStrAsKey(size);
       break;
   }
   return json;
@@ -220,10 +220,10 @@ void JSON_Free(JSON* const json) {
     }
     case JSON_Object: {
       MapEntry* current = NULL;
-      MapIterator map_it = MapIteratorNew(&json->value.map);
-      while ((current = MapIteratorNext(&map_it)))
+      MapIterator object_it = MapIteratorNew(&json->value.object);
+      while ((current = MapIteratorNext(&object_it)))
         JSON_Free((JSON*)current);
-      MapFree(&json->value.map);
+      MapFree(&json->value.object);
       break;
     }
     case JSON_Number: {
@@ -261,10 +261,10 @@ void JSON_FreeDeep(JSON* const json) {
     }
     case JSON_Object: {
       MapEntry* current = NULL;
-      MapIterator map_it = MapIteratorNew(&json->value.map);
-      while ((current = MapIteratorNext(&map_it)))
+      MapIterator object_it = MapIteratorNew(&json->value.object);
+      while ((current = MapIteratorNext(&object_it)))
         JSON_FreeDeep((JSON*)current);
-      MapFreeDeep(&json->value.map);
+      MapFreeDeep(&json->value.object);
       break;
     }
     case JSON_Number: {

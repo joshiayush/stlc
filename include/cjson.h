@@ -78,7 +78,7 @@ typedef union JSON_value {
   // clang-format off
   json_null_t null; json_bool_t boolean; json_string_t string;
   json_number_t number; json_decimal_t decimal; json_list_t list;
-  json_object_t map;
+  json_object_t object;
   // clang-format on
 } JSON_value;
 
@@ -178,7 +178,7 @@ JSON JSON_InitListImpl(json_list_t* list);
 // So if the initial data dies because it was allocated in stack not in the
 // free-store then the `JSON` instance will lose that data too, so make sure
 // to pass in dynamically allocated data.
-JSON JSON_InitObjectImpl(json_object_t* map);
+JSON JSON_InitObjectImpl(json_object_t* object);
 
 JSON* JSON_AllocType(JSON_type type);
 JSON* JSON_AllocTypeSize(JSON_type type, size_t size);

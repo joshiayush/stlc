@@ -100,15 +100,15 @@ StringStream JSON_Stringify(JSON* const json, const bool_t prettify,
       break;
     }
     case JSON_Object: {
-      if (!json->value.map.entrieslen) {
+      if (!json->value.object.entrieslen) {
         StringStreamConcat(&stringified, "{}%s", __place_endl_if_prettify);
         break;
       }
 
       StringStreamConcat(&stringified, "{%s", __place_endl_if_prettify);
       MapEntry* current = NULL;
-      MapIterator mapit = MapIteratorNew(&json->value.map);
-      while ((current = MapIteratorNext(&mapit))) {
+      MapIterator objectit = MapIteratorNew(&json->value.object);
+      while ((current = MapIteratorNext(&objectit))) {
         if (prettify) {
           for (size_t i = 0; i < init_tab_pos; ++i)
             StringStreamConcat(&stringified, JSON_TAB);
