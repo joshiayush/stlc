@@ -39,9 +39,9 @@
 
 #define JSON_TAB "    "
 
-StringStream JSONStringify(JSON* const json, const bool_t prettify,
-                           const size_t init_tab_pos,
-                           const bool_t is_dict_valid) {
+StringStream JSON_Stringify(JSON* const json, const bool_t prettify,
+                            const size_t init_tab_pos,
+                            const bool_t is_dict_valid) {
   StringStream stringified;
 
 #define __place_endl_if_prettify ((prettify) ? (endl) : (""))
@@ -82,7 +82,7 @@ StringStream JSONStringify(JSON* const json, const bool_t prettify,
       VectorIterator vectorit = VectorIteratorNew(&json->value.list);
       while ((current = VectorIteratorNext(&vectorit))) {
         StringStream sstream =
-            JSONStringify((JSON*)current, prettify, init_tab_pos + 1, FALSE);
+            JSON_Stringify((JSON*)current, prettify, init_tab_pos + 1, FALSE);
         StringStreamConcat(&stringified, "%s,%s", sstream.data,
                            __place_endl_if_prettify);
         StringStreamDealloc(&sstream);
@@ -115,8 +115,8 @@ StringStream JSONStringify(JSON* const json, const bool_t prettify,
         }
         StringStreamConcat(&stringified, "\"%s\":%s", (char*)current->key,
                            prettify ? " " : "");
-        StringStream sstream = JSONStringify((JSON*)current->value, prettify,
-                                             init_tab_pos + 1, TRUE);
+        StringStream sstream = JSON_Stringify((JSON*)current->value, prettify,
+                                              init_tab_pos + 1, TRUE);
         StringStreamConcat(&stringified, "%s,%s", sstream.data,
                            __place_endl_if_prettify);
       }

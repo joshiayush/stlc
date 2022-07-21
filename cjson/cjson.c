@@ -42,14 +42,14 @@
 // This function assumes that the requested `JSON` instance has a type size of
 // `0` thus calls the function `JSON_TypeSize(type, 0)` with the given type and
 // the `size` as `0`.
-JSON JSONInitType(const JSON_type type) { return JSONInitTypeSize(type, 0); }
+JSON JSON_InitType(const JSON_type type) { return JSON_InitTypeSize(type, 0); }
 
 // Returns a `JSON` instance of the given `type`, in case `size` is given
 // allocates `size` amount of memory in the free-store for the `JSON` instance.
 //
 // Uses the given `size` to allocate `size` bytes for either the `Vector` or the
 // `Map` instance inside the `JSON_value` `union`.
-JSON JSONInitTypeSize(const JSON_type type, const size_t size) {
+JSON JSON_InitTypeSize(const JSON_type type, const size_t size) {
   JSON json = {.type = type};
   switch (type) {
     case JSON_Null:
@@ -81,16 +81,16 @@ JSON JSONInitTypeSize(const JSON_type type, const size_t size) {
 //
 // Unlike the other allocation methods this method does not take in an explicit
 // argument reason being the `JSON` instance automatically assigned a `null`
-// value inside function `JSONInitTypeSize()` as soon the `type` is inferred as
+// value inside function `JSON_InitTypeSize()` as soon the `type` is inferred as
 // `JSON_null`.
-JSON JSONInitNullImpl() { return JSON_INIT_TYPE(Null); }
+JSON JSON_InitNullImpl() { return JSON_INIT_TYPE(Null); }
 
 // Creates a `JSON` instance from a `json_string_t` type.
 //
 // Allocates free-store memory to store the comming `string` instance. Assigns
 // `NULL` to the `json.value.string` instance if dynamic-memory allocation
 // failed.
-JSON JSONInitStringImpl(const json_string_t string) {
+JSON JSON_InitStringImpl(const json_string_t string) {
   JSON json = JSON_INIT_TYPE(String);
   size_t strlen_ = strlen(string);
   if ((json.value.string = (char*)malloc((strlen_ + 1) * sizeof(char))) == NULL)
@@ -104,7 +104,7 @@ JSON JSONInitStringImpl(const json_string_t string) {
 // The given number is copied to the `json.value.number` instance of the
 // `JSON` instance and can be access as long as `JSON` instance is in the
 // memory.
-JSON JSONInitNumberImpl(const json_number_t number) {
+JSON JSON_InitNumberImpl(const json_number_t number) {
   JSON json = JSON_INIT_TYPE(Number);
   json.value.number = number;
   return json;
@@ -118,7 +118,7 @@ JSON JSONInitNumberImpl(const json_number_t number) {
 //
 // This particular function is aimed to take in `floating-point` values of
 // type `double`.
-JSON JSONInitDecimalImpl(const json_decimal_t decimal) {
+JSON JSON_InitDecimalImpl(const json_decimal_t decimal) {
   JSON json = JSON_INIT_TYPE(Decimal);
   json.value.decimal = decimal;
   return json;
@@ -130,7 +130,7 @@ JSON JSONInitDecimalImpl(const json_decimal_t decimal) {
 // `__uint8_t` can be either `0` ("false") or any value greater than and
 // less than `256` to be stored as a `JSON_boolean` type data inside
 // `json.value.boolean`.
-JSON JSONInitBoolImpl(const json_bool_t boolean) {
+JSON JSON_InitBoolImpl(const json_bool_t boolean) {
   JSON json = JSON_INIT_TYPE(Boolean);
   json.value.boolean = boolean;
   return json;
@@ -148,7 +148,7 @@ JSON JSONInitBoolImpl(const json_bool_t boolean) {
 // initial data dies because it was allocated in stack not in the free-store
 // then the `JSON` instance will lose that data too, so make sure to pass in
 // dynamically allocated data.
-JSON JSONInitListImpl(json_list_t* list) {
+JSON JSON_InitListImpl(json_list_t* list) {
   JSON json = JSON_INIT_TYPE(List);
   VectorCopy(&json.value.list, list);
   return json;
@@ -166,17 +166,17 @@ JSON JSONInitListImpl(json_list_t* list) {
 // So if the initial data dies because it was allocated in stack not in the
 // free-store then the `JSON` instance will lose that data too, so make sure
 // to pass in dynamically allocated data.
-JSON JSONInitObjectImpl(json_object_t* map) {
+JSON JSON_InitObjectImpl(json_object_t* map) {
   JSON json = JSON_INIT_TYPE(Object);
   MapCopy(&json.value.map, map);
   return json;
 }
 
-JSON* JSONAllocType(JSON_type type) {
-  return JSONAllocTypeSize(type, sizeof(JSON));
+JSON* JSON_AllocType(JSON_type type) {
+  return JSON_AllocTypeSize(type, sizeof(JSON));
 }
 
-JSON* JSONAllocTypeSize(JSON_type type, size_t size) {
+JSON* JSON_AllocTypeSize(JSON_type type, size_t size) {
   JSON* json = (JSON*)(malloc(size));
   switch (type) {
     case JSON_Null:
@@ -204,7 +204,7 @@ JSON* JSONAllocTypeSize(JSON_type type, size_t size) {
   return json;
 }
 
-void JSONFree(JSON* const json) {
+void JSON_Free(JSON* const json) {
   switch (json->type) {
     case JSON_String: {
       free(json->value.string);
@@ -214,7 +214,7 @@ void JSONFree(JSON* const json) {
       void* current = NULL;
       VectorIterator vector_it = VectorIteratorNew(&json->value.list);
       while ((current = VectorIteratorNext(&vector_it)))
-        JSONFree((JSON*)current);
+        JSON_Free((JSON*)current);
       VectorFree(&json->value.list);
       break;
     }
@@ -222,7 +222,7 @@ void JSONFree(JSON* const json) {
       MapEntry* current = NULL;
       MapIterator map_it = MapIteratorNew(&json->value.map);
       while ((current = MapIteratorNext(&map_it)))
-        JSONFree((JSON*)current);
+        JSON_Free((JSON*)current);
       MapFree(&json->value.map);
       break;
     }
@@ -245,7 +245,7 @@ void JSONFree(JSON* const json) {
   }
 }
 
-void JSONFreeDeep(JSON* const json) {
+void JSON_FreeDeep(JSON* const json) {
   switch (json->type) {
     case JSON_String: {
       free(json->value.string);
@@ -255,7 +255,7 @@ void JSONFreeDeep(JSON* const json) {
       void* current = NULL;
       VectorIterator vector_it = VectorIteratorNew(&json->value.list);
       while ((current = VectorIteratorNext(&vector_it)))
-        JSONFreeDeep((JSON*)current);
+        JSON_FreeDeep((JSON*)current);
       VectorFreeDeep(&json->value.list);
       break;
     }
@@ -263,7 +263,7 @@ void JSONFreeDeep(JSON* const json) {
       MapEntry* current = NULL;
       MapIterator map_it = MapIteratorNew(&json->value.map);
       while ((current = MapIteratorNext(&map_it)))
-        JSONFreeDeep((JSON*)current);
+        JSON_FreeDeep((JSON*)current);
       MapFreeDeep(&json->value.map);
       break;
     }

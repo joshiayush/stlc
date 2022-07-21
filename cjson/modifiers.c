@@ -37,14 +37,14 @@
 #include "data/map/map.h"
 #include "data/vector/vector.h"
 
-void JSONListAdd(JSON* const list, JSON* const value) {
+void JSON_ListAdd(JSON* const list, JSON* const value) {
   VectorPush(&list->value.list, (void*)value);
 }
 
 #define __json_copy_and_insert_into_json_list(json, obj_to_copy, list) \
   do {                                                                 \
     memcpy(json, &obj_to_copy, sizeof(JSON));                          \
-    JSONListAdd(list, json);                                           \
+    JSON_ListAdd(list, json);                                          \
   } while (0)
 
 #define __json_add_null_value_to_json_list(type, list)       \
@@ -61,28 +61,28 @@ void JSONListAdd(JSON* const list, JSON* const value) {
     __json_copy_and_insert_into_json_list(json, type, list); \
   } while (0)
 
-void _JSONListAddNull(JSON* const list) {
+void _JSON_ListAddNull(JSON* const list) {
   __json_add_null_value_to_json_list(Null, list);
 }
 
-void _JSONListAddNumber(JSON* const list, const json_number_t value) {
+void _JSON_ListAddNumber(JSON* const list, const json_number_t value) {
   __json_add_value_to_json_list(Number, list, value);
 }
 
-void _JSONListAddDecimal(JSON* const list, const json_decimal_t value) {
+void _JSON_ListAddDecimal(JSON* const list, const json_decimal_t value) {
   __json_add_value_to_json_list(Decimal, list, value);
 }
 
-void _JSONListAddBool(JSON* const list, const json_bool_t value) {
+void _JSON_ListAddBool(JSON* const list, const json_bool_t value) {
   __json_add_value_to_json_list(Bool, list, value);
 }
 
-void _JSONListAddString(JSON* const list, const json_string_t data) {
+void _JSON_ListAddString(JSON* const list, const json_string_t data) {
   __json_add_value_to_json_list(String, list, data);
 }
 
-void JSONObjectPut(JSON* const object, const json_string_t const key,
-                   JSON* const value) {
+void JSON_ObjectPut(JSON* const object, const json_string_t const key,
+                    JSON* const value) {
   MapPut(&object->value.map, (void*)key, (void*)value);
 }
 
@@ -90,7 +90,7 @@ void JSONObjectPut(JSON* const object, const json_string_t const key,
                                                 object)                 \
   do {                                                                  \
     memcpy(json, &obj_to_copy, sizeof(JSON));                           \
-    JSONObjectPut(object, key, json);                                   \
+    JSON_ObjectPut(object, key, json);                                  \
   } while (0)
 
 #define __json_add_null_value_to_json_object(type, key, object)       \
@@ -107,26 +107,26 @@ void JSONObjectPut(JSON* const object, const json_string_t const key,
     __json_copy_and_insert_into_json_object(json, type, key, object); \
   } while (0)
 
-void _JSONObjectPutNull(JSON* const object, const json_string_t const key) {
+void _JSON_ObjectPutNull(JSON* const object, const json_string_t const key) {
   __json_add_null_value_to_json_object(Null, key, object);
 }
 
-void _JSONObjectPutNumber(JSON* const object, const json_string_t const key,
-                          const json_number_t value) {
+void _JSON_ObjectPutNumber(JSON* const object, const json_string_t const key,
+                           const json_number_t value) {
   __json_add_value_to_json_object(Number, object, key, value);
 }
 
-void _JSONObjectPutDecimal(JSON* const object, const json_string_t const key,
-                           const json_decimal_t value) {
+void _JSON_ObjectPutDecimal(JSON* const object, const json_string_t const key,
+                            const json_decimal_t value) {
   __json_add_value_to_json_object(Decimal, object, key, value);
 }
 
-void _JSONObjectPutBool(JSON* const object, const json_string_t const key,
-                        const json_bool_t value) {
+void _JSON_ObjectPutBool(JSON* const object, const json_string_t const key,
+                         const json_bool_t value) {
   __json_add_value_to_json_object(Bool, object, key, value);
 }
 
-void _JSONObjectPutString(JSON* const object, const json_string_t const key,
-                          json_string_t const data) {
+void _JSON_ObjectPutString(JSON* const object, const json_string_t const key,
+                           json_string_t const data) {
   __json_add_value_to_json_object(String, object, key, data);
 }

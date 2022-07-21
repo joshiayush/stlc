@@ -38,7 +38,7 @@
 
 class CJSONTest : public testing::Test {
  protected:
-  void TearDown() override { JSONFree(&json); }
+  void TearDown() override { JSON_Free(&json); }
 
  protected:
   JSON json;
@@ -50,20 +50,20 @@ TEST_F(CJSONTest, JSONStringifiyTestWithAListAndAObjectInstance) {
   JSON list = JSON_INIT_TYPE(List);
   JSON_LIST_ADD_VAL(
       String, &list,
-      (const json_string_t) "Mohika says \"Fake people leave when you cry.\"");
-  JSON_LIST_ADD_VAL(Decimal, &list, 1.29);
+      JSON_CONST_STRINGIFY("Mohika says \"Fake people leave when you cry.\""));
+  JSON_LIST_ADD_VAL(Decimal, &list, JSON_DECIMALIFY(1.29));
   JSON_LIST_ADD(Null, &list);
 
   JSON object = JSON_INIT_TYPE(Object);
-  JSON_OBJECT_PUT(Null, &object, (const json_string_t) "Hope in my life");
+  JSON_OBJECT_PUT(Null, &object, JSON_CONST_STRINGIFY("Hope in my life"));
   JSON_OBJECT_PUT_VAL(Decimal, &object,
-                      (const json_string_t) "My chances of success",
-                      0.000000000000000);
-  JSON_OBJECT_PUT_VAL(String, &object, (const json_string_t) "My horoscope",
-                      (const json_string_t) "Just die");
+                      JSON_CONST_STRINGIFY("My chances of success"),
+                      JSON_DECIMALIFY(0.000000000000000));
+  JSON_OBJECT_PUT_VAL(String, &object, JSON_CONST_STRINGIFY("My horoscope"),
+                      JSON_CONST_STRINGIFY("Just die"));
 
-  JSONObjectPut(&json, (const json_string_t) "list", &list);
-  JSONObjectPut(&json, (const json_string_t) "object", &object);
+  JSON_ObjectPut(&json, JSON_CONST_STRINGIFY("list"), &list);
+  JSON_ObjectPut(&json, JSON_CONST_STRINGIFY("object"), &object);
 
   const char* json_expected_output =
       "{\n"
@@ -79,7 +79,7 @@ TEST_F(CJSONTest, JSONStringifiyTestWithAListAndAObjectInstance) {
       "        }\n"
       "}\n";
 
-  StringStream json_actual_data = JSONStringify(&json, TRUE, 4, TRUE);
+  StringStream json_actual_data = JSON_Stringify(&json, TRUE, 4, TRUE);
 
   ASSERT_STREQ(json_actual_data.data, json_expected_output);
 }

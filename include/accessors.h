@@ -40,9 +40,9 @@
 extern "C" {
 #endif
 
-StringStream JSONStringify(JSON* const json, const bool_t prettify,
-                           const size_t init_tab_pos,
-                           const bool_t is_dict_valid);
+StringStream JSON_Stringify(JSON* const json, const bool_t prettify,
+                            const size_t init_tab_pos,
+                            const bool_t is_dict_valid);
 
 #ifdef __cplusplus
 }
