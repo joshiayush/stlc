@@ -105,6 +105,14 @@ u_int8_t VectorResize(Vector* const vector, const size_t size) {
 // to lose the memory when `src` goes out of scope; thus it's better to copy
 // the entire `src` vector into a new vector that is dynamically allocated.
 u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
+  if (dest == NULL)
+    return VECTOR_COPY_FAILURE;
+  if (src == NULL) {
+    dest->data = NULL;
+    dest->size = 0;
+    ComputeVectorBufferCapacity(dest->size, &dest->capacity);
+    return VECTOR_COPY_SUCCESS;
+  }
   if (src->size > dest->size)
     if (VectorResize(dest, src->size) == VECTOR_RESIZE_FAILURE)
       return VECTOR_COPY_FAILURE;
