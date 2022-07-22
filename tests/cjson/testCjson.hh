@@ -31,9 +31,12 @@
 #define CJSON_TESTS_CJSON_TESTCJSON_HH_
 
 #include <gtest/gtest.h>
-#include <stdio.h>
+
+#include <cstdio>
+#include <limits>
 
 #include "../vector/utils.hh"
+#include "bool.h"
 #include "bytes.h"
 #include "cjson.h"
 #include "data/map/map.h"
@@ -197,6 +200,104 @@ TEST(JSON_InitTypeSizeTest, TestWhenJSON_ObjectIsUsedWhenHighEntriesAreGiven) {
   EXPECT_EQ(json.value.object.entrieslen, 0);
   EXPECT_EQ(json.value.object.hash, Hash);
   EXPECT_EQ(json.value.object.keycmp, KeyCmp);
+}
+
+TEST(JSON_InitNullImplTest, TestFunctionJSON_InitNullImpl) {
+  JSON json = JSON_InitNullImpl();
+  EXPECT_EQ(json.type, JSON_Null);
+  EXPECT_EQ(json.value.null, nullptr);
+}
+
+TEST(JSON_InitStringImplTest, TestWhenStringIsEmpty) {
+  JSON json = JSON_InitStringImpl(JSON_CONST_STRINGIFY(""));
+  EXPECT_EQ(json.type, JSON_String);
+  EXPECT_EQ(*json.value.string, '\0');
+}
+
+TEST(JSON_InitStringImplTest, TestWhenStringIsNotEmpty) {
+  JSON json = JSON_InitStringImpl(JSON_CONST_STRINGIFY("foo"));
+  EXPECT_EQ(json.type, JSON_String);
+  EXPECT_STREQ(json.value.string, "foo");
+}
+
+TEST(JSON_InitNumberImplTest, TestWhenINT64_MINIsUsed) {
+  JSON json = JSON_InitNumberImpl(INT64_MIN);
+  EXPECT_EQ(json.type, JSON_Number);
+  EXPECT_EQ(json.value.number, INT64_MIN);
+}
+
+TEST(JSON_InitNumberImplTest, TestWhenINT64_MAXIsGiven) {
+  JSON json = JSON_InitNumberImpl(INT64_MAX);
+  EXPECT_EQ(json.type, JSON_Number);
+  EXPECT_EQ(json.value.number, INT64_MAX);
+}
+
+TEST(JSON_InitDecimalImplTest, TestWhenDBL_MINIsGiven) {
+  JSON json = JSON_InitDecimalImpl(DBL_MIN);
+  EXPECT_EQ(json.type, JSON_Decimal);
+  EXPECT_EQ(json.value.decimal, DBL_MIN);
+}
+
+TEST(JSON_InitDecimalImplTest, TestWhenDBL_MAXIsGiven) {
+  JSON json = JSON_InitDecimalImpl(DBL_MAX);
+  EXPECT_EQ(json.type, JSON_Decimal);
+  EXPECT_EQ(json.value.decimal, DBL_MAX);
+}
+
+TEST(JSON_InitBooleanImplTest, TestWhenTRUEIsGiven) {
+  JSON json = JSON_InitBoolImpl(TRUE);
+  EXPECT_EQ(json.type, JSON_Boolean);
+  EXPECT_EQ(json.value.boolean, TRUE);
+}
+
+TEST(JSON_InitBooleanImplTest, TestWhenFALSEIsGiven) {
+  JSON json = JSON_InitBoolImpl(FALSE);
+  EXPECT_EQ(json.type, JSON_Boolean);
+  EXPECT_EQ(json.value.boolean, FALSE);
+}
+
+TEST(JSON_InitListImplTest, TestWhenNullIsGiven) {
+  JSON json = JSON_InitListImpl(nullptr);
+  EXPECT_EQ(json.type, JSON_List);
+  EXPECT_EQ(json.value.list.data, nullptr);
+  EXPECT_EQ(json.value.list.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  EXPECT_EQ(json.value.list.capacity, capacity);
+}
+
+TEST(JSON_InitListImplTest, TestWhenAEmptyVectorInstanceIsGiven) {
+  Vector vec = VectorDefAlloc();
+  JSON json = JSON_InitListImpl(&vec);
+  EXPECT_EQ(json.type, JSON_List);
+  EXPECT_NE(json.value.list.data, nullptr);
+  EXPECT_EQ(json.value.list.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  EXPECT_EQ(json.value.list.capacity, capacity);
+}
+
+TEST(JSON_InitListImplTest, TestWhenAVectorInstanceIsGiven) {
+  Vector vec = VectorDefAlloc();
+  int64_t value1 = 1;
+  int64_t value2 = 2;
+  int64_t value3 = 3;
+  VectorPush(&vec, &value1);
+  VectorPush(&vec, &value2);
+  VectorPush(&vec, &value3);
+  JSON json = JSON_InitListImpl(&vec);
+  EXPECT_EQ(json.type, JSON_List);
+  EXPECT_NE(json.value.list.data, nullptr);
+  for (size_t i = 0; i < json.value.list.size; ++i)
+    EXPECT_EQ(*(const int*)VectorGet(&json.value.list, i),
+              *(const int*)VectorGet(&vec, i))
+        << "At index: " << i << "\n  json.value.list[" << i << "]("
+        << *(const int*)VectorGet(&json.value.list, i) << ") != vec[" << i
+        << "](" << *(const int*)VectorGet(&vec, i) << ")";
+  EXPECT_EQ(json.value.list.size, 3);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  EXPECT_EQ(json.value.list.capacity, capacity);
 }
 
 #endif
