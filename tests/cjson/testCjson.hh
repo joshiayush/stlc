@@ -45,10 +45,16 @@ TEST(JSON_InitTypeTest, TestWhenJSON_NullIsUsed) {
   EXPECT_EQ(json.value.null, nullptr);
 }
 
-TEST(JSON_InitTypeTest, TestWhenJSON_BoolIsUsed) {
+TEST(JSON_InitTypeTest, TestWhenJSON_BooleanIsUsed) {
   JSON json = JSON_INIT_TYPE(Boolean);
   EXPECT_EQ(json.type, JSON_Boolean);
   EXPECT_EQ(json.value.boolean, false);
+}
+
+TEST(JSON_InitTypeTest, TestWhenJSON_NumberIsUsed) {
+  JSON json = JSON_INIT_TYPE(Number);
+  EXPECT_EQ(json.type, JSON_Number);
+  EXPECT_EQ(json.value.number, 0);
 }
 
 TEST(JSON_InitTypeTest, TestWhenJSON_DecimalIsUsed) {
@@ -104,6 +110,86 @@ TEST(JSON_InitTypeTest, TestWhenJSON_ObjectIsUsedWhenLessEntriesAreGiven) {
 }
 
 TEST(JSON_InitTypeTest, TestWhenJSON_ObjectIsUsedWhenHighEntriesAreGiven) {
+  JSON json = JSON_INIT_TYPE_SIZE(Object, 20);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_NE(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen, 32);
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+  EXPECT_EQ(json.value.object.hash, Hash);
+  EXPECT_EQ(json.value.object.keycmp, KeyCmp);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_NullIsUsed) {
+  JSON json = JSON_INIT_TYPE_SIZE(Null, 0);
+  EXPECT_EQ(json.type, JSON_Null);
+  EXPECT_EQ(json.value.null, nullptr);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_BooleanIsUsed) {
+  JSON json = JSON_INIT_TYPE_SIZE(Boolean, 0);
+  EXPECT_EQ(json.type, JSON_Boolean);
+  EXPECT_EQ(json.value.boolean, false);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_NumberIsUsed) {
+  JSON json = JSON_INIT_TYPE_SIZE(Number, 0);
+  EXPECT_EQ(json.type, JSON_Number);
+  EXPECT_EQ(json.value.number, 0);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_DecimalIsUsed) {
+  JSON json = JSON_INIT_TYPE_SIZE(Decimal, 0);
+  EXPECT_EQ(json.type, JSON_Decimal);
+  EXPECT_EQ(json.value.decimal, 0.0);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_StringIsUsed) {
+  JSON json = JSON_INIT_TYPE_SIZE(String, 0);
+  EXPECT_EQ(json.type, JSON_String);
+  EXPECT_EQ(*json.value.string, '\0');
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_ListIsUsedWhenCapacityZeroIsGiven) {
+  JSON json = JSON_INIT_TYPE_SIZE(List, 0);
+  EXPECT_EQ(json.type, JSON_List);
+  EXPECT_NE(json.value.list.data, nullptr);
+  EXPECT_EQ(json.value.list.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  EXPECT_EQ(json.value.list.capacity, capacity);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_ListIsUsedWhenCapacityTenIsGiven) {
+  JSON json = JSON_INIT_TYPE_SIZE(List, 10);
+  EXPECT_EQ(json.type, JSON_List);
+  EXPECT_NE(json.value.list.data, nullptr);
+  EXPECT_EQ(json.value.list.size, 0);
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(10, capacity);
+  EXPECT_EQ(json.value.list.capacity, capacity);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_ObjectIsUsedWhenZeroEntriesAreGiven) {
+  JSON json = JSON_INIT_TYPE_SIZE(Object, 0);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_NE(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+  EXPECT_EQ(json.value.object.hash, Hash);
+  EXPECT_EQ(json.value.object.keycmp, KeyCmp);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_ObjectIsUsedWhenTenEntriesAreGiven) {
+  JSON json = JSON_INIT_TYPE_SIZE(Object, 10);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_NE(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+  EXPECT_EQ(json.value.object.hash, Hash);
+  EXPECT_EQ(json.value.object.keycmp, KeyCmp);
+}
+
+TEST(JSON_InitTypeSizeTest, TestWhenJSON_ObjectIsUsedWhenHighEntriesAreGiven) {
   JSON json = JSON_INIT_TYPE_SIZE(Object, 20);
   EXPECT_EQ(json.type, JSON_Object);
   EXPECT_NE(json.value.object.buckets, nullptr);
