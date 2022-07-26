@@ -95,6 +95,19 @@ TEST(MapAllocEntryWithHashTest, TestWhenMultipleEntriesAreLinkedTogether) {
   delete mapentry3;
 }
 
+TEST(MapAllocTest, TestMapAllocFunction) {
+  Map map = MapAlloc(Hash, KeyCmp);
+  EXPECT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, Hash);
+  EXPECT_EQ(map.keycmp, KeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << "is not nullptr" << std::endl;
+  MapFree(&map);
+}
+
 class MapTest : public testing::Test {
  protected:
   void TearDown() override { MapFree(&map); }
