@@ -34,8 +34,20 @@
 
 #include <cstring>
 
+#include "bool.h"
 #include "data/map/map.h"
 #include "data/map/ops.h"
+
+static hash_t CustomHash(const void* const key) {
+  hash_t hash = 0;
+  if (key == nullptr)
+    return hash;
+  for (const char* c = reinterpret_cast<const char*>(key); *c != '\0'; ++c)
+    hash += static_cast<hash_t>(*c);
+  return hash;
+}
+
+static bool_t CustomKeyCmp(const void* key1, const void* key2) { return TRUE; }
 
 TEST(MapMacrosTest,
      TestIfAnyExternalFlagWhileBuildingLibraryDidChangeTheValues) {
@@ -119,7 +131,7 @@ TEST(MapAllocTest, TestWhenNullIsGivenAsArguments) {
   EXPECT_EQ(map.keycmp, KeyCmp);
   for (size_t i = 0; i < map.bucketslen; ++i)
     EXPECT_EQ(map.buckets[i], nullptr)
-        << "Bucket at index: " << i << "is not nullptr";
+        << "Bucket at index: " << i << " is not nullptr";
   MapFree(&map);
 }
 
@@ -132,7 +144,60 @@ TEST(MapAllocTest, TestWhenDefaultFunctionsAreGivenAsArguments) {
   EXPECT_EQ(map.keycmp, KeyCmp);
   for (size_t i = 0; i < map.bucketslen; ++i)
     EXPECT_EQ(map.buckets[i], nullptr)
-        << "Bucket at index: " << i << "is not nullptr";
+        << "Bucket at index: " << i << " is not nullptr";
+  MapFree(&map);
+}
+
+TEST(MapAllocTest, TestWhenCustomFunctionsAreGivenAsArguments) {
+  Map map = MapAlloc(CustomHash, CustomKeyCmp);
+  EXPECT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, CustomHash);
+  EXPECT_EQ(map.keycmp, CustomKeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << " is not nullptr";
+  MapFree(&map);
+}
+
+TEST(MapAllocNBucketsTest, TestWhenBucketsLenIsZeroAndFunctionsAreNull) {
+  Map map = MapAllocNBuckets(0, NULL, NULL);
+  EXPECT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, Hash);
+  EXPECT_EQ(map.keycmp, KeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << " is not nullptr";
+  MapFree(&map);
+}
+
+TEST(MapAllocNBucketsTest,
+     TestWhenBucketsLenIsGivenAndFunctionsAreDefaultOnes) {
+  Map map = MapAllocNBuckets(32UL, Hash, KeyCmp);
+  EXPECT_EQ(map.bucketslen, 32UL);
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, Hash);
+  EXPECT_EQ(map.keycmp, KeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << " is not nullptr";
+  MapFree(&map);
+}
+
+TEST(MapAllocNBucketsTest, TestWhenBucketsLenIsGivenAndFunctionsAreCustomOnes) {
+  Map map = MapAllocNBuckets(32UL, CustomHash, CustomKeyCmp);
+  EXPECT_EQ(map.bucketslen, 32UL);
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, CustomHash);
+  EXPECT_EQ(map.keycmp, CustomKeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << " is not nullptr";
   MapFree(&map);
 }
 
