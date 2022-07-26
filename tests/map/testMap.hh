@@ -37,6 +37,12 @@
 #include "data/map/map.h"
 #include "data/map/ops.h"
 
+TEST(MapMacrosTest,
+     TestIfAnyExternalFlagWhileBuildingLibraryDidChangeTheValues) {
+  EXPECT_EQ(MAX_LOAD_FACTOR, 0.75f);
+  EXPECT_EQ(MAP_DEFAULT_BUCKET_LEN, (1 << 4));
+}
+
 TEST(MapAllocEntryWithHashTest, TestWhenA16DigitsHashIsUsed) {
   char key[5];
   std::strcpy(key, "key1");
