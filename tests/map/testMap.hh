@@ -43,6 +43,15 @@ TEST(MapMacrosTest,
   EXPECT_EQ(MAP_DEFAULT_BUCKET_LEN, (1 << 4));
 }
 
+TEST(MapEntryStructTest, TestSizeOfMapEntry) {
+  EXPECT_EQ(sizeof(MapEntry), 32UL)
+      << "Error: sizeof(MapEntry) = " << sizeof(MapEntry);
+}
+
+TEST(MapTestStructTest, TestSizeOfMap) {
+  EXPECT_EQ(sizeof(Map), 40UL) << "Error: sizeof(Map) = " << sizeof(Map);
+}
+
 TEST(MapAllocEntryWithHashTest, TestWhenA16DigitsHashIsUsed) {
   char key[5];
   std::strcpy(key, "key1");
@@ -110,7 +119,7 @@ TEST(MapAllocTest, TestWhenNullIsGivenAsArguments) {
   EXPECT_EQ(map.keycmp, KeyCmp);
   for (size_t i = 0; i < map.bucketslen; ++i)
     EXPECT_EQ(map.buckets[i], nullptr)
-        << "Bucket at index: " << i << "is not nullptr" << std::endl;
+        << "Bucket at index: " << i << "is not nullptr";
   MapFree(&map);
 }
 
@@ -123,7 +132,7 @@ TEST(MapAllocTest, TestWhenDefaultFunctionsAreGivenAsArguments) {
   EXPECT_EQ(map.keycmp, KeyCmp);
   for (size_t i = 0; i < map.bucketslen; ++i)
     EXPECT_EQ(map.buckets[i], nullptr)
-        << "Bucket at index: " << i << "is not nullptr" << std::endl;
+        << "Bucket at index: " << i << "is not nullptr";
   MapFree(&map);
 }
 
