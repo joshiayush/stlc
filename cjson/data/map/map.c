@@ -74,6 +74,10 @@ Map MapAlloc(hash_f hash, keycmp_f keycmp) {
 Map MapAllocNBuckets(size_t bucketslen, hash_f hash, keycmp_f keycmp) {
   if (bucketslen == 0)
     bucketslen = MAP_DEFAULT_BUCKET_LEN;
+  if (hash == NULL)
+    hash = Hash;
+  if (keycmp == NULL)
+    keycmp = KeyCmp;
   // clang-format off
   Map map = {.bucketslen = bucketslen, .entrieslen = 0,
              .buckets = (void*)0, .hash = hash, .keycmp = keycmp};
