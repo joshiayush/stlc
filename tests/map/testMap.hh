@@ -37,6 +37,7 @@
 #include "bool.h"
 #include "data/map/map.h"
 #include "data/map/ops.h"
+#include "utils.hh"
 
 static hash_t CustomHash(const void* const key) {
   hash_t hash = 0;
@@ -195,6 +196,35 @@ TEST(MapAllocNBucketsTest, TestWhenBucketsLenIsGivenAndFunctionsAreCustomOnes) {
   ASSERT_NE(map.buckets, nullptr);
   EXPECT_EQ(map.hash, CustomHash);
   EXPECT_EQ(map.keycmp, CustomKeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << " is not nullptr";
+  MapFree(&map);
+}
+
+TEST(MapAllocNEntriesTest, TestWhenEntriesLenGivenIsZero) {
+  Map map = MapAllocNEntries(0, Hash, KeyCmp);
+  EXPECT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, Hash);
+  EXPECT_EQ(map.keycmp, KeyCmp);
+  for (size_t i = 0; i < map.bucketslen; ++i)
+    EXPECT_EQ(map.buckets[i], nullptr)
+        << "Bucket at index: " << i << " is not nullptr";
+  MapFree(&map);
+}
+
+TEST(MapAllocNEntriesTest,
+     TestWhenEntriesLenGivenIsGreaterThanDefaultBucketsLen) {
+  Map map = MapAllocNEntries(32UL, Hash, KeyCmp);
+  EXPECT_EQ(map.bucketslen,
+            cjson::testing::map::utils::ComputeBucketsLenSatisfyingLoadFactor(
+                MAX_LOAD_FACTOR, 32UL));
+  EXPECT_EQ(map.entrieslen, 0);
+  ASSERT_NE(map.buckets, nullptr);
+  EXPECT_EQ(map.hash, Hash);
+  EXPECT_EQ(map.keycmp, KeyCmp);
   for (size_t i = 0; i < map.bucketslen; ++i)
     EXPECT_EQ(map.buckets[i], nullptr)
         << "Bucket at index: " << i << " is not nullptr";
