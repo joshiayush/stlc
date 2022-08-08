@@ -127,8 +127,10 @@ void MapRealloc(Map* map) {
   const size_t bucketslen = map_.bucketslen;
   for (size_t i = 0; i < map_.bucketslen; ++i) {
     MapEntry* current = *(map->buckets + i);
-    while (current)
+    while (current) {
       MapPut(&map_, current->key, current->value);
+      current = current->next;
+    }
   }
 
   MapEntry** tmp_buckets = map->buckets;
