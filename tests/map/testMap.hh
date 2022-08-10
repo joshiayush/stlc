@@ -231,6 +231,78 @@ TEST(MapAllocNEntriesTest,
   MapFree(&map);
 }
 
+static void MapPutWithoutReallocation(Map* map, void* const key,
+                                      void* const value) {
+  hash_t hash = map->hash(key);
+  size_t idx = CalculateIndex(hash, map->bucketslen);
+
+  MapEntry* mapentry = MapAllocEntryWithHash(key, value, hash);
+
+  if (*(map->buckets + idx) == nullptr) {
+    *(map->buckets + idx) = mapentry;
+    ++map->entrieslen;
+    return;
+  } else {
+    MapEntry* current = *(map->buckets + idx);
+    while (current->next != nullptr)
+      current = current->next;
+    if ((hash == current->hash) && map->keycmp(key, current->key) == TRUE) {
+      current->value = value;
+    } else {
+      MapEntry* tmp_mapentry = current->next;
+      current->next = mapentry;
+      mapentry->next = tmp_mapentry;
+      ++(map->entrieslen);
+    }
+  }
+}
+
+TEST(MapReallocTest, TestWhenReallocationIsNotRequired) {
+  Map map = MapAlloc(Hash, KeyCmp);
+
+  EXPECT_EQ(map.entrieslen, 0);
+  EXPECT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(map.hash, Hash);
+  EXPECT_EQ(map.keycmp, KeyCmp);
+
+  char key1[5], value1[7];
+  std::strcpy(key1, "key1");
+  std::strcpy(value1, "value1");
+  MapPutWithoutReallocation(&map, key1, value1);
+
+  char key2[5], value2[7];
+  std::strcpy(key2, "key2");
+  std::strcpy(value2, "value2");
+  MapPutWithoutReallocation(&map, key2, value2);
+
+  char key3[5], value3[7];
+  std::strcpy(key3, "key3");
+  std::strcpy(value3, "value3");
+  MapPutWithoutReallocation(&map, key3, value3);
+
+  char key4[5], value4[7];
+  std::strcpy(key4, "key4");
+  std::strcpy(value4, "value4");
+  MapPutWithoutReallocation(&map, key4, value4);
+
+  char key5[5], value5[7];
+  std::strcpy(key5, "key5");
+  std::strcpy(value5, "value5");
+  MapPutWithoutReallocation(&map, key5, value5);
+
+  ASSERT_EQ(map.entrieslen, 5);
+  ASSERT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN)
+      << "Assertion was to not re-allocate the Map instance.";
+
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key1)), value1);
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key2)), value2);
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key3)), value3);
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key4)), value4);
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key5)), value5);
+
+  MapFree(&map);
+}
+
 class MapTest : public testing::Test {
  protected:
   void TearDown() override { MapFree(&map); }
