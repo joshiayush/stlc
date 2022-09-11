@@ -29,6 +29,7 @@
 
 #include "data/map/map.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,10 +42,18 @@
 // Allocates a `MapEntry` instance in the free-store and fills that memory
 // with the given values.  Remember to free the returned `MapEntry` instance
 // when not needed.
-MapEntry* MapAllocEntryWithHash(void* key, void* value, const hash_t hash) {
+MapEntry* MapAllocEntryWithHash(const void* key, const void* value,
+                                const hash_t hash) {
   MapEntry* mapentry = (MapEntry*)malloc(sizeof(MapEntry));
-  mapentry->key = key;
-  mapentry->value = value;
+
+  mapentry->key = malloc(strlen(key) * sizeof(char));
+  assert(mapentry->key != NULL);
+  strcpy(mapentry->key, key);
+
+  mapentry->value = malloc(strlen(value) * sizeof(char));
+  assert(mapentry->value != NULL);
+  strcpy(mapentry->value, value);
+
   mapentry->hash = hash;
   mapentry->next = NULL;
   return mapentry;

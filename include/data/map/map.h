@@ -89,7 +89,8 @@ typedef struct MapEntry {
 // Allocates a `MapEntry` instance in the free-store and fills that memory
 // with the given values.  Remember to free the returned `MapEntry` instance
 // when not needed.
-MapEntry* MapAllocEntryWithHash(void* key, void* value, const hash_t hash);
+MapEntry* MapAllocEntryWithHash(const void* key, const void* value,
+                                const hash_t hash);
 
 typedef struct Map {
   hash_f hash;
