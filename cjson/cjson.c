@@ -59,7 +59,7 @@ JSON JSON_InitTypeSize(const JSON_type type, const size_t size) {
       json.value.string = "";
       break;
     case JSON_Decimal:
-      json.value.decimal = 0.0;
+      json.value.decimal = 0.0f;
       break;
     case JSON_Number:
       json.value.number = 0;
@@ -186,7 +186,7 @@ JSON* JSON_AllocTypeSize(JSON_type type, size_t size) {
       json->value.string = (char*)(malloc(size * sizeof(char)));
       break;
     case JSON_Decimal:
-      json->value.decimal = 0.0;
+      json->value.decimal = 0.0f;
       break;
     case JSON_Number:
       json->value.number = 0;
