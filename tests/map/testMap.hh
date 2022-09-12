@@ -30,6 +30,7 @@
 #ifndef CJSON_TESTS_MAP_TESTMAP_HH_
 #define CJSON_TESTS_MAP_TESTMAP_HH_
 
+#include <assert.h>
 #include <gtest/gtest.h>
 
 #include <cstring>
@@ -221,8 +222,8 @@ TEST(MapAllocNEntriesTest,
   MapFree(&map);
 }
 
-static void MapPutWithoutReallocation(Map* map, void* const key,
-                                      void* const value) {
+static void MapPutWithoutReallocation(Map* map, const void* const key,
+                                      const void* const value) {
   hash_t hash = map->hash(key);
   size_t idx = CalculateIndex(hash, map->bucketslen);
 
@@ -237,7 +238,12 @@ static void MapPutWithoutReallocation(Map* map, void* const key,
     while (current->next != nullptr)
       current = current->next;
     if ((hash == current->hash) && map->keycmp(key, current->key) == TRUE) {
-      current->value = value;
+      const size_t value_len = strlen((const char*)value);
+      if (value_len > strlen((const char*)current->value)) {
+        current->value = realloc(current->value, value_len * sizeof(char));
+        assert(current->value != NULL);
+      }
+      strcpy((char*)current->value, (const char*)value);
     } else {
       MapEntry* tmp_mapentry = current->next;
       current->next = mapentry;
@@ -255,40 +261,21 @@ TEST(MapReallocTest, TestWhenReallocationIsNotRequired) {
   EXPECT_EQ(map.hash, Hash);
   EXPECT_EQ(map.keycmp, KeyCmp);
 
-  char key1[5], value1[7];
-  std::strcpy(key1, "key1");
-  std::strcpy(value1, "value1");
-  MapPutWithoutReallocation(&map, key1, value1);
-
-  char key2[5], value2[7];
-  std::strcpy(key2, "key2");
-  std::strcpy(value2, "value2");
-  MapPutWithoutReallocation(&map, key2, value2);
-
-  char key3[5], value3[7];
-  std::strcpy(key3, "key3");
-  std::strcpy(value3, "value3");
-  MapPutWithoutReallocation(&map, key3, value3);
-
-  char key4[5], value4[7];
-  std::strcpy(key4, "key4");
-  std::strcpy(value4, "value4");
-  MapPutWithoutReallocation(&map, key4, value4);
-
-  char key5[5], value5[7];
-  std::strcpy(key5, "key5");
-  std::strcpy(value5, "value5");
-  MapPutWithoutReallocation(&map, key5, value5);
+  MapPutWithoutReallocation(&map, "key1", "value1");
+  MapPutWithoutReallocation(&map, "key2", "value2");
+  MapPutWithoutReallocation(&map, "key3", "value3");
+  MapPutWithoutReallocation(&map, "key4", "value4");
+  MapPutWithoutReallocation(&map, "key5", "value5");
 
   ASSERT_EQ(map.entrieslen, 5);
   ASSERT_EQ(map.bucketslen, MAP_DEFAULT_BUCKET_LEN)
       << "Assertion was to not re-allocate the Map instance.";
 
-  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key1)), value1);
-  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key2)), value2);
-  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key3)), value3);
-  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key4)), value4);
-  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, key5)), value5);
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, "key1")), "value1");
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, "key2")), "value2");
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, "key3")), "value3");
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, "key4")), "value4");
+  EXPECT_STREQ(reinterpret_cast<const char*>(MapGet(&map, "key5")), "value5");
 
   MapFree(&map);
 }

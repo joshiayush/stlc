@@ -89,7 +89,7 @@ void MapPut(Map *map, void *const key, void *const value) {
 //
 // This should be very reminiscent of what we are doing in function
 // `MapEntry *MapGetEntry(Map *const map, void *const key)`.
-void *MapGet(Map *const map, void *const key) {
+void *MapGet(Map *const map, const void *const key) {
   MapEntry *mapentry = MapGetEntry(map, key);
   return mapentry ? mapentry->value : NULL;
 }
@@ -102,7 +102,7 @@ void *MapGet(Map *const map, void *const key) {
 // than then we immediately return `NULL` as having a value greater than the
 // computed `hash` using the `key` can only be possible when we have traversed
 // long enough but did not find any `hash` value equals to the computed `hash`.
-MapEntry *MapGetEntry(Map *const map, void *const key) {
+MapEntry *MapGetEntry(Map *const map, const void *const key) {
   hash_t hash = map->hash(key);
   size_t idx = CalculateIndex(hash, map->bucketslen);
 

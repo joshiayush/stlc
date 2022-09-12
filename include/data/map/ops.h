@@ -65,7 +65,7 @@ void MapPut(Map *const map, void *const key, void *const value);
 //
 // This should be very reminiscent of what we are doing in function
 // `MapEntry *MapGetEntry(Map *const map, void *const key)`.
-void *MapGet(Map *const map, void *const key);
+void *MapGet(Map *const map, const void *const key);
 
 // Returns a `MapEntry*` to the `MapEntry` instance that holds the given `key`.
 //
@@ -75,7 +75,7 @@ void *MapGet(Map *const map, void *const key);
 // than then we immediately return `NULL` as having a value greater than the
 // computed `hash` using the `key` can only be possible when we have traversed
 // long enough but did not find any `hash` value equals to the computed `hash`.
-MapEntry *MapGetEntry(Map *const map, void *const key);
+MapEntry *MapGetEntry(Map *const map, const void *const key);
 
 // Returns a `void*` and removes to/the value mapped by the given `key`.
 //
