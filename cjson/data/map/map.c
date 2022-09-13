@@ -161,6 +161,14 @@ void MapRealloc(Map* map) {
 // the memory when `src` goes out of scope; thus it's better to copy the entire
 // `src` hash map bucket into a new bucket that is dynamically allocated.
 void MapCopy(Map* const dest, Map* const src) {
+  if (src == NULL) {
+    dest->buckets = NULL;
+    dest->bucketslen = MAP_DEFAULT_BUCKET_LEN;
+    dest->entrieslen = 0;
+    dest->hash = NULL;
+    dest->keycmp = NULL;
+    return;
+  }
   if (src->entrieslen > dest->entrieslen) {
     dest->entrieslen = src->entrieslen;
     MapRealloc(dest);

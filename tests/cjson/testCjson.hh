@@ -35,6 +35,7 @@
 #include <cstdio>
 #include <limits>
 
+#include "../map/utils.hh"
 #include "../vector/utils.hh"
 #include "bool.h"
 #include "bytes.h"
@@ -298,6 +299,36 @@ TEST(JSON_InitListImplTest, TestWhenAVectorInstanceIsGiven) {
   size_t capacity;
   cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
   EXPECT_EQ(json.value.list.capacity, capacity);
+}
+
+TEST(JSON_InitObjectImplTest, TestWhenNullIsGiven) {
+  JSON json = JSON_InitObjectImpl(nullptr);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_EQ(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+}
+
+TEST(JSON_InitObjectImplTest, TestWhenAEmptyMapInstanceIsGiven) {
+  Map map = MapAlloc(Hash, KeyCmp);
+  JSON json = JSON_InitObjectImpl(&map);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_NE(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen, MAP_DEFAULT_BUCKET_LEN);
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+  EXPECT_EQ(json.value.object.hash, Hash);
+  EXPECT_EQ(json.value.object.keycmp, KeyCmp);
+}
+
+TEST(JSON_InitObjectImplTest, TestWhenAMapInstanceIsGiven) {
+  Map map = MapAllocNBuckets(16, Hash, KeyCmp);
+  JSON json = JSON_InitObjectImpl(&map);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_NE(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen, 16);
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+  EXPECT_EQ(json.value.object.hash, Hash);
+  EXPECT_EQ(json.value.object.keycmp, KeyCmp);
 }
 
 #endif
