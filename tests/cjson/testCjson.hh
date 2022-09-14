@@ -331,4 +331,17 @@ TEST(JSON_InitObjectImplTest, TestWhenAMapInstanceIsGiven) {
   EXPECT_EQ(json.value.object.keycmp, KeyCmp);
 }
 
+TEST(JSON_InitObjectImplTest, TestWhenAMapInstanceIsAllocatedUsingEntries) {
+  Map map = MapAllocNEntries(12UL, Hash, KeyCmp);
+  JSON json = JSON_InitObjectImpl(&map);
+  EXPECT_EQ(json.type, JSON_Object);
+  EXPECT_NE(json.value.object.buckets, nullptr);
+  EXPECT_EQ(json.value.object.bucketslen,
+            cjson::testing::map::utils::ComputeBucketsLenSatisfyingLoadFactor(
+                MAX_LOAD_FACTOR, 12UL));
+  EXPECT_EQ(json.value.object.entrieslen, 0);
+  EXPECT_EQ(json.value.object.hash, Hash);
+  EXPECT_EQ(json.value.object.keycmp, KeyCmp);
+}
+
 #endif
