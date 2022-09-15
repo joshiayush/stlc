@@ -52,7 +52,7 @@ size_t CalculateIndex(hash_t hash, size_t n);
 //
 // Resizes the `Map` instance in case the load factor exceeds the
 // `MAX_LOAD_FACTOR`.
-void MapPut(Map *const map, void *const key, void *const value);
+void MapPut(Map *const map, const void *const key, const void *const value);
 
 // Returns a `void*` to the value mapped by the given `key`.
 //

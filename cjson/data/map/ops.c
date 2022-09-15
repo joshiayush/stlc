@@ -29,6 +29,7 @@
 
 #include "data/map/ops.h"
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -51,7 +52,7 @@ size_t CalculateIndex(hash_t hash, size_t n) { return hash & (n - 0x01); }
 //
 // Resizes the `Map` instance in case the load factor exceeds the
 // `MAX_LOAD_FACTOR`.
-void MapPut(Map *map, void *const key, void *const value) {
+void MapPut(Map *map, const void *const key, const void *const value) {
   hash_t hash = map->hash(key);
   size_t idx = CalculateIndex(hash, map->bucketslen);
 
@@ -65,7 +66,12 @@ void MapPut(Map *map, void *const key, void *const value) {
     while (current->next && hash > current->hash)
       current = current->next;
     if ((hash == current->hash) && map->keycmp(key, current->key) == TRUE) {
-      current->value = value;
+      const size_t value_len = strlen((const char *)value);
+      if (value_len > strlen((const char *)current->value)) {
+        current->value = realloc(current->value, value_len * sizeof(char));
+        assert(current->value != NULL);
+      }
+      strcpy((char *)current->value, (const char *)value);
     } else {
       MapEntry *tmp_mapentry = current->next;
       current->next = mapentry;
