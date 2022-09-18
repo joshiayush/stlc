@@ -180,8 +180,16 @@ JSON JSON_InitListImpl(json_list_t* list);
 // to pass in dynamically allocated data.
 JSON JSON_InitObjectImpl(json_object_t* object);
 
+// Returns a `JSON *` of the given `type`.
+//
+// This function assumes that the requested `JSON *` instance has a type size of
+// `sizeof(JSON)` thus calls the function `JSON_AllocSize(type, sizeof(JSON))`
+// with the given type and the `size` as `sizeof(JSON)`.
 JSON* JSON_AllocType(JSON_type type);
 JSON* JSON_AllocTypeSize(JSON_type type, size_t size);
+
+#define JSON_ALLOC_TYPE(type) JSON_AllocType(JSON_##type)
+#define JSON_ALLOC_TYPE_SIZE(type, size) JSON_AllocTypeSize(JSON_##type, size)
 
 void JSON_Free(JSON* const json);
 void JSON_FreeDeep(JSON* const json);

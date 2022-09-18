@@ -172,12 +172,18 @@ JSON JSON_InitObjectImpl(json_object_t* object) {
   return json;
 }
 
+// Returns a `JSON *` of the given `type`.
+//
+// This function assumes that the requested `JSON *` instance has a type size of
+// `sizeof(JSON)` thus calls the function `JSON_AllocSize(type, sizeof(JSON))`
+// with the given type and the `size` as `sizeof(JSON)`.
 JSON* JSON_AllocType(JSON_type type) {
   return JSON_AllocTypeSize(type, sizeof(JSON));
 }
 
 JSON* JSON_AllocTypeSize(JSON_type type, size_t size) {
   JSON* json = (JSON*)(malloc(size));
+  json->type = type;
   switch (type) {
     case JSON_Null:
       json->value.null = NULL;

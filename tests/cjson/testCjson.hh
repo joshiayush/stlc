@@ -428,4 +428,95 @@ TEST(JSON_InitObjectImplTest, TestWhenAMapInstanceWithValuesIsGiven) {
   MapFree(&map);
 }
 
+TEST(JSON_AllocTypeTest, TestWhenJSON_NullIsUsed) {
+  JSON* json = JSON_ALLOC_TYPE(Null);
+
+  EXPECT_EQ(json->type, JSON_Null);
+  EXPECT_EQ(json->value.null, nullptr);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_BooleanIsUsed) {
+  JSON* json = JSON_ALLOC_TYPE(Boolean);
+
+  EXPECT_EQ(json->type, JSON_Boolean);
+  EXPECT_EQ(json->value.boolean, false);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_NumberIsUsed) {
+  JSON* json = JSON_ALLOC_TYPE(Number);
+
+  EXPECT_EQ(json->type, JSON_Number);
+  EXPECT_EQ(json->value.number, 0);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_DecimalIsUsed) {
+  JSON* json = JSON_ALLOC_TYPE(Decimal);
+
+  EXPECT_EQ(json->type, JSON_Decimal);
+  EXPECT_EQ(json->value.decimal, 0.0);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_StringIsUsed) {
+  JSON* json = JSON_ALLOC_TYPE(String);
+
+  EXPECT_EQ(json->type, JSON_String);
+  EXPECT_NE(json->value.string, nullptr);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_ListIsUsedWithNoCapacityGiven) {
+  JSON* json = JSON_ALLOC_TYPE(List);
+
+  EXPECT_EQ(json->type, JSON_List);
+  EXPECT_NE(json->value.list.data, nullptr);
+  EXPECT_EQ(json->value.list.size, 0);
+
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(sizeof(JSON),
+                                                             capacity);
+  EXPECT_EQ(json->value.list.capacity, capacity);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_ListIsUsedWithCapacityGiven) {
+  const size_t type_size = 10UL;
+  JSON* json = JSON_ALLOC_TYPE_SIZE(List, type_size);
+
+  EXPECT_EQ(json->type, JSON_List);
+  EXPECT_NE(json->value.list.data, nullptr);
+  EXPECT_EQ(json->value.list.size, 0);
+
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(type_size,
+                                                             capacity);
+  EXPECT_EQ(json->value.list.capacity, capacity);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeTest, TestWhenJSON_ObjectIsUsedWithEntriesAsSizeOfJSON) {
+  JSON* json = JSON_ALLOC_TYPE(Object);
+
+  EXPECT_EQ(json->type, JSON_Object);
+  EXPECT_NE(json->value.object.buckets, nullptr);
+  EXPECT_EQ(json->value.object.bucketslen,
+            cjson::testing::map::utils::ComputeBucketsLenSatisfyingLoadFactor(
+                MAX_LOAD_FACTOR, sizeof(JSON)));
+  EXPECT_EQ(json->value.object.entrieslen, 0);
+  EXPECT_EQ(json->value.object.hash, Hash);
+  EXPECT_EQ(json->value.object.keycmp, KeyCmp);
+
+  JSON_Free(json);
+}
+
 #endif
