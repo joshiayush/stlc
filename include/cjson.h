@@ -102,8 +102,7 @@ typedef struct JSON {
 JSON JSON_InitType(const JSON_type type);
 
 // Returns a `JSON` instance of the given `type`, in case `size` is given
-// allocates `size` amount of memory in the free-store for the `JSON`
-// instance.
+// allocates `size` amount of memory in the free-store for the `JSON` instance.
 //
 // Uses the given `size` to allocate `size` bytes for either the `Vector`
 // or the `Map` instance inside the `JSON_value` `union`.
@@ -186,6 +185,15 @@ JSON JSON_InitObjectImpl(json_object_t* object);
 // `sizeof(JSON)` thus calls the function `JSON_AllocSize(type, sizeof(JSON))`
 // with the given type and the `size` as `sizeof(JSON)`.
 JSON* JSON_AllocType(JSON_type type);
+
+// Returns a `JSON *` instance of the given `type`, in case `size` is given
+// allocates `size` amount of memory in the free-store for the `JSON` instance.
+//
+// Uses the given `size` to allocate `size` bytes for either the `Vector` or the
+// `Map` instance inside the `JSON_value` `union`.
+//
+// In case the size is zero, returns a `NULL` pointer or a unique-pointer
+// returned by `malloc`.
 JSON* JSON_AllocTypeSize(JSON_type type, size_t size);
 
 #define JSON_ALLOC_TYPE(type) JSON_AllocType(JSON_##type)

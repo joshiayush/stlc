@@ -181,8 +181,19 @@ JSON* JSON_AllocType(JSON_type type) {
   return JSON_AllocTypeSize(type, sizeof(JSON));
 }
 
+// Returns a `JSON *` instance of the given `type`, in case `size` is given
+// allocates `size` amount of memory in the free-store for the `JSON` instance.
+//
+// Uses the given `size` to allocate `size` bytes for either the `Vector` or the
+// `Map` instance inside the `JSON_value` `union`.
+//
+// In case the size is zero, returns a `NULL` pointer or a unique-pointer
+// returned by `malloc`.
 JSON* JSON_AllocTypeSize(JSON_type type, size_t size) {
-  JSON* json = (JSON*)(malloc(size));
+  JSON* json;
+  if ((json = (JSON*)(malloc(size))) ==
+      NULL)  // This also handles the case when the given size is 0.
+    return json;
   json->type = type;
   switch (type) {
     case JSON_Null:

@@ -519,4 +519,68 @@ TEST(JSON_AllocTypeTest, TestWhenJSON_ObjectIsUsedWithEntriesAsSizeOfJSON) {
   JSON_Free(json);
 }
 
+TEST(JSON_AllocTypeSizeTest, TestWhenZeroSizeIsGiven) {
+  JSON* json = JSON_ALLOC_TYPE_SIZE(Object, 0);
+
+  if (json == nullptr) {
+    GTEST_LOG_(INFO) << "For size 0 malloc returned (nullptr).\nEarly return.";
+    return;
+  }
+
+  GTEST_LOG_(INFO) << "For size 0 malloc returned unique pointer.";
+
+  EXPECT_EQ(json->type, JSON_Object);
+  EXPECT_NE(json->value.object.buckets, nullptr);
+  EXPECT_EQ(json->value.object.bucketslen,
+            cjson::testing::map::utils::ComputeBucketsLenSatisfyingLoadFactor(
+                MAX_LOAD_FACTOR, 0));
+  EXPECT_EQ(json->value.object.entrieslen, 0);
+  EXPECT_EQ(json->value.object.hash, Hash);
+  EXPECT_EQ(json->value.object.keycmp, KeyCmp);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeSizeTest, TestWhenArbitrarySizeForStringTypeIsGiven) {
+  const size_t type_size = sizeof(JSON);
+  JSON* json = JSON_ALLOC_TYPE_SIZE(String, type_size);
+
+  EXPECT_EQ(json->type, JSON_String);
+  EXPECT_NE(json->value.string, nullptr);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeSizeTest, TestWhenArbitrarySizeForListTypeIsGiven) {
+  const size_t type_size = sizeof(JSON);
+  JSON* json = JSON_ALLOC_TYPE_SIZE(List, type_size);
+
+  EXPECT_EQ(json->type, JSON_List);
+  EXPECT_NE(json->value.list.data, nullptr);
+  EXPECT_EQ(json->value.list.size, 0);
+
+  size_t capacity;
+  cjson::testing::vector::utils::ComputeVectorBufferCapacity(type_size,
+                                                             capacity);
+  EXPECT_EQ(json->value.list.capacity, capacity);
+
+  JSON_Free(json);
+}
+
+TEST(JSON_AllocTypeSizeTest, TestWhenArbitrarySizeForObjectTypeIsGiven) {
+  const size_t type_size = sizeof(JSON);
+  JSON* json = JSON_ALLOC_TYPE_SIZE(Object, type_size);
+
+  EXPECT_EQ(json->type, JSON_Object);
+  EXPECT_NE(json->value.object.buckets, nullptr);
+  EXPECT_EQ(json->value.object.bucketslen,
+            cjson::testing::map::utils::ComputeBucketsLenSatisfyingLoadFactor(
+                MAX_LOAD_FACTOR, type_size));
+  EXPECT_EQ(json->value.object.entrieslen, 0);
+  EXPECT_EQ(json->value.object.hash, Hash);
+  EXPECT_EQ(json->value.object.keycmp, KeyCmp);
+
+  JSON_Free(json);
+}
+
 #endif
