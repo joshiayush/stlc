@@ -46,7 +46,7 @@ StringStream JSON_Stringify(JSON* const json, const bool_t prettify,
 
 #define __place_endl_if_prettify ((prettify) ? (endl) : (""))
 
-  if (prettify && is_dict_valid) {
+  if (prettify && !is_dict_valid) {
     stringified = StringStreamNAlloc(4 * init_tab_pos);
     for (size_t i = 0; i < init_tab_pos; ++i)
       StringStreamConcat(&stringified, JSON_TAB);
