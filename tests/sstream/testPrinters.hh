@@ -27,33 +27,23 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+#ifndef CJSON_TESTS_SSTREAM_TESTPRINTERS_HH_
+#define CJSON_TESTS_SSTREAM_TESTPRINTERS_HH_
+
 #include <gtest/gtest.h>
 
-/* Header files including tests for `internal` API. */
-#include "internal/testFs.hh"
-#include "internal/testString.hh"
+#include <string>
 
-/* Header files including tests for `map` API. */
-#include "map/testMap.hh"
+#include "data/sstream/sstream.h"
 
-/* Header files including tests for `sstream` API. */
-#include "sstream/testAccessors.hh"
-#include "sstream/testFileIO.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testPrinters.hh"
-#include "sstream/testSstream.hh"
+TEST(PrintSstreamTest, TestPrintSstreamWhenPrintedAString) {
+  StringStream sstream = StringStreamStrAlloc("foo//bar//buzz");
 
-/* Header files including tests for `vector` API. */
-#include "vector/testAccessors.hh"
-#include "vector/testModifiers.hh"
-#include "vector/testVector.hh"
+  testing::internal::CaptureStdout();
+  PrintSstream(&sstream);
+  std::string stdout_output = testing::internal::GetCapturedStdout();
 
-/* Header files including tests for `cjson` API. */
-#include "cjson/testAccessors.hh"
-#include "cjson/testCjson.hh"
-
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  EXPECT_STREQ(stdout_output.c_str(), sstream.data);
 }
+
+#endif  // CJSON_TESTS_SSTREAM_TESTPRINTERS_HH_

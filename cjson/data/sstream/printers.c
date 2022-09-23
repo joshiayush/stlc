@@ -27,33 +27,15 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include <gtest/gtest.h>
+#include "data/sstream/printers.h"
 
-/* Header files including tests for `internal` API. */
-#include "internal/testFs.hh"
-#include "internal/testString.hh"
+#include <stdio.h>
 
-/* Header files including tests for `map` API. */
-#include "map/testMap.hh"
+#include "data/sstream/sstream.h"
 
-/* Header files including tests for `sstream` API. */
-#include "sstream/testAccessors.hh"
-#include "sstream/testFileIO.hh"
-#include "sstream/testIterators.hh"
-#include "sstream/testModifiers.hh"
-#include "sstream/testPrinters.hh"
-#include "sstream/testSstream.hh"
-
-/* Header files including tests for `vector` API. */
-#include "vector/testAccessors.hh"
-#include "vector/testModifiers.hh"
-#include "vector/testVector.hh"
-
-/* Header files including tests for `cjson` API. */
-#include "cjson/testAccessors.hh"
-#include "cjson/testCjson.hh"
-
-int main(int argc, char** argv) {
-  ::testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+// Prints the given `StringStream` object to the `stdout` and flushes the stream
+// quickly.
+void PrintSstream(const StringStream* const sstream) {
+  printf("%s", sstream->data);
+  fflush(stdout);
 }

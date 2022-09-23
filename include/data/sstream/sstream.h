@@ -116,5 +116,6 @@ void StringStreamDealloc(StringStream* const sstream);
 #include "data/sstream/fileio.h"
 #include "data/sstream/iterators.h"
 #include "data/sstream/modifiers.h"
+#include "data/sstream/printers.h"
 
 #endif  // CJSON_INCLUDE_DATA_SSTREAM_SSTREAM_H_
