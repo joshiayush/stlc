@@ -30,12 +30,85 @@
 #include "data/sstream/printers.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "bool.h"
 #include "data/sstream/sstream.h"
+
+// Escapes control characters and quotes in a string and appends it to the given
+// buffer.
+void ChrCStrLiteral(const char chr, char* buffer) {
+  if ((chr >= 0x20 && chr <= 0x7E) && chr != '\'' && chr != '\"' &&
+      chr != '\\') {
+    strcat(buffer, &chr);  // Opposite of control characters can be saved just
+                           // as they are.
+  } else {
+    switch (chr) {
+      case '\a':
+        strcat(buffer, "\\a");
+        break;
+      case '\b':
+        strcat(buffer, "\\b");
+        break;
+      case '\f':
+        strcat(buffer, "\\f");
+        break;
+      case '\n':
+        strcat(buffer, "\\n");
+        break;
+      case '\r':
+        strcat(buffer, "\\r");
+        break;
+      case '\t':
+        strcat(buffer, "\\t");
+        break;
+      case '\v':
+        strcat(buffer, "\\v");
+        break;
+      case '\\':
+        strcat(buffer, "\\\\");
+        break;
+      case '\'':
+        strcat(buffer, "\\'");
+        break;
+      case '\"':
+        strcat(buffer, "\\\"");
+        break;
+      default: {
+        char buffer_[6];
+        snprintf(buffer_, 6, "\\0x%02x",
+                 (unsigned char)(chr));  // This handles control
+                                         // characters that are not
+                                         // printable and does not
+                                         // meet any case.
+        strcat(buffer, buffer_);
+      } break;
+    }
+  }
+}
+
+// Returns a string with printable representation of escape sequences.
+void ReprSstream(StringStream* sstream) {
+  const size_t strlen_ = strlen(sstream->data);
+  char* buffer = malloc(strlen_ * sizeof(char));
+  for (size_t i = 0; i < strlen_; ++i) {
+    ChrCStrLiteral(
+        sstream->data[i],
+        buffer);  // Escape the character that we took out in this iteration.
+  }
+  StringStreamDealloc(sstream);
+  *sstream = StringStreamStrAlloc(buffer);
+}
 
 // Prints the given `StringStream` object to the `stdout` and flushes the stream
 // quickly.
-void PrintSstream(const StringStream* const sstream) {
-  printf("%s", sstream->data);
+void PrintSstream(StringStream* sstream, const bool_t escape) {
+  if (!escape) {
+    printf("%s", sstream->data);
+  } else {
+    ReprSstream(sstream);
+    printf("%s", sstream->data);
+  }
   fflush(stdout);
 }

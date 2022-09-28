@@ -34,13 +34,14 @@
 
 #include <string>
 
+#include "bool.h"
 #include "data/sstream/sstream.h"
 
 TEST(PrintSstreamTest, TestPrintSstreamWhenPrintedAString) {
   StringStream sstream = StringStreamStrAlloc("foo//bar//buzz");
 
   testing::internal::CaptureStdout();
-  PrintSstream(&sstream);
+  PrintSstream(&sstream, FALSE);
   std::string stdout_output = testing::internal::GetCapturedStdout();
 
   EXPECT_STREQ(stdout_output.c_str(), sstream.data);

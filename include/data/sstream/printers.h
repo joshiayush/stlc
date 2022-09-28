@@ -30,15 +30,23 @@
 #ifndef CJSON_INCLUDE_DATA_SSTREAM_PRINTERS_H_
 #define CJSON_INCLUDE_DATA_SSTREAM_PRINTERS_H_
 
+#include "bool.h"
 #include "data/sstream/sstream.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+// Escapes control characters and quotes in a string and appends it to the given
+// buffer.
+void ChrCStrLiteral(const char chr, char* buffer);
+
+// Returns a string with printable representation of escape sequences.
+void ReprSstream(StringStream* str);
+
 // Prints the given `StringStream` object to the `stdout` and flushes the stream
 // quickly.
-void PrintSstream(const StringStream* const sstream);
+void PrintSstream(StringStream* sstream, const bool_t escape);
 
 #ifdef __cplusplus
 }
