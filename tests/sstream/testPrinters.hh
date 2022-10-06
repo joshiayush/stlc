@@ -37,6 +37,22 @@
 #include "bool.h"
 #include "data/sstream/sstream.h"
 
+TEST(ChrCStrLiteralTest, TestWithNonControlCharacters) {
+  const char* str = "//foo//bar//buzz";
+  const size_t strlen_ = sizeof(str);
+
+  char* buffer =
+      reinterpret_cast<char*>(std::malloc(sizeof(strlen_) * sizeof(char)));
+  for (size_t i = 0; i < strlen_; ++i)
+    *(buffer + i) = '\0';
+  for (size_t i = 0; i < strlen_; ++i)
+    ChrCStrLiteral(str[i], buffer);
+
+  EXPECT_STREQ(buffer, "//foo//bar//buzz");
+
+  std::free(buffer);
+}
+
 TEST(PrintSstreamTest, TestPrintSstreamWhenPrintedAString) {
   StringStream sstream = StringStreamStrAlloc("foo//bar//buzz");
 
@@ -44,7 +60,21 @@ TEST(PrintSstreamTest, TestPrintSstreamWhenPrintedAString) {
   PrintSstream(&sstream, FALSE);
   std::string stdout_output = testing::internal::GetCapturedStdout();
 
-  EXPECT_STREQ(stdout_output.c_str(), sstream.data);
+  EXPECT_STREQ(stdout_output.c_str(), "foo//bar//buzz");
+
+  StringStreamDealloc(&sstream);
+}
+
+TEST(PrintSstreamTest, TestPrintSstreamWithAStringContainingEscapeSequences) {
+  StringStream sstream = StringStreamStrAlloc("\foo\bar");
+
+  testing::internal::CaptureStdout();
+  PrintSstream(&sstream, TRUE);
+  std::string stdout_output = testing::internal::GetCapturedStdout();
+
+  EXPECT_STREQ(stdout_output.c_str(), "\\foo\\bar");
+
+  StringStreamDealloc(&sstream);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTPRINTERS_HH_

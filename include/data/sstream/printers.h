@@ -42,7 +42,7 @@ extern "C" {
 void ChrCStrLiteral(const char chr, char* buffer);
 
 // Returns a string with printable representation of escape sequences.
-void ReprSstream(StringStream* str);
+void ReprSstream(StringStream* sstream);
 
 // Prints the given `StringStream` object to the `stdout` and flushes the stream
 // quickly.
