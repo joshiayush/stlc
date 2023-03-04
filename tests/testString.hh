@@ -31,7 +31,7 @@
 
 #include <cstring>
 
-#include "string.h"
+#include "stlc-string.h"
 
 TEST(SplitStrFunctionTest, WhenSingleCharacterIsUsedAsSeparator) {
   char** comps = SplitStr("/foo/bar/foo/buzz/", "/");

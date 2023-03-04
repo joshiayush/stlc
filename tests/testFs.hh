@@ -31,7 +31,7 @@
 
 #include <cstring>
 
-#include "fs.h"
+#include "stlc-fs.h"
 
 TEST(IsAbsPathTest, TestForBothWindowsAndNixStylePaths) {
 #ifdef CJSON_OS_WINDOWS
