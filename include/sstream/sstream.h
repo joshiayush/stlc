@@ -66,7 +66,7 @@ typedef struct StringStream {
 //
 // Memory blocks allocated for `StringStream` instances are allocated using the
 // `capacity` calculated by the given `length` i.e., `SSTREAM_DEFAULT_SIZE`.
-StringStream StringStreamAlloc();
+StringStream StringStreamAlloc(void);
 
 // Returns a initialized `StringStream` instance of given length.
 //

@@ -208,7 +208,7 @@ void MapFreeEntryDeepImpl(MapEntry* const mapentry);
 // Returns a `Map` instance with the built-in support for hash generation and
 // key comparison.  Key must always be a string data and the value could be
 // anything.
-Map MapAllocStrAsKey();
+Map MapAllocStrAsKey(void);
 
 // Returns a `Map` instance with the number of given `entrieslen` entries and
 // with the built-in support for hash generation and key comparison.

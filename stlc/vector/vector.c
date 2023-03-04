@@ -48,7 +48,7 @@ static void ComputeVectorBufferCapacity(const size_t size,
 //
 // Memory blocks allocated for `Vector` instances are allocated using the
 // `capacity` calculated by the given `size` i.e., `VECTOR_DEFAULT_SIZE`.
-Vector VectorDefAlloc() { return VectorAlloc(VECTOR_DEFAULT_SIZE); }
+Vector VectorDefAlloc(void) { return VectorAlloc(VECTOR_DEFAULT_SIZE); }
 
 // Returns an initialized instance of `Vector` of `length`.
 //

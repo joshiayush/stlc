@@ -69,7 +69,7 @@ typedef struct Vector {
 //
 // Memory blocks allocated for `Vector` instances are allocated using the
 // `capacity` calculated by the given `size` i.e., `VECTOR_DEFAULT_SIZE`.
-Vector VectorDefAlloc();
+Vector VectorDefAlloc(void);
 
 // Returns an initialized instance of `Vector` of `length`.
 //

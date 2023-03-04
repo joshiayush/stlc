@@ -51,7 +51,7 @@ static void ComputeStringStreamBufferCapacity(const size_t length,
 //
 // Memory blocks allocated for `StringStream` instances are allocated using the
 // `capacity` calculated by the given `length` i.e., `SSTREAM_DEFAULT_SIZE`.
-StringStream StringStreamAlloc() {
+StringStream StringStreamAlloc(void) {
   return StringStreamNAlloc(SSTREAM_DEFAULT_SIZE);
 }
 
