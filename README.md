@@ -1,27 +1,10 @@
 <div id="top"></div>
 
-<br/>
+# Introduction
 
-<div align="center">
-  <h3 align="center">stlc</h3>
-  
-  <p align="center">
-    Standard Template Library for C.
-    <br />
-    <a href="https://github.com/joshiayush/stlc/tree/master/docs"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/joshiayush/stlc/wiki">Wiki</a>
-    ·
-    <a href="https://github.com/joshiayush/stlc/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/joshiayush/stlc/issues">Request Feature</a>
-  </p>
-</div>
+[__stlc__](https://github.com/joshiayush/stlc) is a simple library without any dependencies providing support for **StringStream**, **Vector**, **Map**, and **File System Routines**.
 
-<div align='center'>
-
-<a href="https://github.com/joshiayush/stlc"><strong>stlc</strong></a> is a simple library without any dependancies providing support for **StringStream**, **Vector**, **Map**, and **File System Routines**.
+The **`STL`** is a collection of reusable data structures and algorithms that provide a standardized way of writing efficient and reliable code in C. It can save time and effort for programmers by providing pre-built functions and structures that can be easily used in a variety of applications.
 
 </div>
 
@@ -47,8 +30,7 @@ Next step is to build `stlc` as a shared library using our build system `cmake`.
 
 ```shell
 cmake -B build/ -S .
-cd build
-make install
+cmake --build build/
 ```
 
 This will build `stlc` library as `libstlc.so` file inside the `build` directory.
@@ -59,8 +41,7 @@ To build tests,
 
 ```shell
 cmake -B build/ -S . -DBUILD_TESTS:BOOL=ON
-cd build
-make install
+cmake --build build/
 ```
 
 Now run the `tests`,
@@ -76,6 +57,50 @@ Now run the `tests`,
   
   </a>
 </div>
+
+## Usage
+
+### Creating and Initializing a `StringStream`
+
+```c
+#include "stlc/bool.h"
+#include "stlc/sstream/sstream.h"
+
+int main() {
+  // Creating an StringStream instance
+  StringStream sstream = StringStreamStrAlloc("Hello, World!");
+
+  // Printing the contents of the StringStream
+  PrintSstream(&sstream, FALSE);
+
+  // Deallocating the StringStream
+  StringStreamDealloc(&sstream);
+}
+```
+
+### Using `StringStream` for File I/O
+
+```c
+#include <stdio.h>
+
+#include "stlc/sstream/sstream.h"
+
+int main() {
+  // Creating an empty StringStream
+  StringStream sstream = StringStreamAlloc();
+
+  FILE* file = fopen("/path/to/file.txt", "r");
+  
+  // Read file contents into the stream
+  StringStreamReadFile(&sstream, file, 0);
+
+  // Return the resource acquired
+  fclose(file);
+
+  printf("%s", sstream.data);
+  printf("Total bytes stored %d.", sstream.length);
+}
+```
 
 ## Contribution
 
