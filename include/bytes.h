@@ -33,6 +33,4 @@
 #define endl "\n"
 #define nullchr '\0'
 
-#define JSON_NULL "null"
-
 #endif  // CJSON_INCLUDE_BYTES_H_

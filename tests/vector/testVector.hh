@@ -34,7 +34,7 @@
 
 #include <cstdlib>
 
-#include "data/vector/vector.h"
+#include "vector/vector.h"
 #include "utils.hh"
 
 #define _ARBITRARY_VECTOR_TESTING_LENGTH 2147489

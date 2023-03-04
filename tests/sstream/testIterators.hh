@@ -35,7 +35,7 @@
 
 #include <cstring>
 
-#include "data/sstream/sstream.h"
+#include "sstream/sstream.h"
 
 class StringStreamIteratorsTest : public ::testing::Test {
  protected:

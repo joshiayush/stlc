@@ -30,8 +30,8 @@
 #include <gtest/gtest.h>
 
 /* Header files including tests for `internal` API. */
-#include "internal/testFs.hh"
-#include "internal/testString.hh"
+#include "testFs.hh"
+#include "testString.hh"
 
 /* Header files including tests for `map` API. */
 #include "map/testMap.hh"
@@ -48,10 +48,6 @@
 #include "vector/testAccessors.hh"
 #include "vector/testModifiers.hh"
 #include "vector/testVector.hh"
-
-/* Header files including tests for `cjson` API. */
-#include "cjson/testAccessors.hh"
-#include "cjson/testCjson.hh"
 
 int main(int argc, char** argv) {
   ::testing::InitGoogleTest(&argc, argv);

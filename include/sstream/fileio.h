@@ -27,14 +27,33 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#ifndef CJSON_INCLUDE_DATA_SSTREAM_FILEIO_H_
+#define CJSON_INCLUDE_DATA_SSTREAM_FILEIO_H_
 
+#include <stdio.h>
 #include <sys/types.h>
 
-#define TRUE 1
-#define FALSE !TRUE
+#include "sstream/sstream.h"
 
-typedef __uint8_t bool_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Reads the content of the file given of the given `length` in the
+// `StringStream` instance.
+//
+// The length of the data read from the file by this function is equal to the
+// value of the `length` given but in case the `length` given is `0` then this
+// function will read the entire file.
+void StringStreamReadFile(StringStream* const sstream, FILE* const file,
+                          size_t length);
+
+// Writes `StringStream` data from position `begin` to `end` in the given file.
+void StringStreamWriteFile(StringStream* const sstream, FILE* const file,
+                           size_t begin, size_t end);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CJSON_INCLUDE_DATA_SSTREAM_FILEIO_H_

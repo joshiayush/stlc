@@ -35,7 +35,7 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "data/vector/vector.h"
+#include "vector/vector.h"
 #include "utils.hh"
 
 class VectorAccessorsTest : public ::testing::Test {

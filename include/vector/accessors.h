@@ -27,14 +27,31 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#ifndef CJSON_INCLUDE_DATA_VECTOR_ACCESSORS_H_
+#define CJSON_INCLUDE_DATA_VECTOR_ACCESSORS_H_
 
 #include <sys/types.h>
 
-#define TRUE 1
-#define FALSE !TRUE
+#include "vector.h"
 
-typedef __uint8_t bool_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Sets the value in a `Vector` instance provided that the `idx` value given is
+// in bounds.
+//
+// Has no effect on the `Vector` instance if the `idx` value is out of bounds.
+void VectorSet(Vector* const vector, void* const elem, const size_t idx);
+
+// Returns a `const void*` to the element present at the given index i.e.,
+// `idx`.
+//
+// Will return `NULL` if the `idx` value is out of bounds.
+const void* VectorGet(const Vector* const vector, const size_t idx);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CJSON_INCLUDE_DATA_VECTOR_ACCESSORS_H_

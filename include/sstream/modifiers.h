@@ -27,14 +27,47 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#ifndef CJSON_INCLUDE_DATA_SSTREAM_MODIFIERS_H_
+#define CJSON_INCLUDE_DATA_SSTREAM_MODIFIERS_H_
 
 #include <sys/types.h>
 
-#define TRUE 1
-#define FALSE !TRUE
+#include "bytes.h"
+#include "sstream/sstream.h"
 
-typedef __uint8_t bool_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Terminates a `StringStream` `data` instance at `\0`.
+//
+// This macro is meant to be protected inside `sstream` module.
+#define _TERMINATE_STRING_STREAM_BUFFER(sstream)  \
+  do {                                            \
+    if ((sstream).data && (sstream).capacity)     \
+      (sstream).data[(sstream).length] = nullchr; \
+  } while (0)
+
+// Concatenates a newly formatted string onto the existing string inside
+// `StringStream` instance and increments the `length` attribute.
+void StringStreamConcat(StringStream* const sstream, const char* format, ...);
+
+// Concatenates data of known length onto the existing `data` instance of
+// `StringStream` instance.  This function will re-allocate the `data` buffer if
+// needed.
+//
+// The `length` property will decide how many bytes to copy from `data` to
+// `sstream->data` while ignoring the `NULL` bytes on the way.
+void StringStreamRead(StringStream* const sstream, const void* data,
+                      const size_t length);
+
+// Impedes the position of the terminate character `\0` by `length`, or if the
+// length is greater than the data length of `StringStream` instance, places the
+// terminator `\0` at beginning.
+void StringStreamRetreat(StringStream* const sstream, const size_t length);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CJSON_INCLUDE_DATA_SSTREAM_MODIFIERS_H_

@@ -34,7 +34,7 @@
 
 #include <cstring>
 
-#include "data/sstream/sstream.h"
+#include "sstream/sstream.h"
 #include "utils.hh"
 
 class StringStreamModifiersTest : public ::testing::Test {

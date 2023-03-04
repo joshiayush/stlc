@@ -35,7 +35,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "data/sstream/sstream.h"
+#include "sstream/sstream.h"
 
 class StringStreamFileIOTest : public ::testing::Test {
  protected:

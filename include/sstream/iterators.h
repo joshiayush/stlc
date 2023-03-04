@@ -27,14 +27,25 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#ifndef CJSON_INCLUDE_DATA_SSTREAM_ITERATORS_H_
+#define CJSON_INCLUDE_DATA_SSTREAM_ITERATORS_H_
 
-#include <sys/types.h>
+#include "sstream/sstream.h"
 
-#define TRUE 1
-#define FALSE !TRUE
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef __uint8_t bool_t;
+// Returns a `const char*` to the beginning of the `data` instance of the
+// `StringStream` instance.
+const char* StringStreamBegin(const StringStream* const sstream);
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Returns a iterator to the end of the `data` instance of the `StringStream`
+// instance.
+const char* StringStreamEnd(const StringStream* const sstream);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CJSON_INCLUDE_DATA_SSTREAM_ITERATORS_H_

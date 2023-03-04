@@ -32,7 +32,7 @@
 
 #include <cstdint>
 
-#include "data/map/map.h"
+#include "map/map.h"
 
 namespace cjson {
 namespace testing {

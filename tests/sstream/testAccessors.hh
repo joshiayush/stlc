@@ -32,7 +32,7 @@
 
 #include <gtest/gtest.h>
 
-#include "data/sstream/sstream.h"
+#include "sstream/sstream.h"
 
 class GetStringStreamAvailableSpaceTest : public ::testing::Test {
  protected:

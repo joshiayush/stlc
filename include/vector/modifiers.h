@@ -27,14 +27,54 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#ifndef CJSON_INCLUDE_DATA_VECTOR_MODIFIERS_H_
+#define CJSON_INCLUDE_DATA_VECTOR_MODIFIERS_H_
 
 #include <sys/types.h>
 
-#define TRUE 1
-#define FALSE !TRUE
+#include "vector.h"
 
-typedef __uint8_t bool_t;
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Inserts elmenet at a specific index inside the `Vector` container.
+//
+// Inserts element at a specific index inside the `Vector` container provided
+// that the index is in bounds.
+//
+// Has no effect if the `idx` value is out-of-bounds.
+void VectorInsert(Vector* const vector, void* const elem, const size_t idx);
+
+// Inserts the given element at the very first index shifting the rest of the
+// array elements towards the last.
+//
+// Internally uses `VectorInsert()` with a `idx` value of `0`.
+void VectorUnshift(Vector* const vector, void* const elem);
+
+// Insert the given element at the very last index of the `Vector` buffer.
+void VectorPush(Vector* const vector, void* const elem);
+
+// Returns the address of the element located at the index `idx` while
+// over-writing element's position.
+//
+// Returns a `NULL` pointer if the `idx` value is out-of-bounds.
+void* VectorDelete(Vector* const vector, const size_t idx);
+
+// Returns the very first element of a `Vector` instance and then over writes
+// the memory block.
+//
+// Internally uses `VectorDelete()` with a `idx` value of `0`.
+void* VectorShift(Vector* const vector);
+
+// Returns the very last element of a `Vector` instance and then over writes the
+// memory block.
+//
+// Internally uses `VectorDelete()` with a `idx` value of `vector->size - 1`.
+void* VectorRemove(Vector* const vector);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CJSON_INCLUDE_DATA_VECTOR_MODIFIERS_H_

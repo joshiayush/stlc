@@ -28,7 +28,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cmake_minimum_required(VERSION 3.16.3)
-project(cjson
+project(stlc
 		VERSION 1.0.0
 		HOMEPAGE_URL https://github.com/joshiayush/cjson
 		LANGUAGES C CXX)
@@ -37,11 +37,11 @@ include_directories(include)
 
 # Note: This requires cmake to be run each time the files have changed to
 # configure the build system 
-file(GLOB_RECURSE CJSON_SRC_FILES "cjson/*.c")
+file(GLOB_RECURSE STLC_SRC_FILES "stlc/*.c")
 
-option(BUILD_TESTS "Builds the tests for library cjson." OFF)
+option(BUILD_TESTS "Builds the tests for library stlc." OFF)
 
-add_library(${PROJECT_NAME} SHARED ${CJSON_SRC_FILES})
+add_library(${PROJECT_NAME} SHARED ${STLC_SRC_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION 1)
 
 install(TARGETS ${PROJECT_NAME} LIBRARY DESTINATION ${CMAKE_SOURCE_DIR}/build)

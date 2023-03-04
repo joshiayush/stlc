@@ -35,7 +35,7 @@
 #include <string>
 
 #include "bool.h"
-#include "data/sstream/sstream.h"
+#include "sstream/sstream.h"
 
 TEST(ChrCStrLiteralTest, TestWithNonControlCharacters) {
   const char* str = "//foo//bar//buzz";

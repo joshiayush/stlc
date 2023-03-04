@@ -27,14 +27,29 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#ifndef CJSON_INCLUDE_DATA_SSTREAM_PRINTERS_H_
+#define CJSON_INCLUDE_DATA_SSTREAM_PRINTERS_H_
 
-#include <sys/types.h>
+#include "bool.h"
+#include "sstream/sstream.h"
 
-#define TRUE 1
-#define FALSE !TRUE
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-typedef __uint8_t bool_t;
+// Escapes control characters and quotes in a string and appends it to the given
+// buffer.
+void ChrCStrLiteral(const char chr, char* buffer);
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Returns a string with printable representation of escape sequences.
+void ReprSstream(StringStream* sstream);
+
+// Prints the given `StringStream` object to the `stdout` and flushes the stream
+// quickly.
+void PrintSstream(StringStream* sstream, const bool_t escape);
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif  // CJSON_INCLUDE_DATA_SSTREAM_PRINTERS_H_

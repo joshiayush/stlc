@@ -27,14 +27,47 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_BOOL_H_
-#define CJSON_INCLUDE_BOOL_H_
+#include "sstream/fileio.h"
 
+#include <stdio.h>
 #include <sys/types.h>
 
-#define TRUE 1
-#define FALSE !TRUE
+#include "sstream/sstream.h"
 
-typedef __uint8_t bool_t;
+// Reads the content of the file given of the given `length` in the
+// `StringStream` instance.
+//
+// The length of the data read from the file by this function is equal to the
+// value of the `length` given but in case the `length` given is `0` then this
+// function will read the entire file.
+void StringStreamReadFile(StringStream* const sstream, FILE* const file,
+                          size_t length) {
+  if (sstream == NULL || file == NULL)
+    return;
+  if (length == 0) {
+    size_t orig_cur_pos = ftell(file);
+    fseek(file, 0L, SEEK_END);
+    length = ftell(file) - orig_cur_pos;
+    fseek(file, orig_cur_pos, SEEK_SET);
+  }
+  StringStreamRealloc(sstream, sstream->length + length);
+  fread(sstream->data + sstream->length, sizeof(char), length, file);
+  sstream->length += length;
+  _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+}
 
-#endif  // CJSON_INCLUDE_BOOL_H_
+// Writes `StringStream` data from position `begin` to `end` in the given file.
+void StringStreamWriteFile(StringStream* const sstream, FILE* const file,
+                           size_t begin, size_t end) {
+  if (sstream == NULL || file == NULL)
+    return;
+  if (begin >= sstream->length)
+    return;
+  if (!end)
+    end = sstream->length;
+  if (end < begin)
+    return;
+  if (end > sstream->length)
+    end = sstream->length;
+  fwrite(sstream->data + begin, sizeof(char), end - begin, file);
+}

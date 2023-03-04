@@ -35,7 +35,7 @@
 
 #include <cstring>
 
-#include "data/sstream/sstream.h"
+#include "sstream/sstream.h"
 #include "utils.hh"
 
 #define _ARBITRARY_SSTREAM_TESTING_LENGTH 2147483648

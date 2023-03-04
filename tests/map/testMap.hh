@@ -36,8 +36,8 @@
 #include <cstring>
 
 #include "bool.h"
-#include "data/map/map.h"
-#include "data/map/ops.h"
+#include "map/map.h"
+#include "map/ops.h"
 #include "utils.hh"
 
 static hash_t CustomHash(const void* const key) {
