@@ -51,7 +51,7 @@ class StringStreamTest : public ::testing::Test {
   StringStream sstream;
 };
 
-TEST_F(StringStreamTest, WhenAllocatedWithDefAlloc) {
+TEST_F(StringStreamTest, StringStreamAllocTest) {
   sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(*sstream.data, '\0');
@@ -62,7 +62,7 @@ TEST_F(StringStreamTest, WhenAllocatedWithDefAlloc) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, WhenAllocatedWithAllocWithArbitrarySstreamLength) {
+TEST_F(StringStreamTest, StringStreamNAllocTest) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(*sstream.data, '\0');
@@ -73,10 +73,8 @@ TEST_F(StringStreamTest, WhenAllocatedWithAllocWithArbitrarySstreamLength) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, WhenAllocatedWithAllocWithConstCharPointer) {
-  const char* teststr =
-      "Mohika says \"I'm that exam question that everyone left without "
-      "understanding :(.\"";
+TEST_F(StringStreamTest, StringStreamStrAllocTest) {
+  const char* teststr = "Time is the wisest counselor of all";
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
@@ -87,11 +85,8 @@ TEST_F(StringStreamTest, WhenAllocatedWithAllocWithConstCharPointer) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest,
-       WhenAllocatedWithAllocWithConstCharPointerAndEmbededNullBytes) {
-  const char* teststr =
-      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
-      "\0without\0understanding\0:(.\"";
+TEST_F(StringStreamTest, StringStreamStrAllocTestWithEmbededNullBytes) {
+  const char* teststr = "Time is the wisest counselor\0of all";
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
@@ -102,13 +97,9 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest,
-       WhenAllocatedWithNAllocWithConstCharPointerAndEmbededNullBytes) {
-  const char* teststr =
-      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
-      "\0without\0understanding\0:(\";"
-      "\0\0I\0did\0not\0get\0a\0chance\0to\0even\0attempt\0that\0exam\0:(.";
-  const size_t strlen_ = 134;
+TEST_F(StringStreamTest, StringStreamStrNAllocTestWithEmbededNullBytes) {
+  const char* teststr = "Time is the wisest counselor\0of all";
+  const size_t strlen_ = 36;
   sstream = StringStreamStrNAlloc(teststr, strlen_);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
@@ -119,41 +110,42 @@ TEST_F(StringStreamTest,
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, WhenReallocatedWithHalfOfTheActaulCapacity) {
+TEST_F(StringStreamTest, StringStreamReallocTest) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
+
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
+
+  // Test if function returns "SSTREAM_REALLOC_NOT_REQUIRED" when reallocated
+  // with a half-length of the original stream length.
   ASSERT_EQ(
       StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH / 2),
       SSTREAM_REALLOC_NOT_REQUIRED);
   ASSERT_EQ(sstream.capacity, capacity);
-}
 
-TEST_F(StringStreamTest, WhenReallocatedWithTwiceOfTheActaulCapacity) {
-  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
-  ASSERT_NE(sstream.data, nullptr);
-  ASSERT_EQ(sstream.length, 0);
-  size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
+  // Test if function returns "SSTREAM_REALLOC_SUCCESS" when reallocated with
+  // twice a length of the original stream length.
   ASSERT_EQ(
       StringStreamRealloc(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH * 2),
       SSTREAM_REALLOC_SUCCESS);
   ASSERT_EQ(sstream.length, 0);
+
+  // Make sure to assert the capacity at the end as extending the length of the
+  // stream also changes the capacity.
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH * 2, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, WhenDeallocatedADefAllocatedSstream) {
+TEST_F(StringStreamTest, StringStreamDeallocTest) {
   sstream = StringStreamAlloc();
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
+
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       SSTREAM_DEFAULT_SIZE, capacity);
@@ -163,13 +155,11 @@ TEST_F(StringStreamTest, WhenDeallocatedADefAllocatedSstream) {
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
-}
 
-TEST_F(StringStreamTest, WhenDeallocatedANonDefaultAllocatedSstream) {
   sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
-  size_t capacity;
+
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
@@ -178,19 +168,14 @@ TEST_F(StringStreamTest, WhenDeallocatedANonDefaultAllocatedSstream) {
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
-}
 
-TEST_F(StringStreamTest, WhenDeallocatedAStrNAllocatedSstream) {
-  const char* teststr =
-      "Mohika says \"I'm that exam question that everyone left without "
-      "understanding :(\"; I did not get a chance to even attempt that exam "
-      ":(.";
-  const size_t strlen_ = 134;
+  const char* teststr = "Time is the wisest counselor of all";
+  const size_t strlen_ = 36;
   sstream = StringStreamStrNAlloc(teststr, strlen_);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, strlen_);
-  size_t capacity;
+
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
@@ -201,14 +186,14 @@ TEST_F(StringStreamTest, WhenDeallocatedAStrNAllocatedSstream) {
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-TEST_F(StringStreamTest, WhenDeallocatedAStrAllocWithEmbededNullBytes) {
-  const char* teststr =
-      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
-      "\0without\0understanding\0:(.\"";
+TEST_F(StringStreamTest, StringStreamDeallocTestWhenAllocatedEmbededNullBytes) {
+  const char* teststr = "Time is the wisest counselor\0of all";
+  const size_t strlen_ = 36;
   sstream = StringStreamStrAlloc(teststr);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
+
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
@@ -218,20 +203,12 @@ TEST_F(StringStreamTest, WhenDeallocatedAStrAllocWithEmbededNullBytes) {
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
-}
 
-TEST_F(StringStreamTest,
-       WhenDeallocatedANAllocatedSstreamWithEmbededNullBytes) {
-  const char* teststr =
-      "Mohika\0says\0\"I'm\0that\0exam\0question\0that\0everyone\0left"
-      "\0without\0understanding\0:(\";"
-      "\0\0I\0did\0not\0get\0a\0chance\0to\0even\0attempt\0that\0exam\0:(.";
-  const size_t strlen_ = 134;
   sstream = StringStreamStrNAlloc(teststr, strlen_);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, strlen_);
-  size_t capacity;
+
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
