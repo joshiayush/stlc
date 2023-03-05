@@ -40,7 +40,7 @@
 class StringStreamModifiersTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (sstream.data != NULL)
+    if (sstream.data != nullptr)
       StringStreamDealloc(&sstream);
   }
 
@@ -50,117 +50,81 @@ class StringStreamModifiersTest : public ::testing::Test {
 
 class StringStreamConcatTest : public StringStreamModifiersTest {};
 
-TEST_F(StringStreamConcatTest, WhenUsedAEmptyStringStreamInstance) {
-  const char* teststr_ = "Mohika is really sweet";
-
+TEST_F(StringStreamConcatTest, StringStreamConcatTest) {
   sstream = StringStreamAlloc();
-  ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, 0);
+  StringStreamConcat(&sstream, "");
+  EXPECT_EQ(std::strlen(sstream.data), 0);
+  EXPECT_EQ(sstream.length, 0);
   size_t capacity;
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamConcat(&sstream, "%s %s", teststr_, "and charming :).");
-  const char* data_ = "Mohika is really sweet and charming :).";
-
-  ASSERT_STREQ(sstream.data, data_);
-  ASSERT_EQ(sstream.length, 39);
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      sstream.length, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
-}
-
-TEST_F(StringStreamConcatTest, WhenUsedAStrAllocatedStringStreamInstance) {
-  const char* teststr_ = "Mohika";
-
-  sstream = StringStreamStrAlloc(teststr_);
-  ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, std::strlen(teststr_));
-  size_t capacity;
+  StringStreamConcat(&sstream, "Hello, %s!", "world");
+  EXPECT_STREQ(sstream.data, "Hello, world!");
+  EXPECT_EQ(sstream.length, std::strlen("Hello, world!"));
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamConcat(&sstream, " %s %s %d%s", "is really sweet :)",
-                     "and talented with a charisma of", 100, "%.");
-  const char* data_ =
-      "Mohika is really sweet :) and talented with a charisma of 100%.";
-
-  ASSERT_STREQ(sstream.data, data_);
-  ASSERT_EQ(sstream.length, 63);
+  // This string will overflow the buffer which will require the
+  // "StringStreamConcat" function to reallocate the "StringStream" buffer in
+  // order to copy the large string.
+  StringStreamConcat(&sstream,
+                     "This is a very long string that will "
+                     "definitely exceed the size of the buffer "
+                     "and cause a reallocation to occur. "
+                     "This is a test string, so don't worry.");
+  EXPECT_EQ(sstream.length,
+            std::strlen("Hello, world!") +
+                std::strlen("This is a very long string that will "
+                            "definitely exceed the size of the buffer "
+                            "and cause a reallocation to occur. "
+                            "This is a test string, so don't worry."));
   cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
+  EXPECT_EQ(sstream.capacity, capacity);
 }
 
 class StringStreamReadTest : public StringStreamModifiersTest {};
 
-TEST_F(StringStreamReadTest, WhenADefaultAllocatedStringStreamInstanceIsUsed) {
+TEST_F(StringStreamReadTest, StringStreamReadTest) {
   sstream = StringStreamAlloc();
-  ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, 0);
-  size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      SSTREAM_DEFAULT_SIZE, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
 
-  const char* readstr =
-      "Mohika is really sweet :) and talented with a charisma of 100%.";
-  StringStreamRead(&sstream, readstr, std::strlen(readstr));
+  const char* data = "This is a test string.";
+  size_t length = std::strlen(data);
 
-  ASSERT_STREQ(sstream.data, readstr);
-  ASSERT_EQ(sstream.length, std::strlen(readstr));
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      sstream.length, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
+  StringStreamRead(&sstream, "", 0);
+  EXPECT_EQ(std::strlen(sstream.data), 0);
+  EXPECT_EQ(sstream.length, 0);
+
+  StringStreamRead(&sstream, data, length);
+  EXPECT_STREQ(sstream.data, data);
+  EXPECT_EQ(sstream.length, length);
+
+  StringStreamRead(&sstream, data, SSTREAM_DEFAULT_SIZE + 10);
+  EXPECT_EQ(sstream.length, length + SSTREAM_DEFAULT_SIZE + 10);
 }
 
-TEST_F(StringStreamReadTest, WhenANAllocatedStringStreamInstanceIsUsed) {
-  const char* readstr =
-      "Mohika is really sweet :) and talented with a charisma of 100%.";
+class StringStreamRetreatTest : public StringStreamModifiersTest {};
 
-  sstream = StringStreamNAlloc(std::strlen(readstr));
-  ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, 0);
-  size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      std::strlen(readstr), capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
+TEST_F(StringStreamRetreatTest, StringStreamRetreatTest) {
+  sstream = StringStreamAlloc();
+  const char* data = "This is a test string.";
+  size_t length = std::strlen(data);
 
-  StringStreamRead(&sstream, readstr, std::strlen(readstr));
+  StringStreamRetreat(&sstream, 5);
+  EXPECT_EQ(std::strlen(sstream.data), 0);
+  EXPECT_EQ(sstream.length, 0);
 
-  ASSERT_STREQ(sstream.data, readstr);
-  ASSERT_EQ(sstream.length, std::strlen(readstr));
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      std::strlen(readstr), capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
-}
+  StringStreamRead(&sstream, data, length);
+  StringStreamRetreat(&sstream, 5);
+  EXPECT_EQ(sstream.length, length - 5);
+  EXPECT_EQ(sstream.data[sstream.length], '\0');
 
-TEST_F(StringStreamReadTest, WhenAStrAllocatedStringStreamInstanceIsUsed) {
-  const char* teststr_ = "Mohika";
-
-  sstream = StringStreamStrAlloc(teststr_);
-  ASSERT_NE(sstream.data, (void*)0);
-  ASSERT_EQ(sstream.length, std::strlen(teststr_));
-  size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      sstream.length, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
-
-  const char* readstr =
-      ", the happiest people don't have the best of everything, they just make "
-      "the best of everything.";
-  StringStreamRead(&sstream, readstr, std::strlen(readstr));
-  const char* data_ =
-      "Mohika, the happiest people don't have the best of everything, they "
-      "just make the best of everything.";
-
-  ASSERT_STREQ(sstream.data, data_);
-  ASSERT_EQ(sstream.length, std::strlen(data_));
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
-      sstream.length, capacity);
-  ASSERT_EQ(sstream.capacity, capacity);
+  StringStreamRetreat(&sstream, length + 5);
+  EXPECT_EQ(sstream.length, 0);
+  EXPECT_EQ(sstream.data[sstream.length], '\0');
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTMODIFIERS_HH_
