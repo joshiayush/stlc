@@ -37,138 +37,82 @@
 #include "bool.h"
 #include "map/map.h"
 
-// Calculates the index of element in the map.
-//
-// Uses `key hash` and the `length` of the bucket to determine the hash value
-// for the element in the map.
-size_t CalculateIndex(hash_t hash, size_t n) { return hash & (n - 0x01); }
+void MapInsert(Map *const map, const void *const key, const size_t key_size,
+               const void *const value, const size_t value_size) {
+  if (map == NULL || key == NULL || value == NULL) return;
 
-// Injects the given set of key-value pair to the given `Map` instance if
-// already exists, overrides it.
-//
-// Generates a hash value using the given key and finds the position of a new
-// `MapEntry` instance in the `buckets` linked list.  To combat collision we
-// extend the already saved `MapEntry` by hooking it up with the new `MapEntry`
-// instance while keeping the order sorted based on the hash computed.
-//
-// Resizes the `Map` instance in case the load factor exceeds the
-// `MAX_LOAD_FACTOR`.
-void MapPut(Map *map, const void *const key, const void *const value) {
-  hash_t hash = map->hash(key);
-  size_t idx = CalculateIndex(hash, map->bucketslen);
+  const hash_t hash = map->hash_func(key);
+  const size_t bucket_index = hash % map->capacity;
+  pthread_mutex_lock(&(map->mutex));
 
-  MapEntry *mapentry = MapAllocEntryWithHash(key, value, hash);
-
-  if (*(map->buckets + idx) == NULL) {
-    *(map->buckets + idx) = mapentry;
-    ++(map->entrieslen);
-  } else {
-    MapEntry *current = map->buckets[idx];
-    while (current->next && hash > current->hash)
-      current = current->next;
-    if ((hash == current->hash) && map->keycmp(key, current->key) == TRUE) {
-      const size_t value_len = strlen((const char *)value);
-      if (value_len > strlen((const char *)current->value)) {
-        current->value = realloc(current->value, value_len * sizeof(char));
-        assert(current->value != NULL);
-      }
-      strcpy((char *)current->value, (const char *)value);
-    } else {
-      MapEntry *tmp_mapentry = current->next;
-      current->next = mapentry;
-      mapentry->next = tmp_mapentry;
-      ++(map->entrieslen);
+  MapEntry *entry = map->buckets[bucket_index];
+  while (entry != NULL) {
+    if (entry->hash == hash && map->key_eq_func(entry->key, key) == TRUE) {
+      free(entry->value);
+      entry->value = (void *)malloc(value_size);
+      memcpy(entry->value, value, value_size);
+      pthread_mutex_unlock(&(map->mutex));
+      return;
     }
+    entry = entry->next;
   }
 
-  if (((double)map->entrieslen / (double)map->bucketslen) > MAX_LOAD_FACTOR)
-    MapRealloc(map);
+  MapEntry *new_entry = (MapEntry *)malloc(sizeof(MapEntry));
+  new_entry->key = (void *)malloc(key_size);
+  memcpy(new_entry->key, key, key_size);
+  new_entry->value = (void *)malloc(value_size);
+  memcpy(new_entry->value, value, value_size);
+  new_entry->hash = hash;
+  new_entry->next = map->buckets[bucket_index];
+  map->buckets[bucket_index] = new_entry;
+  ++(map->size);
+
+  pthread_mutex_unlock(&(map->mutex));
 }
 
-// Returns a `void*` to the value mapped by the given `key`.
-//
-// Traverse through the entries of the bucket at the computed `idx` value and
-// searches for a `hash` value that matches the computed `hash` value.  If we
-// find a value that is greater than the `hash` computed; not equal but greater
-// than then we immediately return `NULL` as having a value greater than the
-// computed `hash` using the `key` can only be possible when we have traversed
-// long enough but did not find any `hash` value equals to the computed `hash`.
-//
-// This should be very reminiscent of what we are doing in function
-// `MapEntry *MapGetEntry(Map *const map, void *const key)`.
-void *MapGet(Map *const map, const void *const key) {
-  MapEntry *mapentry = MapGetEntry(map, key);
-  return mapentry ? mapentry->value : NULL;
+void *MapGet(Map *const map, const void *key) {
+  if (map == NULL || key == NULL) return NULL;
+
+  hash_t hash = map->hash_func(key);
+  size_t bucket_index = hash % map->capacity;
+
+  MapEntry *entry = map->buckets[bucket_index];
+  while (entry != NULL) {
+    if (hash == entry->hash && map->key_eq_func(entry->key, key) == TRUE) {
+      return entry->value;
+    }
+    entry = entry->value;
+  }
+
+  return NULL;
 }
 
-// Returns a `MapEntry*` to the `MapEntry` instance that holds the given `key`.
-//
-// Traverse through the entries of the bucket at the computed `idx` value and
-// searches for a `hash` value that matches the computed `hash` value.  If we
-// find a value that is greater than the `hash` computed; not equal but greater
-// than then we immediately return `NULL` as having a value greater than the
-// computed `hash` using the `key` can only be possible when we have traversed
-// long enough but did not find any `hash` value equals to the computed `hash`.
-MapEntry *MapGetEntry(Map *const map, const void *const key) {
-  hash_t hash = map->hash(key);
-  size_t idx = CalculateIndex(hash, map->bucketslen);
+void MapRemove(Map *const map, const void *key, const size_t key_size) {
+  if (map == NULL || key == NULL || MapGet(map, key) == NULL) return;
 
-  if (map->buckets[idx] == NULL)
-    return NULL;
+  const hash_t hash = map->hash_func(key);
+  const size_t bucket_index = hash % map->capacity;
 
-  MapEntry *current = map->buckets[idx];
+  pthread_mutex_lock(&(map->mutex));
 
-  while (current) {
-    if (hash < current->hash)
-      return (current = NULL);
-    if (hash == current->hash && map->keycmp(key, current->key))
+  MapEntry *entry = map->buckets[bucket_index];
+  MapEntry *prev_entry = NULL;
+  while (entry != NULL) {
+    if (entry->hash == hash && map->key_eq_func(entry->key, key) == TRUE) {
+      if (prev_entry == NULL) {
+        map->buckets[bucket_index] = entry->next;
+      } else {
+        prev_entry->next = entry->next;
+      }
+      free(entry->key);
+      free(entry->value);
+      free(entry);
+      --(map->size);
       break;
-    current = current->next;
+    }
+    prev_entry = entry;
+    entry = entry->next;
   }
 
-  return current;
-}
-
-// Returns a `void*` and removes to/the value mapped by the given `key`.
-//
-// `MapEntry` with the associated key i.e., `key` will be deleted from the
-// free-store while returning a `void*` to the value mapped with the given
-// `key`.
-//
-// This should be very reminiscent of what we are doing in function `MapEntry
-// *MapGetEntry(Map *const map, void *const key)` except after locating the
-// entry in the `buckets` list we free the memory occupied by that `MapEntry`.
-// This function is not responsible to free up the free-store occupied by the
-// value inside of the `MapEntry` the caller should take care of that.
-void *MapRemove(Map *const map, void *const key) {
-  hash_t hash = map->hash(key);
-  size_t idx = CalculateIndex(hash, map->bucketslen);
-
-  if (map->buckets[idx] == NULL)
-    return NULL;
-
-  MapEntry *current = map->buckets[idx];
-  MapEntry *prev = NULL;
-
-  while (current) {
-    if (hash < current->hash)
-      return (current = NULL);
-    if (hash == current->hash && map->keycmp(key, current->key))
-      break;
-    prev = current;
-    current = current->next;
-  }
-
-  if (current == NULL)
-    return NULL;
-
-  void *ret = current->value;
-  if (prev)
-    prev->next = current->next;
-  else
-    map->buckets[idx] = current->next;
-  free(current);
-  --(map->entrieslen);
-
-  return ret;
+  pthread_mutex_unlock(&(map->mutex));
 }

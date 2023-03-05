@@ -36,59 +36,12 @@
 extern "C" {
 #endif
 
-// Calculates the index of element in the map.
-//
-// Uses `key hash` and the `length` of the bucket to determine the hash value
-// for the element in the map.
-size_t CalculateIndex(hash_t hash, size_t n);
+void MapInsert(Map *const map, const void *const key, const size_t key_size,
+               const void *const value, const size_t value_size);
 
-// Injects the given set of key-value pair to the given `Map` instance if
-// already exists, overrides it.
-//
-// Generates a hash value using the given key and finds the position of a new
-// `MapEntry` instance in the `buckets` linked list.  To combat collision we
-// extend the already saved `MapEntry` by hooking it up with the new `MapEntry`
-// instance while keeping the order sorted based on the hash computed.
-//
-// Resizes the `Map` instance in case the load factor exceeds the
-// `MAX_LOAD_FACTOR`.
-void MapPut(Map *const map, const void *const key, const void *const value);
+void *MapGet(Map *const map, const void *key);
 
-// Returns a `void*` to the value mapped by the given `key`.
-//
-// Traverse through the entries of the bucket at the computed `idx` value and
-// searches for a `hash` value that matches the computed `hash` value.  If we
-// find a value that is greater than the `hash` computed; not equal but greater
-// than then we immediately return `NULL` as having a value greater than the
-// computed `hash` using the `key` can only be possible when we have traversed
-// long enough but did not find any `hash` value equals to the computed `hash`.
-//
-// This should be very reminiscent of what we are doing in function
-// `MapEntry *MapGetEntry(Map *const map, void *const key)`.
-void *MapGet(Map *const map, const void *const key);
-
-// Returns a `MapEntry*` to the `MapEntry` instance that holds the given `key`.
-//
-// Traverse through the entries of the bucket at the computed `idx` value and
-// searches for a `hash` value that matches the computed `hash` value.  If we
-// find a value that is greater than the `hash` computed; not equal but greater
-// than then we immediately return `NULL` as having a value greater than the
-// computed `hash` using the `key` can only be possible when we have traversed
-// long enough but did not find any `hash` value equals to the computed `hash`.
-MapEntry *MapGetEntry(Map *const map, const void *const key);
-
-// Returns a `void*` and removes to/the value mapped by the given `key`.
-//
-// `MapEntry` with the associated key i.e., `key` will be deleted from the
-// free-store while returning a `void*` to the value mapped with the given
-// `key`.
-//
-// This should be very reminiscent of what we are doing in function `MapEntry
-// *MapGetEntry(Map *const map, void *const key)` except after locating the
-// entry in the `buckets` list we free the memory occupied by that `MapEntry`.
-// This function is not responsible to free up the free-store occupied by the
-// value inside of the `MapEntry` the caller should take care of that.
-void *MapRemove(Map *const map, void *const key);
+void MapRemove(Map *const map, const void *key, const size_t key_size);
 
 #ifdef __cplusplus
 }

@@ -32,8 +32,8 @@ BasedOnStyle: Google
 
 # Never allow single line blocks even if the code block is short
 # because that will kill the debugability of the program
-AllowShortBlocksOnASingleLine: Never
-AllowShortIfStatementsOnASingleLine: Never
-AllowShortLoopsOnASingleLine: false
+AllowShortBlocksOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: true
+AllowShortLoopsOnASingleLine: true
 
 FixNamespaceComments: true

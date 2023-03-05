@@ -39,7 +39,7 @@
 // The given predicate must conform to the signature of the
 // `TraversePredicate` type and must not try to update its pointers.
 void MapTraverse(Map *const map, TraversePredicate predicate) {
-  for (size_t i = 0; i < map->bucketslen; ++i) {
+  for (size_t i = 0; i < map->capacity; ++i) {
     MapEntry *current = *(map->buckets + i);
     while (current) {
       predicate(current->key, current->value);
@@ -56,7 +56,7 @@ void MapTraverse(Map *const map, TraversePredicate predicate) {
 // this `predicate` also takes in a `Map` instance as its first parameter.
 void MapTraverseWithMapInstance(Map *const map,
                                 TraverseWithMapInstancePredicate predicate) {
-  for (size_t i = 0; i < map->bucketslen; ++i) {
+  for (size_t i = 0; i < map->capacity; ++i) {
     MapEntry *current = *(map->buckets + i);
     while (current) {
       predicate(map, current->key, current->value);
@@ -67,7 +67,7 @@ void MapTraverseWithMapInstance(Map *const map,
 
 MapIterator MapIteratorNew(Map *const map) {
   MapIterator it = {.map = map, .cur_bucket_idx = 0, .cur_entry = NULL};
-  while (it.cur_bucket_idx < map->bucketslen) {
+  while (it.cur_bucket_idx < map->capacity) {
     if (map->buckets[it.cur_bucket_idx]) {
       it.cur_entry = map->buckets[it.cur_bucket_idx];
       break;
@@ -78,11 +78,10 @@ MapIterator MapIteratorNew(Map *const map) {
 }
 
 MapEntry *MapIteratorNext(MapIterator *const it) {
-  if (it->cur_bucket_idx >= it->map->bucketslen)
-    return NULL;
+  if (it->cur_bucket_idx >= it->map->capacity) return NULL;
   MapEntry *mapentry = it->cur_entry;
   MapEntry *current = mapentry->next;
-  while (current == NULL && it->cur_bucket_idx < it->map->bucketslen) {
+  while (current == NULL && it->cur_bucket_idx < it->map->capacity) {
     ++(it->cur_bucket_idx);
     current = it->map->buckets[it->cur_bucket_idx];
   }

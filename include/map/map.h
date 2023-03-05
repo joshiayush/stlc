@@ -30,9 +30,14 @@
 #ifndef CJSON_INCLUDE_DATA_MAP_MAP_H_
 #define CJSON_INCLUDE_DATA_MAP_MAP_H_
 
+#include <pthread.h>
 #include <sys/types.h>
 
 #include "bool.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 // We are pretty much doing everything in constant time if we don't have a load
 // factor greater than `1`.
@@ -42,10 +47,6 @@
 //                      #Buckets
 #define MAX_LOAD_FACTOR 0.75f
 #define MAP_DEFAULT_BUCKET_LEN (1 << 4)
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 // Custom type to represent hash data.
 typedef size_t hash_t;
@@ -64,7 +65,7 @@ typedef hash_t (*hash_f)(const void* key);
 // Function defined with this signature takes `const void*` to the keys of the
 // `Map` which means you can pass in a data of any type that makes a `key`
 // pair inside the `Map`.
-typedef bool_t (*keycmp_f)(const void* key1, const void* key2);
+typedef bool_t (*key_eq_f)(const void* key1, const void* key2);
 
 // Creates a Map entry inside of a bucket.  This map entry is later extended in
 // case the `LoadFactor` exceeds by `1` due to collision.
@@ -72,98 +73,30 @@ typedef struct MapEntry {
   void* key;
   void* value;
   hash_t hash;
-  // Pointer to the entires inside a bucket to combat collisions.
+  // Pointer to the entires inside a bucket to combat collisions by keeping the
+  // number of entries always less than the number of buckets:
   //
-  // +~~~~~~~~~~~~~~~~+  +~> +~~~~~~~~~~~~~~~~+
-  // !      key       !  !   !      key       !
-  // !      value     !  !   !      value     !
-  // !      hash      !  !   !      hash      !
-  // +~~~~~~~~~~~~~~~~+  !   +~~~~~~~~~~~~~~~~+
-  // !      next  ~~~~+~~+   !      next  ~~~~+~~> NULL
-  // +~~~~~~~~~~~~~~~~+      +~~~~~~~~~~~~~~~~+
+  //       +~~~~~~~~~~~~~~~~~~~~+      +~~~~~~~~~~~~~~~~~~~~+
+  //       ! key|value|hash|next+~~~~> + key|value|hash|next+~~~> NULL
+  //       +~~~~~~~~~~~~~~~~~~~~+      +~~~~~~~~~~~~~~~~~~~~+
   struct MapEntry* next;
 } MapEntry;
 
-// Creates a `MapEntry` instance with the given key-value pairs and a hash.
-//
-// Allocates a `MapEntry` instance in the free-store and fills that memory
-// with the given values.  Remember to free the returned `MapEntry` instance
-// when not needed.
-MapEntry* MapAllocEntryWithHash(const void* key, const void* value,
-                                const hash_t hash);
+void MapEntryInit(MapEntry* map_entry, const void* key, const size_t key_size,
+                  const void* value, const size_t value_size,
+                  const hash_t hash);
 
 typedef struct Map {
-  hash_f hash;
-  keycmp_f keycmp;
-
-  // Each bucket is an element of a singly linked list so we want to have access
-  // to its head.
+  hash_f hash_func;
+  key_eq_f key_eq_func;
   MapEntry** buckets;
-
-  size_t bucketslen;
-  size_t entrieslen;
+  size_t capacity;
+  size_t size;
+  pthread_mutex_t mutex;
 } Map;
 
-// Allocates a `Map` instance of a default bucket length of
-// `MAP_DEFAULT_BUCKET_LEN` provided the `hash` function to generate a hash and
-// a `keycmp` function to compare two distinct keys inside a `Map` instance is
-// given.
-//
-// While allocating a `Map` instance you can also use the built-in hash
-// generator function `Hash()` to generate a hash value from a `key` regardless
-// of its data type and also the built-in key compare function `KeyCmp()` to
-// compare two distinct keys.
-Map MapAlloc(hash_f hash, keycmp_f keycmp);
-
-// Allocates a `Map` instance of the given `bucketslen` provided the `hash`
-// function to generate a hash and a `keycmp` function to compare two distinct
-// keys inside a `Map` instance.
-//
-// While allocating a `Map` instance you can also use the built-in hash
-// generator function `Hash()` to generate a hash value from a `key` regardless
-// of its data type and also the built-in key compare function `KeyCmp()` to
-// compare two distinct keys.
-Map MapAllocNBuckets(size_t bucketslen, hash_f hash, keycmp_f keycmp);
-
-// Allocates a `Map` instance when the number of entries that are going to be in
-// our bucket is given.
-//
-// Explicitly providing the number of entries in the entire `Map` instance is
-// helpful to keep the `MAX_LOAD_FACTOR` below 0.75 by increasing the amount of
-// buckets our `Map` instance can hold, thus minimizing the chances of
-// collision.
-//
-// While allocating a `Map` instance you can also use the built-in hash
-// generator function `Hash()` to generate a hash value from a `key` regardless
-// of its data type and also the built-in key compare function `KeyCmp()` to
-// compare two distinct keys.
-Map MapAllocNEntries(const size_t entrieslen, hash_f hash, keycmp_f keycmp);
-
-// Re-allocates a `Map` instance by extending the `bucketslen` until the
-// following does not evaluates to true:
-//
-//                      #Entries
-//      LoadFactor > ~~~~~~~~~~~~~~
-//                      #Buckets
-//
-// Calling this function will result in a new `Map` instance which would be
-// the exact copy of the previous `Map` instance except for the `bucketslen`.
-//
-// We want to re-allocate the `Map` instance and extend the number of buckets
-// it currently has so to combat the chances of collisions.
-void MapRealloc(Map* map);
-
-// Copies `src` to `dest`.
-//
-// This function will not make the copies of the values stored inside of the
-// `src` hash map but will create a new bucket list of pointers pointing to the
-// values inside `src` hash map.
-//
-// This is mainly used when `src` instance is stored in the `stack` while the
-// values inside of it are stored in the `free-store` and you don't want to lose
-// the memory when `src` goes out of scope; thus it's better to copy the entire
-// `src` hash map bucket into a new bucket that is dynamically allocated.
-void MapCopy(Map* const dest, Map* const src);
+void MapInit(Map* const map, const size_t capacity, hash_f hash_func,
+             key_eq_f key_eq_func);
 
 // Frees up a `Map` instance and the entries associated with it.
 //
@@ -171,48 +104,6 @@ void MapCopy(Map* const dest, Map* const src);
 // `Map` instance after calling this function the `Map` data reference passed
 // becomes empty.
 void MapFree(Map* const map);
-
-// Frees up a `Map` instance and the entries associated with it with their
-// `key-value` pairs.
-//
-// This function is resposible for clearning up the free-store occupied by your
-// `Map` instance after calling this function the `Map` data reference passed
-// becomes empty and the values stored as `key-value` pairs inside of the `Map`
-// instance will be destroyed forever.
-void MapFreeDeep(Map* const map);
-
-// Private function to free up the space occupied by the entries in a bucket.
-//
-// Takes in a `MapEntry` instance but frees up all the other entries linked
-// with that map entry and leaves the map entry given intially unchanged.
-//
-// Only the neighbours are freed using this function not the head node you still
-// need to free the head node by yourself.  This function is an implementation
-// detail, you should not use it as it is not the part of the public API.
-void MapFreeEntryImpl(MapEntry* const mapentry);
-
-// Private function to free up the space occupied by the entries and their
-// respective `key-value` pairs in a bucket.
-//
-// Takes in a `MapEntry` instance but frees up all the other entries linked
-// with that map entry and leaves the map entry given intially unchanged.
-//
-// Only the neighbours are freed using this function not the head node you still
-// need to free the head node by yourself.  This function is an implementation
-// detail, you should not use it as it is not the part of the public API.
-//
-// The `key-value` pair stored inside of the initial `MapEntry` will always get
-// destroyed from the free-store but not the `MapEntry` container.
-void MapFreeEntryDeepImpl(MapEntry* const mapentry);
-
-// Returns a `Map` instance with the built-in support for hash generation and
-// key comparison.  Key must always be a string data and the value could be
-// anything.
-Map MapAllocStrAsKey(void);
-
-// Returns a `Map` instance with the number of given `entrieslen` entries and
-// with the built-in support for hash generation and key comparison.
-Map MapAllocNStrAsKey(const size_t entrieslen);
 
 // Creates a hash from a `key` of `string` data type.
 //
