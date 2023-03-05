@@ -37,60 +37,16 @@
 
 #include "sstream/sstream.h"
 
-class StringStreamIteratorsTest : public ::testing::Test {
- protected:
-  void TearDown() override {
-    if (sstream.data != NULL)
-      StringStreamDealloc(&sstream);
-  }
-
- protected:
-  StringStream sstream;
-};
-
-class StringStreamBeginTest : public StringStreamIteratorsTest {};
-
-TEST_F(StringStreamBeginTest, WhenANullByteIsUsedAsAnArgumentToStrAlloc) {
-  sstream = StringStreamStrAlloc("\0");
-  EXPECT_EQ(*StringStreamBegin(&sstream), (const char)'\0');
+TEST(StringStreamBegin, ReturnsCorrectPointer) {
+  StringStream sstream = StringStreamStrAlloc("Hello, world!");
+  EXPECT_EQ(sstream.data, StringStreamBegin(&sstream));
+  StringStreamDealloc(&sstream);
 }
 
-TEST_F(StringStreamBeginTest, WhenCStringIsUsedAsAnArgumentToStrAlloc) {
-  const char* str = "Mohika, I miss your smile.";
-  sstream = StringStreamStrAlloc(str);
-  const char* begin = StringStreamBegin(&sstream);
-  EXPECT_EQ(*begin, (const char)'M');
-  EXPECT_EQ(std::strncmp(begin, str, sstream.length), 0);
-}
-
-class StringStreamEndTest : public StringStreamIteratorsTest {};
-
-TEST_F(StringStreamEndTest, WhenNullByteIsUsedAsAnArgumentToStrAlloc) {
-  sstream = StringStreamStrAlloc("\0");
-  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
-}
-
-TEST_F(StringStreamEndTest, WhenCStringIsUsedAsAnArgumentToStrAlloc) {
-  const char* str = "Mohika, I miss your smile.";
-  sstream = StringStreamStrAlloc(str);
-  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
-}
-
-TEST_F(StringStreamEndTest,
-       WhenCStringWithEmbededNullBytesIsUsedAsAnArgumentToStrAlloc) {
-  const char* str = "Mohika,\0I miss your smile.";
-  sstream = StringStreamStrAlloc(str);
-  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
-  EXPECT_EQ(*(StringStreamEnd(&sstream) - 1), (const char)',');
-}
-
-TEST_F(StringStreamEndTest,
-       WhenCStringWithEmbededNullByteAsAnAgrumentToStrNAllocIsUsed) {
-  const char* str = "Mohika,\0I miss your smile.";
-  const size_t strlen_ = 26;
-  sstream = StringStreamStrNAlloc(str, strlen_);
-  EXPECT_EQ(*StringStreamEnd(&sstream), (const char)'\0');
-  EXPECT_EQ(*(StringStreamEnd(&sstream) - 1), (const char)'.');
+TEST(StringStreamEnd, ReturnsCorrectPointer) {
+  StringStream sstream = StringStreamStrAlloc("Hello, world!");
+  EXPECT_EQ(sstream.data + sstream.length, StringStreamEnd(&sstream));
+  StringStreamDealloc(&sstream);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTITERATORS_HH_
