@@ -40,13 +40,12 @@
 // buffer.
 void ChrCStrLiteral(const char chr, char* buffer) {
   if ((chr >= 0x20 && chr <= 0x7E) && chr != '\'' && chr != '\"' &&
-      chr != '\\') {
-    char chr_to_str_buffer[2] = {
-        chr, '\0'};  // `strcat` doesn't support character to string
-                     // concatenation so we have to make an extra step to
-                     // convert our character to string.
-    strcat(buffer, chr_to_str_buffer);  // Opposite of control characters can be
-                                        // saved just as they are.
+      chr != '\\') {  // Opposite of control characters can be saved just as
+                      // they are.
+    // `strcat` doesn't support character to string concatenation so we have to
+    // make an extra step to convert our character to string.
+    char chr_to_str_buffer[2] = {chr, '\0'};
+    strcat(buffer, chr_to_str_buffer);
   } else {
     switch (chr) {
       case '\a':
@@ -81,11 +80,9 @@ void ChrCStrLiteral(const char chr, char* buffer) {
         break;
       default: {
         char buffer_[6];
-        snprintf(buffer_, 6, "\\0x%02x",
-                 (unsigned char)(chr));  // This handles control
-                                         // characters that are not
-                                         // printable and does not
-                                         // meet any case.
+        // This handles control characters that are not printable and does not
+        // meet any case.
+        snprintf(buffer_, 6, "\\0x%02x", (unsigned char)(chr));
         strcat(buffer, buffer_);
       } break;
     }

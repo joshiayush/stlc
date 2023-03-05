@@ -32,48 +32,112 @@
 
 #include <gtest/gtest.h>
 
+#include <cstring>
 #include <string>
 
 #include "bool.h"
 #include "sstream/sstream.h"
 
-TEST(ChrCStrLiteralTest, TestWithNonControlCharacters) {
-  const char* str = "//foo//bar//buzz";
-  const size_t strlen_ = sizeof(str);
+#define _MAX_BUFFER_CAPACITY 1024
 
-  char* buffer =
-      reinterpret_cast<char*>(std::malloc(sizeof(strlen_) * sizeof(char)));
-  for (size_t i = 0; i < strlen_; ++i)
-    *(buffer + i) = '\0';
-  for (size_t i = 0; i < strlen_; ++i)
-    ChrCStrLiteral(str[i], buffer);
+class ChrCStrLiteralTest : public ::testing::Test {
+ protected:
+  void SetUp() override { std::memset(buffer, 0, sizeof(buffer)); }
 
-  EXPECT_STREQ(buffer, "//foo//bar//buzz");
+ protected:
+  char buffer[_MAX_BUFFER_CAPACITY];
+};
 
-  std::free(buffer);
+TEST_F(ChrCStrLiteralTest, TestWithControlCharacters) {
+  memset(buffer, 0, sizeof(buffer));
+  ChrCStrLiteral('\'', buffer);
+  ASSERT_STREQ(buffer, "\\'");
+
+  memset(buffer, 0, sizeof(buffer));
+  ChrCStrLiteral('\r', buffer);
+  ASSERT_STREQ(buffer, "\\r");
+
+  memset(buffer, 0, sizeof(buffer));
+  ChrCStrLiteral('\x1b', buffer);
+  ASSERT_STREQ(buffer, "\\0x1b");
+
+  memset(buffer, 0, sizeof(buffer));
+  ChrCStrLiteral('\0', buffer);
+  ASSERT_STREQ(buffer, "\\0x00");
 }
 
-TEST(PrintSstreamTest, TestPrintSstreamWhenPrintedAString) {
-  StringStream sstream = StringStreamStrAlloc("foo//bar//buzz");
+TEST_F(ChrCStrLiteralTest, TestWithNonControlCharacters) {
+  ChrCStrLiteral('A', buffer);
+  ASSERT_STREQ(buffer, "A");
+}
 
-  testing::internal::CaptureStdout();
-  PrintSstream(&sstream, FALSE);
-  std::string stdout_output = testing::internal::GetCapturedStdout();
+class ReprSstreamTest : public ::testing::Test {
+ protected:
+  void TearDown() override {
+    if (sstream.data != nullptr)
+      StringStreamDealloc(&sstream);
+  }
 
-  EXPECT_STREQ(stdout_output.c_str(), "foo//bar//buzz");
+ protected:
+  StringStream sstream;
+};
 
+TEST_F(ReprSstreamTest, ReprSstreamTest) {
+  sstream = StringStreamStrAlloc("");
+  ReprSstream(&sstream);
+  ASSERT_STREQ(sstream.data, "");
+  StringStreamDealloc(&sstream);
+
+  sstream = StringStreamStrAlloc("This is a\ttest string.\n");
+  ReprSstream(&sstream);
+  ASSERT_STREQ(sstream.data, "This is a\\ttest string.\\n");
+  StringStreamDealloc(&sstream);
+
+  sstream = StringStreamStrAlloc("\t\n\r");
+  ReprSstream(&sstream);
+  ASSERT_STREQ(sstream.data, "\\t\\n\\r");
   StringStreamDealloc(&sstream);
 }
 
-TEST(PrintSstreamTest, TestPrintSstreamWithAStringContainingEscapeSequences) {
-  StringStream sstream = StringStreamStrAlloc("\foo\bar");
+class PrintSstreamTest : public ::testing::Test {
+ protected:
+  void TearDown() override {
+    if (sstream.data != nullptr)
+      StringStreamDealloc(&sstream);
+  }
 
+ protected:
+  StringStream sstream;
+};
+
+TEST_F(PrintSstreamTest, PrintSstreamTestWhenNotEscaped) {
+  sstream = StringStreamStrAlloc("Hello, World!\n");
   testing::internal::CaptureStdout();
-  PrintSstream(&sstream, TRUE);
-  std::string stdout_output = testing::internal::GetCapturedStdout();
+  PrintSstream(&sstream, false);
+  std::string output = testing::internal::GetCapturedStdout();
+  ASSERT_STREQ(output.c_str(), sstream.data);
+}
 
-  EXPECT_STREQ(stdout_output.c_str(), "\\foo\\bar");
+TEST_F(PrintSstreamTest, PrintSstreamTestWhenEscaped) {
+  sstream = StringStreamStrAlloc("");
+  testing::internal::CaptureStdout();
+  PrintSstream(&sstream, true);
+  std::string output = testing::internal::GetCapturedStdout();
+  ASSERT_STREQ(output.c_str(), sstream.data);
+  StringStreamDealloc(&sstream);
 
+  sstream = StringStreamStrAlloc("This is a\ttest string.\n");
+  testing::internal::CaptureStdout();
+  PrintSstream(&sstream, true);
+  output = testing::internal::GetCapturedStdout();
+  ASSERT_STREQ(output.c_str(), "This is a\\ttest string.\\n");
+  StringStreamDealloc(&sstream);
+
+  sstream = StringStreamStrAlloc("\t\n\r");
+  testing::internal::CaptureStdout();
+  PrintSstream(&sstream, true);
+  output = testing::internal::GetCapturedStdout();
+  ASSERT_STREQ(output.c_str(), "\\t\\n\\r");
   StringStreamDealloc(&sstream);
 }
 
