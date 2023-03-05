@@ -45,13 +45,11 @@ class GetStringStreamAvailableSpaceTest : public ::testing::Test {
   StringStream sstream;
 };
 
-TEST_F(GetStringStreamAvailableSpaceTest, WhenStringStreamDefAllocIsUsed) {
+TEST_F(GetStringStreamAvailableSpaceTest, GetStringStreamAvailableSpaceTest) {
   sstream = StringStreamAlloc();
   ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
             sstream.capacity - sstream.length - 1);
-}
 
-TEST_F(GetStringStreamAvailableSpaceTest, WhenStringStreamAllocIsUsed) {
   const size_t strlen_ = 2147483648;
   sstream = StringStreamNAlloc(strlen_);
   ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
