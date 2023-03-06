@@ -70,6 +70,17 @@ bool_t KeyCmp(const void* key1, const void* key2) {
   return strcmp((char*)key1, (char*)key2) == 0 ? TRUE : FALSE;
 }
 
+// Initializes a MapEntry with the specified key, key size, value, value size,
+// hash, and next MapEntry.
+//
+// Params:
+//  map_entry  - A pointer to the MapEntry to be initialized.
+//  key        - A pointer to the key.
+//  key_size   - The size of the key.
+//  value      - A pointer to the value.
+//  value_size - The size of the value.
+//  hash       - The hash value for the key.
+//  next       - A pointer to the next MapEntry in the map.
 void MapEntryInit(MapEntry* map_entry, const void* key, const size_t key_size,
                   const void* value, const size_t value_size, const hash_t hash,
                   MapEntry* const next) {
@@ -77,36 +88,109 @@ void MapEntryInit(MapEntry* map_entry, const void* key, const size_t key_size,
   map_entry->value = NULL;
   if (map_entry == NULL || key == NULL || value == NULL) return;
 
-  map_entry->key = (void*)malloc(key_size);
-  assert(map_entry->key != NULL);
+  if ((map_entry->key = (void*)malloc(key_size)) == NULL) {
+    fprintf(stderr, "MapEntryInit: failed to allocate key for key_size: %zu\n",
+            key_size);
+    return;
+  }
   memcpy(map_entry->key, key, key_size);
 
-  map_entry->value = (void*)malloc(value_size);
-  assert(map_entry->value != NULL);
+  if ((map_entry->value = (void*)malloc(value_size)) == NULL) {
+    fprintf(stderr,
+            "MapEntryInit: failed to allocate value for value_size: %zu\n",
+            value_size);
+    return;
+  }
   memcpy(map_entry->value, value, value_size);
 
   map_entry->hash = hash;
   map_entry->next = NULL;
 }
 
+// Initializes a new instance of the Map data structure with the specified
+// capacity and hash and key comparison functions.
+//
+// Params:
+//  map         - A pointer to the Map data structure to be initialized.
+//  capacity    - The capacity of the Map, which is the number of buckets to
+//                allocate.
+//  hash_func   - A pointer to the hash function used to calculate hash codes
+//                for keys.
+//  key_eq_func - A pointer to the key comparison function used to compare keys
+//                for equality.
+//
+// Remarks:
+//  This function initializes a new instance of the Map data structure with the
+//  specified capacity, hash function, and key comparison function. It sets the
+//  size of the Map to 0 and allocates the necessary memory for the Map's
+//  buckets. If the pointer passed to `map` is NULL, this function returns
+//  immediately without doing anything.
+//
+//  The `hash_func` function should take a const void* pointer to a key and its
+//  size as arguments and return a hash_t value. The `key_eq_func` function
+//  should take two const void* pointers to keys and their sizes as arguments
+//  and return a boolean value indicating whether they are equal or not.
 void MapInit(Map* const map, const size_t capacity, hash_f hash_func,
              key_eq_f key_eq_func) {
   if (map == NULL) return;
+  if (capacity < MAP_MIN_CAPACITY || capacity > MAP_MAX_CAPACITY) {
+    fprintf(stderr, "MapInit: capacity out of range [%zu, %zu]: %zu\n",
+            MAP_MIN_CAPACITY, MAP_MAX_CAPACITY, capacity);
+    return;
+  }
+
   map->capacity = capacity;
   map->size = 0;
   map->hash_func = hash_func;
   map->key_eq_func = key_eq_func;
-  map->buckets = (MapEntry**)calloc(capacity, sizeof(MapEntry*));
-  map->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
+  if ((map->buckets = (MapEntry**)calloc(capacity, sizeof(MapEntry*))) ==
+      NULL) {
+    fprintf(stderr, "MapInit: failed to allocate buckets for capacity: %zu\n",
+            capacity);
+    return;
+  }
+  if (pthread_mutex_init(&map->mutex, NULL) != 0) {
+    fprintf(stderr, "MapInit: failed to initialize mutex\n");
+    free(map->buckets);
+  }
 }
 
+// Re-allocates a `Map` instance with the specified capacity inside the default
+// capacity constraints, rehashing all the entries.
+//
+// Params:
+//  map          - A pointer to the `Map` data structure to be re-allocated.
+//  new_capacity - The new capacity of the `Map`, which is the number of buckets
+//                 to allocate.
+//
+// Remarks:
+//  This function acquires a mutex lock before accessing the map for thread
+//  safety.
+//    * If `map` is `NULL`, the function returns without doing anything.
+//    * If allocation of `new_buckets` fails, the function returns with an error
+//      message.
+//
+//  The function rehashes all entries in the current map to their new bucket
+//  index in the new map
+//    * If `map->size` is greater than `new_capacity`, `map->size` is set to
+//      `new_capacity`.
 void MapRealloc(Map* const map, const size_t new_capacity) {
   if (map == NULL) return;
+  if (new_capacity < MAP_MIN_CAPACITY || new_capacity > MAP_MAX_CAPACITY) {
+    fprintf(stderr, "MapRealloc: capacity out of range [%zu, %zu]: %zu\n",
+            MAP_MIN_CAPACITY, MAP_MAX_CAPACITY, new_capacity);
+    return;
+  }
 
   pthread_mutex_lock(&map->mutex);
 
-  MapEntry** new_buckets = (MapEntry**)calloc(new_capacity, sizeof(MapEntry*));
-  assert(new_buckets != NULL);
+  MapEntry** new_buckets;
+  if ((new_buckets = (MapEntry**)calloc(new_capacity, sizeof(MapEntry*))) ==
+      NULL) {
+    fprintf(stderr, "MapRealloc: failed to allocate buckets for capacity: %zu",
+            new_capacity);
+    return;
+  }
 
   for (size_t i = 0; i < map->capacity; ++i) {
     MapEntry* entry = map->buckets[i];
@@ -126,6 +210,11 @@ void MapRealloc(Map* const map, const size_t new_capacity) {
   pthread_mutex_unlock(&map->mutex);
 }
 
+// Frees up a `Map` instance and the entries associated with it.
+//
+// This function is resposible for clearning up the free-store occupied by your
+// `Map` instance after calling this function the `Map` data reference passed
+// becomes empty.
 void MapFree(Map* map) {
   if (map == NULL) return;
 

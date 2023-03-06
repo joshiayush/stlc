@@ -36,11 +36,55 @@
 extern "C" {
 #endif
 
+// Insert a new key-value pair into the map.
+//
+// Args:
+//  map        - A pointer to the map to insert the key-value pair into.
+//  key        - A pointer to the key to insert.
+//  key_size   - The size of the key in bytes.
+//  value      - A pointer to the value to insert.
+//  value_size - The size of the value in bytes.
+//
+// Remarks:
+//  If the map, key, or value pointers are NULL, this function will immediately
+//  return without doing anything. The key and value pointers must point to
+//  valid memory of the specified sizes. If a key already exists in the map, its
+//  value will be replaced with the new value.
+//
+// Thread Safety:
+//  This function locks the mutex associated with the map while it is performing
+//  its operations to ensure thread safety.
 void MapInsert(Map *const map, const void *const key, const size_t key_size,
                const void *const value, const size_t value_size);
 
+// Retrieve the value associated with the given key in the map.
+//
+// Params:
+//  map - A pointer to the map.
+//  key - A pointer to the key.
+//
+// Returns:
+//  A pointer to the value associated with the key, or NULL if the key is not
+//  found in the map.
+//
+// Remarks:
+//  This function assumes that the `hash_func` and `key_eq_func` fields of the
+//  map are properly set to the hash function and key equality function used to
+//  initialize the map. Also note that this function does not check if the map
+//  or key pointers are NULL, as passing NULL to these parameters is considered
+//  undefined behavior.
 void *MapGet(Map *const map, const void *key);
 
+// Remove an entry from the map with the given key.
+//
+// Params:
+//  map      - The map from which to remove the entry.
+//  key      - The key of the entry to remove.
+//  key_size - The size of the key in bytes.
+//
+// Effects:
+//  * Removes an entry from the map with the given key, if it exists.
+//  * Frees the memory used by the removed entry.
 void MapRemove(Map *const map, const void *key, const size_t key_size);
 
 #ifdef __cplusplus

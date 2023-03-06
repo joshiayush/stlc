@@ -39,6 +39,9 @@
 extern "C" {
 #endif
 
+#define MAP_MIN_CAPACITY 0x20
+#define MAP_MAX_CAPACITY 0xF4240
+
 // Custom type to represent hash data.
 typedef size_t hash_t;
 
@@ -64,6 +67,7 @@ typedef struct MapEntry {
   void* key;
   void* value;
   hash_t hash;
+
   // Pointer to the entires inside a bucket to combat collisions by keeping the
   // number of entries always less than the number of buckets:
   //
@@ -73,10 +77,36 @@ typedef struct MapEntry {
   struct MapEntry* next;
 } MapEntry;
 
+// Initializes a MapEntry with the specified key, key size, value, value size,
+// hash, and next MapEntry.
+//
+// Params:
+//  map_entry  - A pointer to the MapEntry to be initialized.
+//  key        - A pointer to the key.
+//  key_size   - The size of the key.
+//  value      - A pointer to the value.
+//  value_size - The size of the value.
+//  hash       - The hash value for the key.
+//  next       - A pointer to the next MapEntry in the map.
 void MapEntryInit(MapEntry* map_entry, const void* key, const size_t key_size,
                   const void* value, const size_t value_size, const hash_t hash,
                   MapEntry* const next);
 
+// The Map structure represents a hash table that associates keys with values.
+// It contains the following fields:
+//
+// Attributes:
+//  hash_func   - a function pointer to the hash function used to generate hash
+//                values for keys.
+//  key_eq_func - a function pointer to the key equality function used to
+//                compare keys for equality.
+//  buckets     - a pointer to an array of MapEntry pointers, which represent
+//                the entries stored in the hash table.
+//  capacity    - the maximum number of MapEntry pointers that can be stored in
+//                buckets.
+//  size        - the number of MapEntry pointers currently stored in buckets.
+//  mutex       - a mutex used to synchronize access to the hash table in a
+//                multi-threaded context.
 typedef struct Map {
   hash_f hash_func;
   key_eq_f key_eq_func;
@@ -86,9 +116,52 @@ typedef struct Map {
   pthread_mutex_t mutex;
 } Map;
 
+// Initializes a new instance of the Map data structure with the specified
+// capacity and hash and key comparison functions.
+//
+// Params:
+//  map         - A pointer to the Map data structure to be initialized.
+//  capacity    - The capacity of the Map, which is the number of buckets to
+//                allocate.
+//  hash_func   - A pointer to the hash function used to calculate hash codes
+//                for keys.
+//  key_eq_func - A pointer to the key comparison function used to compare keys
+//                for equality.
+//
+//
+// Remarks:
+//  This function initializes a new instance of the Map data structure with the
+//  specified capacity, hash function, and key comparison function. It sets the
+//  size of the Map to 0 and allocates the necessary memory for the Map's
+//  buckets. If the pointer passed to `map` is NULL, this function returns
+//  immediately without doing anything.
+//
+//  The `hash_func` function should take a const void* pointer to a key and its
+//  size as arguments and return a hash_t value. The `key_eq_func` function
+//  should take two const void* pointers to keys and their sizes as arguments
+//  and return a boolean value indicating whether they are equal or not.
 void MapInit(Map* const map, const size_t capacity, hash_f hash_func,
              key_eq_f key_eq_func);
 
+// Re-allocates a `Map` instance with the specified capacity inside the default
+// capacity constraints, rehashing all the entries.
+//
+// Params:
+//  map          - A pointer to the `Map` data structure to be re-allocated.
+//  new_capacity - The new capacity of the `Map`, which is the number of buckets
+//                 to allocate.
+//
+// Remarks:
+//  This function acquires a mutex lock before accessing the map for thread
+//  safety.
+//    * If `map` is `NULL`, the function returns without doing anything.
+//    * If allocation of `new_buckets` fails, the function returns with an error
+//      message.
+//
+//  The function rehashes all entries in the current map to their new bucket
+//  index in the new map
+//    * If `map->size` is greater than `new_capacity`, `map->size` is set to
+//      `new_capacity`.
 void MapRealloc(Map* const map, const size_t new_capacity);
 
 // Frees up a `Map` instance and the entries associated with it.
