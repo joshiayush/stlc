@@ -38,7 +38,6 @@
 #include "bool.h"
 #include "map/map.h"
 #include "map/ops.h"
-#include "utils.hh"
 
 TEST(HashTest, SameStringReturnsSameHashValue) {
   const char* key = "hello world";
@@ -215,6 +214,72 @@ TEST(MapMutexTest, ThreadSafety) {
                  map.hash_func(keys[i]), nullptr);
     ASSERT_STREQ((char*)entry.value, values[i]);
   }
+
+  MapFree(&map);
+}
+
+TEST(MapReallocTest, EmptyMapRealloc) {
+  Map map;
+  MapInit(&map, 2, Hash, KeyCmp);
+  MapRealloc(&map, 4);
+
+  EXPECT_EQ(map.capacity, 4);
+  EXPECT_EQ(map.size, 0);
+
+  MapFree(&map);
+}
+
+TEST(MapReallocTest, NonEmptyMapRealloc) {
+  Map map;
+  MapInit(&map, 4, Hash, KeyCmp);
+
+  MapInsert(&map, "key1", std::strlen("key1"), "value1", std::strlen("value1"));
+  MapInsert(&map, "key2", std::strlen("key2"), "value2", std::strlen("value2"));
+  MapInsert(&map, "key3", std::strlen("key3"), "value3", std::strlen("value3"));
+  MapInsert(&map, "key4", std::strlen("key4"), "value4", std::strlen("value4"));
+
+  MapRealloc(&map, 8);
+
+  EXPECT_EQ(map.capacity, 8);
+  EXPECT_EQ(map.size, 4);
+
+  MapFree(&map);
+}
+
+TEST(MapReallocTest, MapReallocWithSameCapacity) {
+  Map map;
+  MapInit(&map, 4, Hash, KeyCmp);
+
+  MapInsert(&map, "key1", std::strlen("key1"), "value1", std::strlen("value1"));
+  MapInsert(&map, "key2", std::strlen("key2"), "value2", std::strlen("value2"));
+  MapInsert(&map, "key3", std::strlen("key3"), "value3", std::strlen("value3"));
+  MapInsert(&map, "key4", std::strlen("key4"), "value4", std::strlen("value4"));
+
+  MapRealloc(&map, 4);
+
+  EXPECT_EQ(map.capacity, 4);
+  EXPECT_EQ(map.size, 4);
+
+  MapFree(&map);
+}
+
+TEST(MapReallocTest, MapReallocWithSmallerCapacity) {
+  Map map;
+  MapInit(&map, 8, Hash, KeyCmp);
+
+  MapInsert(&map, "key1", std::strlen("key1"), "value1", std::strlen("value1"));
+  MapInsert(&map, "key2", std::strlen("key2"), "value2", std::strlen("value2"));
+  MapInsert(&map, "key3", std::strlen("key3"), "value3", std::strlen("value3"));
+  MapInsert(&map, "key4", std::strlen("key4"), "value4", std::strlen("value4"));
+  MapInsert(&map, "key5", std::strlen("key5"), "value5", std::strlen("value5"));
+  MapInsert(&map, "key6", std::strlen("key6"), "value6", std::strlen("value6"));
+  MapInsert(&map, "key7", std::strlen("key7"), "value7", std::strlen("value7"));
+  MapInsert(&map, "key8", std::strlen("key8"), "value8", std::strlen("value8"));
+
+  MapRealloc(&map, 4);
+
+  EXPECT_EQ(map.capacity, 4);
+  EXPECT_EQ(map.size, 4);
 
   MapFree(&map);
 }

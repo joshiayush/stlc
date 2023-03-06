@@ -100,6 +100,32 @@ void MapInit(Map* const map, const size_t capacity, hash_f hash_func,
   map->mutex = (pthread_mutex_t)PTHREAD_MUTEX_INITIALIZER;
 }
 
+void MapRealloc(Map* const map, const size_t new_capacity) {
+  if (map == NULL) return;
+
+  pthread_mutex_lock(&map->mutex);
+
+  MapEntry** new_buckets = (MapEntry**)calloc(new_capacity, sizeof(MapEntry*));
+  assert(new_buckets != NULL);
+
+  for (size_t i = 0; i < map->capacity; ++i) {
+    MapEntry* entry = map->buckets[i];
+    while (entry != NULL) {
+      MapEntry* next_entry = entry->next;
+      const size_t new_bucket_index = entry->hash % new_capacity;
+      entry->next = new_buckets[new_bucket_index];
+      new_buckets[new_bucket_index] = entry;
+      entry = next_entry;
+    }
+  }
+  free(map->buckets);
+  map->buckets = new_buckets;
+  map->capacity = new_capacity;
+  if (map->size > map->capacity) map->size = map->capacity;
+
+  pthread_mutex_unlock(&map->mutex);
+}
+
 void MapFree(Map* map) {
   if (map == NULL) return;
 

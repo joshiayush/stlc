@@ -39,15 +39,6 @@
 extern "C" {
 #endif
 
-// We are pretty much doing everything in constant time if we don't have a load
-// factor greater than `1`.
-//
-//                      #Entries
-//      LoadFactor = ~~~~~~~~~~~~~~    <= 1 for O(1)
-//                      #Buckets
-#define MAX_LOAD_FACTOR 0.75f
-#define MAP_DEFAULT_BUCKET_LEN (1 << 4)
-
 // Custom type to represent hash data.
 typedef size_t hash_t;
 
@@ -97,6 +88,8 @@ typedef struct Map {
 
 void MapInit(Map* const map, const size_t capacity, hash_f hash_func,
              key_eq_f key_eq_func);
+
+void MapRealloc(Map* const map, const size_t new_capacity);
 
 // Frees up a `Map` instance and the entries associated with it.
 //
