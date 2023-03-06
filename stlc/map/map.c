@@ -71,19 +71,19 @@ bool_t KeyCmp(const void* key1, const void* key2) {
 }
 
 void MapEntryInit(MapEntry* map_entry, const void* key, const size_t key_size,
-                  const void* value, const size_t value_size,
-                  const hash_t hash) {
+                  const void* value, const size_t value_size, const hash_t hash,
+                  MapEntry* const next) {
   map_entry->key = NULL;
   map_entry->value = NULL;
   if (map_entry == NULL || key == NULL || value == NULL) return;
 
   map_entry->key = (void*)malloc(key_size);
   assert(map_entry->key != NULL);
-  strncpy(map_entry->key, key, key_size);
+  memcpy(map_entry->key, key, key_size);
 
   map_entry->value = (void*)malloc(value_size);
   assert(map_entry->value != NULL);
-  strncpy(map_entry->value, value, value_size);
+  memcpy(map_entry->value, value, value_size);
 
   map_entry->hash = hash;
   map_entry->next = NULL;

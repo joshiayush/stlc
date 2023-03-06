@@ -108,7 +108,7 @@ class MapEntryInitTest : public ::testing::Test {
 
 TEST_F(MapEntryInitTest, SavesTheGivenValues) {
   MapEntry entry;
-  MapEntryInit(&entry, key, key_size, value, value_size, hash);
+  MapEntryInit(&entry, key, key_size, value, value_size, hash, nullptr);
 
   ASSERT_STREQ((char*)entry.key, key);
   ASSERT_STREQ((char*)entry.value, value);
@@ -121,7 +121,7 @@ TEST_F(MapEntryInitTest, SavesTheGivenValues) {
 
 TEST_F(MapEntryInitTest, NullArgsTest) {
   MapEntry entry;
-  MapEntryInit(&entry, nullptr, key_size, nullptr, value_size, hash);
+  MapEntryInit(&entry, nullptr, key_size, nullptr, value_size, hash, nullptr);
 
   ASSERT_EQ(entry.key, nullptr);
   ASSERT_EQ(entry.value, nullptr);
@@ -131,7 +131,7 @@ TEST_F(MapEntryInitTest, NullArgsTest) {
 
 TEST_F(MapEntryInitTest, EmptyArgsTest) {
   MapEntry entry;
-  MapEntryInit(&entry, "", 1, "", 1, hash);
+  MapEntryInit(&entry, "", 1, "", 1, hash, nullptr);
 
   ASSERT_STREQ((char*)entry.key, "");
   ASSERT_STREQ((char*)entry.value, "");
@@ -212,7 +212,7 @@ TEST(MapMutexTest, ThreadSafety) {
     MapEntry entry;
     MapEntryInit(&entry, keys[i], std::strlen(keys[i]), MapGet(&map, keys[i]),
                  std::strlen((char*)MapGet(&map, keys[i])),
-                 map.hash_func(keys[i]));
+                 map.hash_func(keys[i]), nullptr);
     ASSERT_STREQ((char*)entry.value, values[i]);
   }
 

@@ -58,12 +58,8 @@ void MapInsert(Map *const map, const void *const key, const size_t key_size,
   }
 
   MapEntry *new_entry = (MapEntry *)malloc(sizeof(MapEntry));
-  new_entry->key = (void *)malloc(key_size);
-  memcpy(new_entry->key, key, key_size);
-  new_entry->value = (void *)malloc(value_size);
-  memcpy(new_entry->value, value, value_size);
-  new_entry->hash = hash;
-  new_entry->next = map->buckets[bucket_index];
+  MapEntryInit(new_entry, key, key_size, value, value_size, hash,
+               map->buckets[bucket_index]);
   map->buckets[bucket_index] = new_entry;
   ++(map->size);
 

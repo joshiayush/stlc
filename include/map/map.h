@@ -83,8 +83,8 @@ typedef struct MapEntry {
 } MapEntry;
 
 void MapEntryInit(MapEntry* map_entry, const void* key, const size_t key_size,
-                  const void* value, const size_t value_size,
-                  const hash_t hash);
+                  const void* value, const size_t value_size, const hash_t hash,
+                  MapEntry* const next);
 
 typedef struct Map {
   hash_f hash_func;
