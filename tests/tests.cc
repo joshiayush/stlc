@@ -34,6 +34,7 @@
 #include "testString.hh"
 
 /* Header files including tests for `map` API. */
+#include "map/testIterators.hh"
 #include "map/testMap.hh"
 
 /* Header files including tests for `sstream` API. */

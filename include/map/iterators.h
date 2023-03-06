@@ -36,47 +36,26 @@
 extern "C" {
 #endif
 
-// Defines a `function pointer` type to take in a `function pointer` by
-// reference.  Used in function
-// `void MapTraverse(Map *const, TraversePredicate)` as its predicate.
-typedef void (*TraversePredicate)(void *const key, void *const value);
-
-// Defines a `function pointer` type to take in a `function pointer` by
-// reference.  Used in function
-// `void MapTraverseWithMapInstance(Map *map,
-//                                  TraverseWithMapInstancePredicate
-//                                  predicate)`
-// as its predicate.  The only difference with `TraversePredicate` type is that
-// it also takes in an extra argument i.e., the `Map` instance.
-typedef void (*TraverseWithMapInstancePredicate)(Map *const map,
-                                                 void *const key,
-                                                 void *const value);
-
-// Traverses through the `Map` instance and executes the given `predicate` on
-// each pair of the `Map` instance.
+// Traverses the entire map and calls the given predicate function on each map
+// element.
 //
-// The given predicate must conform to the signature of the
-// `TraversePredicate` type and must not try to update its pointers.
-void MapTraverse(Map *const map, TraversePredicate predicate);
-
-// Traverses through the `Map` instance and executes the given `predicate` on
-// each pair of the `Map` instance.
+// Params:
+//  map       - A pointer to the map to traverse.
+//  predicate - A function pointer to the predicate function to call on each map
+//              element.
+//              The function should have the signature:
+//                    void (*predicate)(void* key, void* value).
+//              The key and value arguments passed to the function are pointers
+//              to the actual key and value stored in the map.
 //
-// This should be very reminiscent of what we did in function
-// `void MapTraverse(Map *const, TraversePredicate)` except for the fact that
-// this `predicate` also takes in a `Map` instance as its first parameter.
-void MapTraverseWithMapInstance(Map *const map,
-                                TraverseWithMapInstancePredicate predicate);
-
-typedef struct MapIterator {
-  Map *map;
-  size_t cur_bucket_idx;
-  MapEntry *cur_entry;
-} MapIterator;
-
-MapIterator MapIteratorNew(Map *const map);
-
-MapEntry *MapIteratorNext(MapIterator *const it);
+// Returns:
+//  The number of map elements traversed.
+//
+// Remarks:
+//  The function acquires the map mutex lock before traversing the map to ensure
+//  thread safety. The function does not modify the map or its elements.
+void MapTraverse(Map *const map,
+                 bool_t (*predicate)(const void *key, const void *value));
 
 #ifdef __cplusplus
 }

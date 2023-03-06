@@ -31,60 +31,45 @@
 
 #include <stdio.h>
 
+#include "bool.h"
+#include "map/iterators.h"
 #include "map/map.h"
 
-// Traverses through the `Map` instance and executes the given `predicate` on
-// each pair of the `Map` instance.
+// Traverses the entire map and calls the given predicate function on each map
+// element.
 //
-// The given predicate must conform to the signature of the
-// `TraversePredicate` type and must not try to update its pointers.
-void MapTraverse(Map *const map, TraversePredicate predicate) {
-  for (size_t i = 0; i < map->capacity; ++i) {
-    MapEntry *current = *(map->buckets + i);
-    while (current) {
-      predicate(current->key, current->value);
-      current = current->next;
-    }
-  }
-}
-
-// Traverses through the `Map` instance and executes the given `predicate` on
-// each pair of the `Map` instance.
+// Params:
+//  map       - A pointer to the map to traverse.
+//  predicate - A function pointer to the predicate function to call on each map
+//              element.
+//              The function should have the signature:
+//                    void (*predicate)(void* key, void* value).
+//              The key and value arguments passed to the function are pointers
+//              to the actual key and value stored in the map.
 //
-// This should be very reminiscent of what we did in function
-// `void MapTraverse(Map *const, TraversePredicate)` except for the fact that
-// this `predicate` also takes in a `Map` instance as its first parameter.
-void MapTraverseWithMapInstance(Map *const map,
-                                TraverseWithMapInstancePredicate predicate) {
-  for (size_t i = 0; i < map->capacity; ++i) {
-    MapEntry *current = *(map->buckets + i);
-    while (current) {
-      predicate(map, current->key, current->value);
-      current = current->next;
+// Returns:
+//  The number of map elements traversed.
+//
+// Remarks:
+//  The function acquires the map mutex lock before traversing the map to ensure
+//  thread safety. The function does not modify the map or its elements.
+void MapTraverse(Map *const map,
+                 bool_t (*predicate)(const void *key, const void *value)) {
+  if (map == NULL || predicate == NULL) return;
+
+  pthread_mutex_lock(&map->mutex);
+
+  for (size_t i = 0; i < map->capacity; i++) {
+    MapEntry *entry = map->buckets[i];
+
+    while (entry != NULL) {
+      if (predicate(entry->key, entry->value) == FALSE) {
+        pthread_mutex_unlock(&map->mutex);
+        return;
+      }
+      entry = entry->next;
     }
   }
-}
 
-MapIterator MapIteratorNew(Map *const map) {
-  MapIterator it = {.map = map, .cur_bucket_idx = 0, .cur_entry = NULL};
-  while (it.cur_bucket_idx < map->capacity) {
-    if (map->buckets[it.cur_bucket_idx]) {
-      it.cur_entry = map->buckets[it.cur_bucket_idx];
-      break;
-    }
-    ++(it.cur_bucket_idx);
-  }
-  return it;
-}
-
-MapEntry *MapIteratorNext(MapIterator *const it) {
-  if (it->cur_bucket_idx >= it->map->capacity) return NULL;
-  MapEntry *mapentry = it->cur_entry;
-  MapEntry *current = mapentry->next;
-  while (current == NULL && it->cur_bucket_idx < it->map->capacity) {
-    ++(it->cur_bucket_idx);
-    current = it->map->buckets[it->cur_bucket_idx];
-  }
-  it->cur_entry = current;
-  return mapentry;
+  pthread_mutex_unlock(&map->mutex);
 }
