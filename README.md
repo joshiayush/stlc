@@ -2,7 +2,7 @@
 
 # Introduction
 
-[__stlc__](https://github.com/joshiayush/stlc) is a simple library without any dependencies providing support for **StringStream**, **Vector**, **Map**, and **File System Routines**.
+[**stlc**](https://github.com/joshiayush/stlc) is a simple library without any dependencies providing support for **StringStream**, **Vector**, **Map**, and **File System Routines**.
 
 The **`STL`** is a collection of reusable data structures and algorithms that provide a standardized way of writing efficient and reliable code in C. It can save time and effort for programmers by providing pre-built functions and structures that can be easily used in a variety of applications.
 
@@ -24,16 +24,12 @@ Clone the repository.
 git clone https://github.com/joshiayush/stlc.git
 ```
 
-**Build stlc**
-
-Next step is to build `stlc` as a shared library using our build system `cmake`.
+**Install `libstlc`**
 
 ```shell
-cmake -B build/ -S .
-cmake --build build/
+sudo chmod +x ./tools/install_libstlc.sh
+./tools/install_libstlc.sh
 ```
-
-This will build `stlc` library as `libstlc.so` file inside the `build` directory.
 
 **Build tests**
 
@@ -47,7 +43,7 @@ cmake --build build/
 Now run the `tests`,
 
 ```shell
-./tests/tests  # Runs the unit tests
+./build/tests/tests  # Runs the unit tests
 ```
 
 <div align="right">
@@ -63,8 +59,8 @@ Now run the `tests`,
 ### Creating and Initializing a `StringStream`
 
 ```c
-#include "stlc/bool.h"
-#include "stlc/sstream/sstream.h"
+#include <stlc/bool.h>
+#include <stlc/sstream/sstream.h>
 
 int main() {
   // Creating an StringStream instance
@@ -83,21 +79,21 @@ int main() {
 ```c
 #include <stdio.h>
 
-#include "stlc/sstream/sstream.h"
+#include <stlc/sstream/sstream.h>
 
 int main() {
   // Creating an empty StringStream
   StringStream sstream = StringStreamAlloc();
 
   FILE* file = fopen("/path/to/file.txt", "r");
-  
+
   // Read file contents into the stream
   StringStreamReadFile(&sstream, file, 0);
 
   // Return the resource acquired
   fclose(file);
 
-  printf("%s", sstream.data);
+  PrintSstream(&sstream, FALSE);
   printf("Total bytes stored %d.", sstream.length);
 }
 ```
