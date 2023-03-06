@@ -91,8 +91,8 @@ class MapEntryInitTest : public ::testing::Test {
   void SetUp() override {
     key = "name";
     value = "Ritu";
-    key_size = strlen(key) + 1;
-    value_size = strlen(value) + 1;
+    key_size = std::strlen(key) + 1;
+    value_size = std::strlen(value) + 1;
     hash = Hash(key);
   }
 
@@ -172,6 +172,50 @@ TEST(MapInitTest, InitNullKeyEqFunc) {
   Map map;
   MapInit(&map, 10, Hash, nullptr);
   EXPECT_EQ(map.key_eq_func, nullptr);
+  MapFree(&map);
+}
+
+void* MapThreadFunc(void* arg) {
+  Map* map = (Map*)arg;
+
+  for (int i = 0; i < 1000; i++) {
+    MapInsert(map, "key", std::strlen("key") + 1, "value",
+              std::strlen("value") + 1);
+    MapGet(map, "key");
+    MapRemove(map, "key", std::strlen("key") + 1);
+  }
+
+  return NULL;
+}
+
+TEST(MapMutexTest, ThreadSafety) {
+  Map map;
+  MapInit(&map, 10, Hash, KeyCmp);
+
+  const char* keys[] = {"key1", "key2", "key3", "key4", "key5"};
+  const char* values[] = {"value1", "value2", "value3", "value4", "value5"};
+  const int num_entries = sizeof(keys) / sizeof(keys[0]);
+  for (int i = 0; i < num_entries; i++) {
+    MapInsert(&map, keys[i], std::strlen(keys[i]) + 1, values[i],
+              std::strlen(values[i]) + 1);
+  }
+
+  const int num_threads = 10;
+  pthread_t threads[num_threads];
+  for (int i = 0; i < num_threads; i++) {
+    pthread_create(&threads[i], NULL, MapThreadFunc, &map);
+  }
+
+  for (int i = 0; i < num_threads; i++) pthread_join(threads[i], NULL);
+
+  for (int i = 0; i < num_entries; i++) {
+    MapEntry entry;
+    MapEntryInit(&entry, keys[i], std::strlen(keys[i]), MapGet(&map, keys[i]),
+                 std::strlen((char*)MapGet(&map, keys[i])),
+                 map.hash_func(keys[i]));
+    ASSERT_STREQ((char*)entry.value, values[i]);
+  }
+
   MapFree(&map);
 }
 
