@@ -64,13 +64,14 @@ Now run the `tests`,
 
 int main() {
   // Creating an StringStream instance
-  StringStream sstream = StringStreamStrAlloc("Hello, World!");
+  StringStream sstream;
+  StringStreamStrInit(&sstream, "Hello, World!", -1);
 
   // Printing the contents of the StringStream
   PrintSstream(&sstream, FALSE);
 
   // Deallocating the StringStream
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 ```
 
@@ -83,7 +84,8 @@ int main() {
 
 int main() {
   // Creating an empty StringStream
-  StringStream sstream = StringStreamAlloc();
+  StringStream sstream;
+  StringStreamInit(&sstream, -1);
 
   FILE* file = fopen("/path/to/file.txt", "r");
 

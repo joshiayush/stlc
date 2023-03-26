@@ -37,8 +37,7 @@
 class GetStringStreamAvailableSpaceTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (sstream.data != NULL)
-      StringStreamDealloc(&sstream);
+    if (sstream.data != NULL) StringStreamFree(&sstream);
   }
 
  protected:
@@ -46,12 +45,12 @@ class GetStringStreamAvailableSpaceTest : public ::testing::Test {
 };
 
 TEST_F(GetStringStreamAvailableSpaceTest, GetStringStreamAvailableSpaceTest) {
-  sstream = StringStreamAlloc();
+  StringStreamInit(&sstream, -1);
   ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
             sstream.capacity - sstream.length - 1);
 
   const size_t strlen_ = 2147483648;
-  sstream = StringStreamNAlloc(strlen_);
+  StringStreamInit(&sstream, strlen_);
   ASSERT_EQ(_GET_STRING_STREAM_AVAILABLE_SPACE(sstream),
             sstream.capacity - sstream.length - 1);
 }

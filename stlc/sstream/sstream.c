@@ -44,57 +44,41 @@ static void ComputeStringStreamBufferCapacity(const size_t length,
   *capacity += length;
 }
 
-// Returns a initialized `StringStream` instance.
-//
-// This function will initialize a `StringStream` container with a initial
-// `length` of `_SSTREAM_DEFAULT_SIZE`.
-//
-// Memory blocks allocated for `StringStream` instances are allocated using the
-// `capacity` calculated by the given `length` i.e., `SSTREAM_DEFAULT_SIZE`.
-StringStream StringStreamAlloc(void) {
-  return StringStreamNAlloc(SSTREAM_DEFAULT_SIZE);
-}
-
-// Returns a initialized `StringStream` instance of given length.
+// Initializes a `StringStream` instance of given length.
 //
 // Memory blocks allocated for `StringStream` instance will match the value of
 // `capacity` which we calculate using the function
 // `ComputeStringStreamBufferCapacity()`.
-StringStream StringStreamNAlloc(const size_t length) {
-  StringStream sstream = {.data = (void*)0, .length = 0, .capacity = 0};
+void StringStreamInit(StringStream* const sstream, const ssize_t length) {
+  sstream->data = (void*)0;
+  sstream->length = 0;
+  sstream->capacity = 0;
   size_t capacity;
-  ComputeStringStreamBufferCapacity(length, &capacity);
-  if (sstream.data = (char*)malloc(capacity * sizeof(char))) {
-    sstream.capacity = capacity;
-    _TERMINATE_STRING_STREAM_BUFFER(sstream);
+  ComputeStringStreamBufferCapacity(length > -1 ? length : SSTREAM_DEFAULT_SIZE,
+                                    &capacity);
+  if (sstream->data = (char*)malloc(capacity * sizeof(char))) {
+    sstream->capacity = capacity;
+    _TERMINATE_STRING_STREAM_BUFFER(*sstream);
   }
-  return sstream;
 }
 
-// Returns a initialized `StringStream` instance from a `const char*` C-String.
+// Initializes `StringStream` instance from a `const char*` C-String.
 //
 // The length of the `StringStream` instance will be the number of items from
 // the first element to the first NULL byte in the string.
 //
-// Use `StringStreamNAlloc` to allocate a `StringStream` instance with a
-// C-String containing `NULL` bytes in between.
-StringStream StringStreamStrAlloc(const char* string) {
-  return StringStreamStrNAlloc(string, strlen(string));
-}
-
-// Returns a initialized `StringStream` instance from a `const char*` C-String
-// by copying `n` bytes to `StringStream.data`.
-//
 // Copies all the characters from the given C-String to the `data` member inside
-// `StringStream` instance regardless of any `NULL` byte on the way.
-StringStream StringStreamStrNAlloc(const char* string, const size_t length) {
-  StringStream sstream = StringStreamNAlloc(length);
-  if (sstream.capacity) {
-    memcpy(sstream.data, string, length * sizeof(char));
-    sstream.length = length;
-    _TERMINATE_STRING_STREAM_BUFFER(sstream);
+// `StringStream` instance regardless of any `NULL` byte on the way when
+// `length` is set.
+void StringStreamStrInit(StringStream* const sstream, const char* string,
+                         const ssize_t length) {
+  size_t slength = length > -1 ? length : strlen(string);
+  StringStreamInit(sstream, slength);
+  if (sstream->capacity) {
+    memcpy(sstream->data, string, slength * sizeof(char));
+    sstream->length = slength;
+    _TERMINATE_STRING_STREAM_BUFFER(*sstream);
   }
-  return sstream;
 }
 
 // Reallocates the free-store space occupied by the given `StringStream`
@@ -110,8 +94,7 @@ StringStream StringStreamStrNAlloc(const char* string, const size_t length) {
 //  * `SSTREAM_REALLOC_SUCCESS` if the re-allocation was successful, or
 //  * `SSTREAM_REALLOC_FAILURE` if the re-allocation failed.
 u_int8_t StringStreamRealloc(StringStream* const sstream, const size_t length) {
-  if (length <= sstream->capacity)
-    return SSTREAM_REALLOC_NOT_REQUIRED;
+  if (length <= sstream->capacity) return SSTREAM_REALLOC_NOT_REQUIRED;
   size_t capacity;
   ComputeStringStreamBufferCapacity(length, &capacity);
   char* data = sstream->data;
@@ -129,7 +112,7 @@ u_int8_t StringStreamRealloc(StringStream* const sstream, const size_t length) {
 }
 
 // Deallocates the memory occupied by the `StringStream` instance.
-void StringStreamDealloc(StringStream* const sstream) {
+void StringStreamFree(StringStream* const sstream) {
   sstream->length = 0;
   sstream->capacity = 0;
   free(sstream->data);

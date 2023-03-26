@@ -38,7 +38,8 @@
 #include "sstream/sstream.h"
 
 TEST(StringStreamReadFile, StringStreamReadFileTest) {
-  StringStream sstream = StringStreamAlloc();
+  StringStream sstream;
+  StringStreamInit(&sstream, -1);
   FILE* file = std::fopen("test.txt", "w");
   ASSERT_NE(file, nullptr);
   const char* content = "This is a test file.\n";
@@ -54,11 +55,12 @@ TEST(StringStreamReadFile, StringStreamReadFileTest) {
   EXPECT_STREQ(sstream.data, content);
 
   std::remove("test.txt");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 
 TEST(StringStreamWriteFile, StringStreamWriteFileTest) {
-  StringStream sstream = StringStreamAlloc();
+  StringStream sstream;
+  StringStreamInit(&sstream, -1);
   StringStreamConcat(&sstream, "This is a test string.");
   FILE* file = std::fopen("test.txt", "w");
   ASSERT_NE(file, nullptr);
@@ -73,7 +75,7 @@ TEST(StringStreamWriteFile, StringStreamWriteFileTest) {
   EXPECT_STREQ(buffer, "is a ");
 
   std::remove("test.txt");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTFILEIO_HH_

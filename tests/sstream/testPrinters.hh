@@ -74,8 +74,7 @@ TEST_F(ChrCStrLiteralTest, TestWithNonControlCharacters) {
 class ReprSstreamTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (sstream.data != nullptr)
-      StringStreamDealloc(&sstream);
+    if (sstream.data != nullptr) StringStreamFree(&sstream);
   }
 
  protected:
@@ -83,27 +82,26 @@ class ReprSstreamTest : public ::testing::Test {
 };
 
 TEST_F(ReprSstreamTest, ReprSstreamTest) {
-  sstream = StringStreamStrAlloc("");
+  StringStreamStrInit(&sstream, "", -1);
   ReprSstream(&sstream);
   ASSERT_STREQ(sstream.data, "");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 
-  sstream = StringStreamStrAlloc("This is a\ttest string.\n");
+  StringStreamStrInit(&sstream, "This is a\ttest string.\n", -1);
   ReprSstream(&sstream);
   ASSERT_STREQ(sstream.data, "This is a\\ttest string.\\n");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 
-  sstream = StringStreamStrAlloc("\t\n\r");
+  StringStreamStrInit(&sstream, "\t\n\r", -1);
   ReprSstream(&sstream);
   ASSERT_STREQ(sstream.data, "\\t\\n\\r");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 
 class PrintSstreamTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (sstream.data != nullptr)
-      StringStreamDealloc(&sstream);
+    if (sstream.data != nullptr) StringStreamFree(&sstream);
   }
 
  protected:
@@ -111,7 +109,7 @@ class PrintSstreamTest : public ::testing::Test {
 };
 
 TEST_F(PrintSstreamTest, PrintSstreamTestWhenNotEscaped) {
-  sstream = StringStreamStrAlloc("Hello, World!\n");
+  StringStreamStrInit(&sstream, "Hello, World!\n", -1);
   testing::internal::CaptureStdout();
   PrintSstream(&sstream, false);
   std::string output = testing::internal::GetCapturedStdout();
@@ -119,26 +117,26 @@ TEST_F(PrintSstreamTest, PrintSstreamTestWhenNotEscaped) {
 }
 
 TEST_F(PrintSstreamTest, PrintSstreamTestWhenEscaped) {
-  sstream = StringStreamStrAlloc("");
+  StringStreamStrInit(&sstream, "", -1);
   testing::internal::CaptureStdout();
   PrintSstream(&sstream, true);
   std::string output = testing::internal::GetCapturedStdout();
   ASSERT_STREQ(output.c_str(), sstream.data);
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 
-  sstream = StringStreamStrAlloc("This is a\ttest string.\n");
+  StringStreamStrInit(&sstream, "This is a\ttest string.\n", -1);
   testing::internal::CaptureStdout();
   PrintSstream(&sstream, true);
   output = testing::internal::GetCapturedStdout();
   ASSERT_STREQ(output.c_str(), "This is a\\ttest string.\\n");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 
-  sstream = StringStreamStrAlloc("\t\n\r");
+  StringStreamStrInit(&sstream, "\t\n\r", -1);
   testing::internal::CaptureStdout();
   PrintSstream(&sstream, true);
   output = testing::internal::GetCapturedStdout();
   ASSERT_STREQ(output.c_str(), "\\t\\n\\r");
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTPRINTERS_HH_

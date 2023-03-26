@@ -43,8 +43,7 @@
 class StringStreamTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (sstream.data != nullptr)
-      StringStreamDealloc(&sstream);
+    if (sstream.data != nullptr) StringStreamFree(&sstream);
   }
 
  protected:
@@ -52,7 +51,7 @@ class StringStreamTest : public ::testing::Test {
 };
 
 TEST_F(StringStreamTest, StringStreamAllocTest) {
-  sstream = StringStreamAlloc();
+  StringStreamInit(&sstream, -1);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(*sstream.data, '\0');
   ASSERT_EQ(sstream.length, 0);
@@ -63,7 +62,7 @@ TEST_F(StringStreamTest, StringStreamAllocTest) {
 }
 
 TEST_F(StringStreamTest, StringStreamNAllocTest) {
-  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  StringStreamInit(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(*sstream.data, '\0');
   ASSERT_EQ(sstream.length, 0);
@@ -75,7 +74,7 @@ TEST_F(StringStreamTest, StringStreamNAllocTest) {
 
 TEST_F(StringStreamTest, StringStreamStrAllocTest) {
   const char* teststr = "Time is the wisest counselor of all";
-  sstream = StringStreamStrAlloc(teststr);
+  StringStreamStrInit(&sstream, teststr, -1);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
@@ -87,7 +86,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocTest) {
 
 TEST_F(StringStreamTest, StringStreamStrAllocTestWithEmbededNullBytes) {
   const char* teststr = "Time is the wisest counselor\0of all";
-  sstream = StringStreamStrAlloc(teststr);
+  StringStreamStrInit(&sstream, teststr, -1);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
@@ -100,7 +99,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocTestWithEmbededNullBytes) {
 TEST_F(StringStreamTest, StringStreamStrNAllocTestWithEmbededNullBytes) {
   const char* teststr = "Time is the wisest counselor\0of all";
   const size_t strlen_ = 36;
-  sstream = StringStreamStrNAlloc(teststr, strlen_);
+  StringStreamStrInit(&sstream, teststr, strlen_);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
   ASSERT_EQ(sstream.length, strlen_);
@@ -111,7 +110,7 @@ TEST_F(StringStreamTest, StringStreamStrNAllocTestWithEmbededNullBytes) {
 }
 
 TEST_F(StringStreamTest, StringStreamReallocTest) {
-  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  StringStreamInit(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
 
@@ -141,8 +140,8 @@ TEST_F(StringStreamTest, StringStreamReallocTest) {
   ASSERT_EQ(sstream.capacity, capacity);
 }
 
-TEST_F(StringStreamTest, StringStreamDeallocTest) {
-  sstream = StringStreamAlloc();
+TEST_F(StringStreamTest, StringStreamFreeTest) {
+  StringStreamInit(&sstream, -1);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
 
@@ -151,12 +150,12 @@ TEST_F(StringStreamTest, StringStreamDeallocTest) {
       SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
 
-  sstream = StringStreamNAlloc(_ARBITRARY_SSTREAM_TESTING_LENGTH);
+  StringStreamInit(&sstream, _ARBITRARY_SSTREAM_TESTING_LENGTH);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
 
@@ -164,14 +163,14 @@ TEST_F(StringStreamTest, StringStreamDeallocTest) {
       _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
 
   const char* teststr = "Time is the wisest counselor of all";
   const size_t strlen_ = 36;
-  sstream = StringStreamStrNAlloc(teststr, strlen_);
+  StringStreamStrInit(&sstream, teststr, strlen_);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, strlen_);
@@ -180,16 +179,16 @@ TEST_F(StringStreamTest, StringStreamDeallocTest) {
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-TEST_F(StringStreamTest, StringStreamDeallocTestWhenAllocatedEmbededNullBytes) {
+TEST_F(StringStreamTest, StringStreamFreeTestWhenAllocatedEmbededNullBytes) {
   const char* teststr = "Time is the wisest counselor\0of all";
   const size_t strlen_ = 36;
-  sstream = StringStreamStrAlloc(teststr);
+  StringStreamStrInit(&sstream, teststr, -1);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
@@ -199,12 +198,12 @@ TEST_F(StringStreamTest, StringStreamDeallocTestWhenAllocatedEmbededNullBytes) {
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);
 
-  sstream = StringStreamStrNAlloc(teststr, strlen_);
+  StringStreamStrInit(&sstream, teststr, strlen_);
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, strlen_);
@@ -213,7 +212,7 @@ TEST_F(StringStreamTest, StringStreamDeallocTestWhenAllocatedEmbededNullBytes) {
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
   ASSERT_EQ(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
   ASSERT_EQ(sstream.capacity, 0);

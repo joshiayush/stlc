@@ -38,15 +38,17 @@
 #include "sstream/sstream.h"
 
 TEST(StringStreamBegin, ReturnsCorrectPointer) {
-  StringStream sstream = StringStreamStrAlloc("Hello, world!");
+  StringStream sstream;
+  StringStreamStrInit(&sstream, "Hello, world!", -1);
   EXPECT_EQ(sstream.data, StringStreamBegin(&sstream));
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 
 TEST(StringStreamEnd, ReturnsCorrectPointer) {
-  StringStream sstream = StringStreamStrAlloc("Hello, world!");
+  StringStream sstream;
+  StringStreamStrInit(&sstream, "Hello, world!", -1);
   EXPECT_EQ(sstream.data + sstream.length, StringStreamEnd(&sstream));
-  StringStreamDealloc(&sstream);
+  StringStreamFree(&sstream);
 }
 
 #endif  // CJSON_TESTS_SSTREAM_TESTITERATORS_HH_

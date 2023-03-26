@@ -98,8 +98,8 @@ void ReprSstream(StringStream* sstream) {
         sstream->data[i],
         buffer);  // Escape the character that we took out in this iteration.
   }
-  StringStreamDealloc(sstream);
-  *sstream = StringStreamStrAlloc(buffer);
+  StringStreamFree(sstream);
+  StringStreamStrInit(sstream, buffer, strlen(buffer));
 }
 
 // Prints the given `StringStream` object to the `stdout` and flushes the stream

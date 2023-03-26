@@ -40,8 +40,7 @@
 class StringStreamModifiersTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (sstream.data != nullptr)
-      StringStreamDealloc(&sstream);
+    if (sstream.data != nullptr) StringStreamFree(&sstream);
   }
 
  protected:
@@ -51,7 +50,7 @@ class StringStreamModifiersTest : public ::testing::Test {
 class StringStreamConcatTest : public StringStreamModifiersTest {};
 
 TEST_F(StringStreamConcatTest, StringStreamConcatTest) {
-  sstream = StringStreamAlloc();
+  StringStreamInit(&sstream, -1);
   StringStreamConcat(&sstream, "");
   EXPECT_EQ(std::strlen(sstream.data), 0);
   EXPECT_EQ(sstream.length, 0);
@@ -89,7 +88,7 @@ TEST_F(StringStreamConcatTest, StringStreamConcatTest) {
 class StringStreamReadTest : public StringStreamModifiersTest {};
 
 TEST_F(StringStreamReadTest, StringStreamReadTest) {
-  sstream = StringStreamAlloc();
+  StringStreamInit(&sstream, -1);
 
   const char* data = "This is a test string.";
   size_t length = std::strlen(data);
@@ -109,7 +108,7 @@ TEST_F(StringStreamReadTest, StringStreamReadTest) {
 class StringStreamRetreatTest : public StringStreamModifiersTest {};
 
 TEST_F(StringStreamRetreatTest, StringStreamRetreatTest) {
-  sstream = StringStreamAlloc();
+  StringStreamInit(&sstream, -1);
   const char* data = "This is a test string.";
   size_t length = std::strlen(data);
 

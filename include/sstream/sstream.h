@@ -59,37 +59,23 @@ typedef struct StringStream {
   size_t capacity;
 } StringStream;
 
-// Returns a initialized `StringStream` instance.
-//
-// This function will initialize a `StringStream` container with a initial
-// `length` of `_SSTREAM_DEFAULT_SIZE`.
-//
-// Memory blocks allocated for `StringStream` instances are allocated using the
-// `capacity` calculated by the given `length` i.e., `SSTREAM_DEFAULT_SIZE`.
-StringStream StringStreamAlloc(void);
-
-// Returns a initialized `StringStream` instance of given length.
+// Initializes `StringStream` instance of given length.
 //
 // Memory blocks allocated for `StringStream` instance will match the value of
 // `capacity` which we calculate using the function
 // `ComputeStringStreamBufferCapacity()`.
-StringStream StringStreamNAlloc(const size_t length);
+void StringStreamInit(StringStream* const sstream, const ssize_t length);
 
-// Returns a initialized `StringStream` instance from a `const char*` C-String.
+// Initializes `StringStream` instance from a `const char*` C-String.
 //
 // The length of the `StringStream` instance will be the number of items from
 // the first element to the first NULL byte in the string.
 //
-// Use `StringStreamStrNAlloc` to allocate a `StringStream` instance with a
-// C-String containing `NULL` bytes in between.
-StringStream StringStreamStrAlloc(const char* string);
-
-// Returns a initialized `StringStream` instance from a `const char*` C-String
-// by copying `n` bytes to `StringStream.data`.
-//
 // Copies all the characters from the given C-String to the `data` member inside
-// `StringStream` instance regardless of any `NULL` byte on the way.
-StringStream StringStreamStrNAlloc(const char* string, const size_t n);
+// `StringStream` instance regardless of any `NULL` byte on the way when
+// `length` is set.
+void StringStreamStrInit(StringStream* const sstream, const char* string,
+                         const ssize_t length);
 
 // Reallocates the free-store space occupied by the given `StringStream`
 // instance.
@@ -106,7 +92,7 @@ StringStream StringStreamStrNAlloc(const char* string, const size_t n);
 u_int8_t StringStreamRealloc(StringStream* const sstream, const size_t length);
 
 // Deallocates the memory occupied by the `StringStream` instance.
-void StringStreamDealloc(StringStream* const sstream);
+void StringStreamFree(StringStream* const sstream);
 
 #ifdef __cplusplus
 }
