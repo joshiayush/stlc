@@ -35,15 +35,13 @@
 #include <cstdint>
 #include <cstdlib>
 
-#include "vector/vector.h"
 #include "utils.hh"
+#include "vector/vector.h"
 
 class VectorAccessorsTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (vector.data != nullptr) {
-      VectorFree(&vector);
-    }
+    if (vector.data != nullptr) { VectorFree(&vector); }
   }
 
  protected:
@@ -61,7 +59,7 @@ TEST_F(VectorSetTest, WhenVectorInstanceIsNull) {
 }
 
 TEST_F(VectorSetTest, WhenElementIndexIsGreaterThanVectorSize) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -75,7 +73,7 @@ TEST_F(VectorSetTest, WhenElementIndexIsGreaterThanVectorSize) {
 }
 
 TEST_F(VectorSetTest, WhenIndexIsInBounds) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -98,7 +96,7 @@ TEST_F(VectorGetTest, WhenVectorInstanceIsNull) {
 }
 
 TEST_F(VectorGetTest, WhenElementIndexIsGreaterThanVectorSize) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -113,7 +111,7 @@ TEST_F(VectorGetTest, WhenElementIndexIsGreaterThanVectorSize) {
 }
 
 TEST_F(VectorGetTest, WhenIndexIsInBounds) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;

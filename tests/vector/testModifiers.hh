@@ -40,8 +40,7 @@
 class VectorModifiersTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (vector.data != nullptr)
-      VectorFree(&vector);
+    if (vector.data != nullptr) VectorFree(&vector);
   }
 
  protected:
@@ -59,7 +58,7 @@ TEST_F(VectorInsertTest, WhenTheGivenVectorInstanceIsNull) {
 }
 
 TEST_F(VectorInsertTest, WhenElementIndexIsZero) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -75,7 +74,7 @@ TEST_F(VectorInsertTest, WhenElementIndexIsZero) {
 }
 
 TEST_F(VectorInsertTest, WhenElementIndexIsGreaterThanVectorSize) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -103,7 +102,7 @@ TEST_F(VectorPushTest, WhenTheGivenVectorInstanceIsNull) {
 }
 
 TEST_F(VectorPushTest, WhenPushedInSomeValues) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -131,7 +130,7 @@ TEST_F(VectorPushTest, WhenPushedInSomeValues) {
 class VectorUnshiftTest : public VectorModifiersTest {};
 
 TEST_F(VectorUnshiftTest, WhenPushedInSomeValues) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
@@ -167,7 +166,7 @@ TEST_F(VectorDeleteTest, WhenTheGivenVectorInstanceIsNull) {
 }
 
 TEST_F(VectorDeleteTest, WhenElementIndexIsZero) {
-  vector = VectorDefAlloc();
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;

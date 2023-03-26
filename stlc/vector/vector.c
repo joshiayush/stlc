@@ -41,27 +41,20 @@ static void ComputeVectorBufferCapacity(const size_t size,
   *capacity += size;
 }
 
-// Returns an initialized instance of `Vector` of length `VECTOR_DEFAULT_SIZE`.
-//
-// `VECTOR_DEFAULT_SIZE` is used to compute the capacity of the `Vector`
-// instance.
-//
-// Memory blocks allocated for `Vector` instances are allocated using the
-// `capacity` calculated by the given `size` i.e., `VECTOR_DEFAULT_SIZE`.
-Vector VectorDefAlloc(void) { return VectorAlloc(VECTOR_DEFAULT_SIZE); }
-
-// Returns an initialized instance of `Vector` of `length`.
+// Initialises instance of `Vector` of `length`.
 //
 // Memory blocks allocated for `Vector` instance will match the value of
 // `capacity` which we calculate using the function
 // `ComputeVectorBufferCapacity()`.
-Vector VectorAlloc(const size_t size) {
-  Vector vector = {.data = (void*)0, .size = 0, .capacity = 0};
+void VectorInit(Vector* const vector, const ssize_t size) {
+  vector->data = (void*)0;
+  vector->size = 0;
+  vector->capacity = 0;
   size_t capacity;
-  ComputeVectorBufferCapacity(size, &capacity);
-  if ((vector.data = (void**)malloc(capacity * sizeof(void*))))
-    vector.capacity = capacity;
-  return vector;
+  ComputeVectorBufferCapacity(size > -1 ? size : VECTOR_DEFAULT_SIZE,
+                              &capacity);
+  if ((vector->data = (void**)malloc(capacity * sizeof(void*))))
+    vector->capacity = capacity;
 }
 
 // Re-allocates the free store space occupied by the `Vector` container.
@@ -75,8 +68,7 @@ Vector VectorAlloc(const size_t size) {
 //  * `VECTOR_RESIZE_SUCCESS` if the re-allocation was successful, or
 //  * `VECTOR_RESIZE_FAILURE` if the re-allocation failed.
 u_int8_t VectorResize(Vector* const vector, const size_t size) {
-  if (size <= vector->capacity)
-    return VECTOR_RESIZE_NOT_REQUIRED;
+  if (size <= vector->capacity) return VECTOR_RESIZE_NOT_REQUIRED;
   size_t capacity;
   ComputeVectorBufferCapacity(size, &capacity);
   void** data = vector->data;
@@ -86,8 +78,7 @@ u_int8_t VectorResize(Vector* const vector, const size_t size) {
       vector->data = data;
       return VECTOR_RESIZE_FAILURE;
     }
-    for (size_t i = 0; i < vector->size; ++i)
-      vector->data[i] = data[i];
+    for (size_t i = 0; i < vector->size; ++i) vector->data[i] = data[i];
     free(data);
   }
   vector->capacity = capacity;
@@ -105,8 +96,7 @@ u_int8_t VectorResize(Vector* const vector, const size_t size) {
 // to lose the memory when `src` goes out of scope; thus it's better to copy
 // the entire `src` vector into a new vector that is dynamically allocated.
 u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
-  if (dest == NULL)
-    return VECTOR_COPY_FAILURE;
+  if (dest == NULL) return VECTOR_COPY_FAILURE;
   if (src == NULL) {
     dest->data = NULL;
     dest->size = 0;
@@ -116,8 +106,7 @@ u_int8_t VectorCopy(Vector* const dest, Vector* const src) {
   if (src->size > dest->size)
     if (VectorResize(dest, src->size) == VECTOR_RESIZE_FAILURE)
       return VECTOR_COPY_FAILURE;
-  for (size_t i = 0; i < src->size; ++i)
-    *(dest->data + i) = *(src->data + i);
+  for (size_t i = 0; i < src->size; ++i) *(dest->data + i) = *(src->data + i);
   dest->size = src->size;
   return VECTOR_COPY_SUCCESS;
 }
@@ -157,8 +146,7 @@ void VectorFree(Vector* const vector) {
 //          free(): double free detected in tcache 2
 //          Aborted (core dumped)
 void VectorFreeDeep(Vector* const vector) {
-  for (size_t i = 0; i < vector->capacity; ++i)
-    free(vector->data[i]);
+  for (size_t i = 0; i < vector->capacity; ++i) free(vector->data[i]);
   vector->size = 0;
   vector->capacity = 0;
   vector->data = (void*)0;

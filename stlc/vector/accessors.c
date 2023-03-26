@@ -39,8 +39,7 @@
 //
 // Has no effect on the `Vector` instance if the `idx` value is out of bounds.
 void VectorSet(Vector* const vector, void* const elem, const size_t idx) {
-  if (vector == NULL || idx > vector->size)
-    return;
+  if (vector == NULL || idx > vector->size) return;
   vector->data[idx] = elem;
 }
 
@@ -49,7 +48,6 @@ void VectorSet(Vector* const vector, void* const elem, const size_t idx) {
 //
 // Will return `NULL` if the `idx` value is out of bounds.
 const void* VectorGet(const Vector* const vector, const size_t idx) {
-  if (vector == NULL || idx > vector->size)
-    return NULL;
+  if (vector == NULL || idx > vector->size) return NULL;
   return vector->data[idx];
 }

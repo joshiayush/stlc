@@ -34,26 +34,25 @@
 
 #include <cstdlib>
 
-#include "vector/vector.h"
 #include "utils.hh"
+#include "vector/vector.h"
 
 #define _ARBITRARY_VECTOR_TESTING_LENGTH 2147489
 
 class VectorTest : public ::testing::Test {
  protected:
   void TearDown() override {
-    if (vector.data != nullptr)
-      VectorFree(&vector);
+    if (vector.data != nullptr) VectorFree(&vector);
   }
 
  protected:
   Vector vector;
 };
 
-class VectorDefAllocTest : public VectorTest {};
+class VectorInitTest : public VectorTest {};
 
-TEST_F(VectorDefAllocTest, WhenAllocatedWithDefAlloc) {
-  vector = VectorDefAlloc();
+TEST_F(VectorInitTest, WhenAllocatedWithDefaultSize) {
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -62,10 +61,8 @@ TEST_F(VectorDefAllocTest, WhenAllocatedWithDefAlloc) {
   ASSERT_EQ(vector.capacity, capacity);
 }
 
-class VectorAllocTest : public VectorTest {};
-
-TEST_F(VectorAllocTest, WhenAllocatedWithAllocAndZeroAsSize) {
-  vector = VectorAlloc(0);
+TEST_F(VectorInitTest, WhenAllocatedWithAllocAndZeroAsSize) {
+  VectorInit(&vector, 0);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -74,8 +71,8 @@ TEST_F(VectorAllocTest, WhenAllocatedWithAllocAndZeroAsSize) {
   ASSERT_EQ(vector.capacity, capacity);
 }
 
-TEST_F(VectorAllocTest, WhenAllocatedWithAllocAndAArbitrarySize) {
-  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+TEST_F(VectorInitTest, WhenAllocatedWithAllocAndAArbitrarySize) {
+  VectorInit(&vector, _ARBITRARY_VECTOR_TESTING_LENGTH);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -87,7 +84,7 @@ TEST_F(VectorAllocTest, WhenAllocatedWithAllocAndAArbitrarySize) {
 class VectorResizeTest : public VectorTest {};
 
 TEST_F(VectorResizeTest, WhenZeroIsUsedAsSize) {
-  vector = VectorAlloc(0);
+  VectorInit(&vector, 0);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -100,7 +97,7 @@ TEST_F(VectorResizeTest, WhenZeroIsUsedAsSize) {
 }
 
 TEST_F(VectorResizeTest, WhenAArbitraryNumberIsUsedAsSizeForVectorResize) {
-  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+  VectorInit(&vector, _ARBITRARY_VECTOR_TESTING_LENGTH);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -116,7 +113,7 @@ TEST_F(VectorResizeTest, WhenAArbitraryNumberIsUsedAsSizeForVectorResize) {
 
 TEST_F(VectorResizeTest,
        WhenDoubleOfArbitraryNumberIsUsedAsSizeForVectorResize) {
-  vector = VectorAlloc(_ARBITRARY_VECTOR_TESTING_LENGTH);
+  VectorInit(&vector, _ARBITRARY_VECTOR_TESTING_LENGTH);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -130,14 +127,15 @@ TEST_F(VectorResizeTest,
 class VectorCopyTest : public VectorTest {};
 
 TEST_F(VectorCopyTest, WhenZeroIsUsedAsSrcSize) {
-  vector = VectorAlloc(0);
+  VectorInit(&vector, 0);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
   cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(vector.capacity, capacity);
-  Vector dest = VectorAlloc(0);
+  Vector dest;
+  VectorInit(&dest, 0);
   ASSERT_NE(dest.data, nullptr);
   ASSERT_EQ(dest.size, 0);
   cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
@@ -149,7 +147,7 @@ TEST_F(VectorCopyTest, WhenZeroIsUsedAsSrcSize) {
 
 TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
   size_t vector_size = 10;
-  vector = VectorAlloc(vector_size);
+  VectorInit(&vector, vector_size);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -157,11 +155,10 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
-  for (size_t i = 0; i < vector_size; ++i)
-    array[i] = i;
-  for (size_t i = 0; i < vector_size; ++i)
-    VectorPush(&vector, &array[i]);
-  Vector dest = VectorDefAlloc();
+  for (size_t i = 0; i < vector_size; ++i) array[i] = i;
+  for (size_t i = 0; i < vector_size; ++i) VectorPush(&vector, &array[i]);
+  Vector dest;
+  VectorInit(&dest, -1);
   ASSERT_NE(dest.data, nullptr);
   ASSERT_EQ(dest.size, 0);
   cjson::testing::vector::utils::ComputeVectorBufferCapacity(
@@ -182,7 +179,7 @@ class VectorClearTest : public VectorTest {};
 
 TEST_F(VectorClearTest, WhenElementsAreNotStoredInTheFreeStore) {
   size_t vector_size = 10;
-  vector = VectorAlloc(vector_size);
+  VectorInit(&vector, vector_size);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -190,8 +187,7 @@ TEST_F(VectorClearTest, WhenElementsAreNotStoredInTheFreeStore) {
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t array[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-  for (size_t i = 0; i < vector_size; ++i)
-    VectorPush(&vector, &array[i]);
+  for (size_t i = 0; i < vector_size; ++i) VectorPush(&vector, &array[i]);
   VectorClear(&vector);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
@@ -201,13 +197,12 @@ TEST_F(VectorClearTest, WhenElementsAreNotStoredInTheFreeStore) {
 
   // Check if the elements are still stored in the stack after calling
   // `VectorClear()`.
-  for (size_t i = 0; i < vector_size; ++i)
-    ASSERT_EQ(array[i], i);
+  for (size_t i = 0; i < vector_size; ++i) ASSERT_EQ(array[i], i);
 }
 
 TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
   size_t vector_size = 10;
-  vector = VectorAlloc(vector_size);
+  VectorInit(&vector, vector_size);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -215,10 +210,8 @@ TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
-  for (size_t i = 0; i < vector_size; ++i)
-    array[i] = i;
-  for (size_t i = 0; i < vector_size; ++i)
-    VectorPush(&vector, &array[i]);
+  for (size_t i = 0; i < vector_size; ++i) array[i] = i;
+  for (size_t i = 0; i < vector_size; ++i) VectorPush(&vector, &array[i]);
   VectorClear(&vector);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
@@ -228,15 +221,14 @@ TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
 
   // Check if the elements are still stored in the free store after calling
   // `VectorClear()`.
-  for (size_t i = 0; i < vector_size; ++i)
-    ASSERT_EQ(array[i], i);
+  for (size_t i = 0; i < vector_size; ++i) ASSERT_EQ(array[i], i);
   std::free(array);
 }
 
 class VectorFreeTest : public VectorTest {};
 
-TEST_F(VectorFreeTest, WhenVectorIsAllocatedUsingDefAlloc) {
-  vector = VectorDefAlloc();
+TEST_F(VectorFreeTest, WhenVectorIsAllocatedUsingDefaultSize) {
+  VectorInit(&vector, -1);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
@@ -253,7 +245,7 @@ class VectorFreeDeepTest : public VectorTest {};
 
 TEST_F(VectorFreeDeepTest, WhenVectorIsCopiedFromADynamicallyAllocatedArray) {
   size_t vector_size = 10;
-  vector = VectorAlloc(vector_size);
+  VectorInit(&vector, vector_size);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;

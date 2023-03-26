@@ -49,8 +49,7 @@ void *VectorIteratorNext(VectorIterator *itr) {
 
 // Executes the given predicate on each element of the `Vector` instance.
 void VectorMap(Vector *const vector, void (*pred)(const void *const elem)) {
-  for (size_t i = 0; i < vector->size; ++i)
-    pred(vector->data[i]);
+  for (size_t i = 0; i < vector->size; ++i) pred(vector->data[i]);
 }
 
 // Checks if for any value in the `Vector` instance the given predicate
@@ -60,8 +59,7 @@ void VectorMap(Vector *const vector, void (*pred)(const void *const elem)) {
 // inside of the `if` clause.
 bool_t VectorAny(Vector *const vector, bool_t (*pred)(const void *const elem)) {
   for (size_t i = 0; i < vector->size; ++i)
-    if (pred(vector->data[i]))
-      return TRUE;
+    if (pred(vector->data[i])) return TRUE;
   return FALSE;
 }
 
@@ -72,7 +70,6 @@ bool_t VectorAny(Vector *const vector, bool_t (*pred)(const void *const elem)) {
 // inside of the `if` clause.
 bool_t VectorAll(Vector *const vector, bool_t (*pred)(const void *const elem)) {
   for (size_t i = 0; i < vector->size; ++i)
-    if (!pred(vector->data[i]))
-      return FALSE;
+    if (!pred(vector->data[i])) return FALSE;
   return TRUE;
 }

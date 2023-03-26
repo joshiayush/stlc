@@ -62,21 +62,12 @@ typedef struct Vector {
   size_t capacity;
 } Vector;
 
-// Returns an initialized instance of `Vector` of length `VECTOR_DEFAULT_SIZE`.
-//
-// `VECTOR_DEFAULT_SIZE` is used to compute the capacity of the `Vector`
-// instance.
-//
-// Memory blocks allocated for `Vector` instances are allocated using the
-// `capacity` calculated by the given `size` i.e., `VECTOR_DEFAULT_SIZE`.
-Vector VectorDefAlloc(void);
-
-// Returns an initialized instance of `Vector` of `length`.
+// Initialises instance of `Vector` of `length`.
 //
 // Memory blocks allocated for `Vector` instance will match the value of
 // `capacity` which we calculate using the function
 // `ComputeVectorBufferCapacity()`.
-Vector VectorAlloc(const size_t size);
+void VectorInit(Vector* const vector, const ssize_t size);
 
 // Re-allocates the free store space occupied by the `Vector` container.
 //
