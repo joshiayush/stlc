@@ -27,11 +27,11 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "stlc-string.h"
-
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "stlc-string.h"
 
 // Splits a string at `sep`.
 //
@@ -53,14 +53,12 @@ char** SplitStr(const char* str, const char* sep) {
   for (size_t i = 0; i < strlen_; ++i) {
     // If we find a separator string at the current position in the given path
     // then increment `ncomps`.
-    if ((strncmp((str + i), sep, seplen) == 0))
-      ++ncomps;
+    if ((strncmp((str + i), sep, seplen) == 0)) ++ncomps;
   }
 
   // If the given path string have a separator at the end that means we've
   // computed one more component then we should so we must decrement `ncomps`.
-  if (strncmp((str + strlen_ - seplen), sep, seplen) == 0)
-    --ncomps;
+  if (strncmp((str + strlen_ - seplen), sep, seplen) == 0) --ncomps;
 
   // Allocate `ncomps` block of memory, each of a size of `char*` to store the
   // splited components.
@@ -78,28 +76,26 @@ char** SplitStr(const char* str, const char* sep) {
   for (size_t i = 0; i < strlen_; ++i) {
     // Because `comp_pos` starts with 0, we must break the for loop once the
     // `comp_pos` is equals to `ncomps`.
-    if (ncomps == comp_pos)
-      break;
+    if (ncomps == comp_pos) break;
 
     // If `end` pointer is not pointing to a `NULL` value then our new beginning
     // must start from `end + seplen`.
-    if (end)
+    if (end) {
       beg = (end++ + seplen);
-    else
+    } else {
       beg =
           (str + i);  // Otherwise, our new beginning must start from `str + i`.
+    }
 
     // Our `beg` pointer is set now find the position of the `end` pointer.
     for (size_t j = 0; j < strlen_; ++j) {
-      if (end && (strncmp(end, sep, seplen) == 0))
-        break;
+      if (end && (strncmp(end, sep, seplen) == 0)) break;
       end = (beg + j);
     }
 
     // Continue if we couldn't find a valid `end` pointer.  `end` must always be
     // at a greater position than `beg`.
-    if ((end - beg) <= 0)
-      continue;
+    if ((end - beg) <= 0) continue;
 
     // Allocate memory for the current component because we are about to take it
     // out.
