@@ -27,8 +27,6 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "stlc-fs.h"
-
 #include <limits.h>
 #include <stdarg.h>
 #include <stdint.h>
@@ -38,6 +36,7 @@
 #include "arch.h"
 #include "bool.h"
 #include "bytes.h"
+#include "stlc-fs.h"
 #include "stlc-string.h"
 
 #ifdef CJSON_OS_WINDOWS
@@ -98,8 +97,7 @@ void Split(char* const head, char* const tail, const char* const path) {
 
   // Once we have taked out our `head` we don't want the node at the end of it
   // so we just overwrite the last character with a `end-of-string` character.
-  if (node_r_idx != 0)
-    head[node_r_idx] = nullchr;
+  if (node_r_idx != 0) head[node_r_idx] = nullchr;
 
   // Now we want to copy everything after the last `kPathSeparator` into the
   // `tail` component.
@@ -132,13 +130,11 @@ char* _GetCurrentWorkingDir(const char* const abspath, char* const buffer,
 // components. If any component is an absolute path, all previous path
 // components will be discarded. An empty last part will result in a path that
 // ends with a separator.
-char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
-           ...) {
-  for (size_t i = 0; i < bufsize; ++i)
-    buffer[i] = nullchr;
+char* Join(const size_t bufsize, char* const buffer, const size_t paths, ...) {
+  for (size_t i = 0; i < bufsize; ++i) buffer[i] = nullchr;
   va_list args;
   va_start(args, paths);
-  for (u_int64_t i = 0; i < paths; ++i) {
+  for (size_t i = 0; i < paths; ++i) {
 #ifdef CJSON_OS_WINDOWS
     strcat(buffer, "\\");
 #else
@@ -148,20 +144,17 @@ char* Join(const size_t bufsize, char* const buffer, const u_int64_t paths,
     // If the component we just took out is a absolute node then we must reset
     // the buffer with null bytes so to overwrite the previous path.
     if (IsAbsPath(p)) {
-      for (size_t i = 0; i < bufsize; ++i)
-        buffer[i] = nullchr;
+      for (size_t i = 0; i < bufsize; ++i) buffer[i] = nullchr;
     }
     // Append the component onto the given buffer.
     strcat(buffer, p);
     size_t buflen = strlen(buffer);
     size_t j = 0;
     for (; j < buflen; ++j) {
-      if (buffer[i] == kPathSeparator)
-        break;
+      if (buffer[i] == kPathSeparator) break;
     }
     if (j == 1) {
-      for (size_t i = 1; i < buflen; ++i)
-        buffer[i - 1] = buffer[i];
+      for (size_t i = 1; i < buflen; ++i) buffer[i - 1] = buffer[i];
     }
   }
   va_end(args);
@@ -198,46 +191,43 @@ char* Normalize(char* path) {
   // to later allocate a buffer of the right size to store our new components
   // for normalized path string.
   size_t ncomps = 0;
-  for (const char** ptr = (const char**)comps; *ptr != NULL; ++ptr)
-    ++ncomps;
+  for (const char** ptr = (const char**)comps; *ptr != NULL; ++ptr) ++ncomps;
 
-  // Now allocate `ncomps` block of memory each of size (char*) to store our
-  // normalized components.
+  // Now allocate `ncomps` block of memory each of size (char*)
+  // to store our normalized components.
   char** new_comps = (char**)calloc(ncomps, sizeof(char*));
   char** ptr = new_comps;
   while (*comps != NULL) {
     if (strcmp(*comps, dot) == 0 || strcmp(*comps, empty) == 0) {
-      // If the component is just a `dot` or a `empty` string then we just skip
-      // it.
+      // If the component is just a `dot` or a `empty` string then
+      // we just skip it.
       ++comps;
       continue;
     } else if (strcmp(*comps, dotdot) != 0) {
-      // If the component is not a `dotdot` then we just copy the address to the
-      // `new_comps`.
+      // If the component is not a `dotdot` then we just copy the
+      // address to the `new_comps`.
       *ptr++ = *comps;
     } else {
-      // If the component is a `dotdot` then we have to go back one component so
-      // that we can store the comming component after `dotdot` into its right
-      // place.
+      // If the component is a `dotdot` then we have to go back one
+      // component so that we can store the comming component after
+      // `dotdot` into its right place.
       *ptr-- = NULL;
     }
     ++comps;
   }
 
-  size_t pathlen = strlen(path);
-  for (size_t i = 0; i < pathlen; ++i)
-    path[i] = '\0';  // Rest path to null bytes.
+  // Rest path to null bytes.
+  for (size_t i = 0, pathlen = strlen(path); i < pathlen; ++i) path[i] = '\0';
 
   for (size_t i = 0; i < ncomps; ++i) {
-    if (new_comps[i] == NULL)
-      continue;
+    if (new_comps[i] == NULL) continue;
+
     // Append separator and new components in our `path` string.
     strcat(path, sep);
     strcat(path, new_comps[i]);
   }
 
-  for (char** ptr = comps; *ptr != NULL; ++ptr)
-    free(*ptr);
+  for (char** ptr = comps; *ptr != NULL; ++ptr) free(*ptr);
   free(new_comps);
 
   return path;
@@ -253,8 +243,7 @@ char* Normalize(char* path) {
 char* _AbsPath(const char* const abspath, char* const buffer,
                char* const path) {
   size_t size = 0;
-  for (const char* ptr = abspath; *ptr != '\0'; ++ptr)
-    ++size;
+  for (const char* ptr = abspath; *ptr != '\0'; ++ptr) ++size;
   char* head = (char*)malloc(sizeof(char) * size);
   char* tail = (char*)malloc(sizeof(char) * size);
   Split(head, tail, abspath);
