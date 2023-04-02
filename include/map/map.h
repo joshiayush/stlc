@@ -30,7 +30,6 @@
 #ifndef STLC_INCLUDE_DATA_MAP_MAP_H_
 #define STLC_INCLUDE_DATA_MAP_MAP_H_
 
-#include <pthread.h>
 #include <sys/types.h>
 
 #include "bool.h"

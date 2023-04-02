@@ -29,6 +29,8 @@
 
 #include "sstream/sstream.h"
 
+#include <pthread.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -53,13 +55,27 @@ void StringStreamInit(StringStream* const sstream, const ssize_t length) {
   sstream->data = (void*)0;
   sstream->length = 0;
   sstream->capacity = 0;
+
   size_t capacity;
   ComputeStringStreamBufferCapacity(length > -1 ? length : SSTREAM_DEFAULT_SIZE,
                                     &capacity);
-  if (sstream->data = (char*)malloc(capacity * sizeof(char))) {
-    sstream->capacity = capacity;
-    _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+  if ((sstream->data = (char*)malloc(capacity * sizeof(char))) == NULL) {
+    fprintf(stderr,
+            "StringStreamInit: failed to allocate stream for capacity: %zu\n",
+            capacity);
+    return;
   }
+  sstream->capacity = capacity;
+  _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+
+  pthread_mutexattr_t mutex_attr;
+  pthread_mutexattr_init(&mutex_attr);
+  pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
+  if (pthread_mutex_init(&(sstream->mutex), &mutex_attr) != 0) {
+    fprintf(stderr, "StringStreamInit: failed to initialize mutex\n");
+    free(sstream->data);
+  }
+  pthread_mutexattr_destroy(&mutex_attr);
 }
 
 // Initializes `StringStream` instance from a `const char*` C-String.
@@ -74,7 +90,7 @@ void StringStreamStrInit(StringStream* const sstream, const char* string,
                          const ssize_t length) {
   size_t slength = length > -1 ? length : strlen(string);
   StringStreamInit(sstream, slength);
-  if (sstream->capacity) {
+  if (sstream->data != NULL) {
     memcpy(sstream->data, string, slength * sizeof(char));
     sstream->length = slength;
     _TERMINATE_STRING_STREAM_BUFFER(*sstream);
@@ -88,33 +104,52 @@ void StringStreamStrInit(StringStream* const sstream, const char* string,
 // size in place (if available) or by moving the entire container to a new
 // address.
 //
-// Function returns:
+// Arguments:
+//  * sstream: `StringStream` instance.
+//  * length:  New length of the `StringStream` instance.
+//
+// Returns:
 //  * `SSTREAM_REALLOC_NOT_REQUIRED` if the given length is smaller than the
-//    capacity,
+//     capacity,
 //  * `SSTREAM_REALLOC_SUCCESS` if the re-allocation was successful, or
 //  * `SSTREAM_REALLOC_FAILURE` if the re-allocation failed.
 u_int8_t StringStreamRealloc(StringStream* const sstream, const size_t length) {
   if (length <= sstream->capacity) return SSTREAM_REALLOC_NOT_REQUIRED;
   size_t capacity;
   ComputeStringStreamBufferCapacity(length, &capacity);
+  pthread_mutex_lock(&(sstream->mutex));
   char* data = sstream->data;
-  if (!(sstream->data =
-            (char*)realloc(sstream->data, capacity * sizeof(char)))) {
-    if (!(sstream->data = (char*)malloc(capacity * sizeof(char)))) {
+  if ((sstream->data =
+           (char*)realloc(sstream->data, capacity * sizeof(char))) == NULL) {
+    if ((sstream->data = (char*)malloc(capacity * sizeof(char))) == NULL) {
       sstream->data = data;
+      fprintf(stderr,
+              "StringStreamRealloc: failed to re-allocate stream for capacity: "
+              "%zu\n",
+              capacity);
+      pthread_mutex_unlock(&(sstream->mutex));
       return SSTREAM_REALLOC_FAILURE;
     }
     memcpy(sstream->data, data, sstream->length * sizeof(char));
     free(data);
   }
   sstream->capacity = capacity;
+  pthread_mutex_unlock(&(sstream->mutex));
   return SSTREAM_REALLOC_SUCCESS;
 }
 
 // Deallocates the memory occupied by the `StringStream` instance.
+//
+// The `pthread_mutex_t` instance also gets destroyed when the
+// `StringStreamFree()` function is called.  `StringStream` instance must go
+// through `StringStreamInit()` to re-initialize the `pthread_mutex_t` mutex.
+//
+// Arguments:
+//  * sstream: `StringStream` instance.
 void StringStreamFree(StringStream* const sstream) {
   sstream->length = 0;
   sstream->capacity = 0;
   free(sstream->data);
   sstream->data = (void*)0;
+  pthread_mutex_destroy(&(sstream->mutex));
 }

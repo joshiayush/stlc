@@ -30,6 +30,7 @@
 #ifndef STLC_INCLUDE_DATA_SSTREAM_SSTREAM_H_
 #define STLC_INCLUDE_DATA_SSTREAM_SSTREAM_H_
 
+#include <pthread.h>
 #include <sys/types.h>
 
 #define SSTREAM_DEFAULT_SIZE (1 << 2)
@@ -57,6 +58,8 @@ typedef struct StringStream {
   //     0 <= length <= capacity
   //     data == NULL implies length == capacity == 0
   size_t capacity;
+
+  pthread_mutex_t mutex;
 } StringStream;
 
 // Initializes `StringStream` instance of given length.

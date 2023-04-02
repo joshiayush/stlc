@@ -29,6 +29,7 @@
 
 #include "sstream/printers.h"
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -105,6 +106,7 @@ void ReprSstream(StringStream* sstream) {
 // Prints the given `StringStream` object to the `stdout` and flushes the stream
 // quickly.
 void PrintSstream(StringStream* sstream, const bool_t escape) {
+  pthread_mutex_lock(&(sstream->mutex));
   if (!escape) {
     printf("%s", sstream->data);
   } else {
@@ -112,4 +114,5 @@ void PrintSstream(StringStream* sstream, const bool_t escape) {
     printf("%s", sstream->data);
   }
   fflush(stdout);
+  pthread_mutex_unlock(&(sstream->mutex));
 }

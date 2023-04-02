@@ -38,7 +38,7 @@
 #include "map/map.h"
 
 class MapTraverseTest : public ::testing::Test {
-  void SetUp() override { MapInit(&map, 10, Hash, KeyCmp); }
+  void SetUp() override { MapInit(&map, 40, Hash, KeyCmp); }
 
   void TearDown() override { MapFree(&map); }
 

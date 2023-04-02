@@ -143,9 +143,9 @@ TEST_F(MapEntryInitTest, EmptyArgsTest) {
 
 TEST(MapInitTest, InitWithExplicitValues) {
   Map map;
-  MapInit(&map, 10, Hash, KeyCmp);
+  MapInit(&map, 40, Hash, KeyCmp);
 
-  EXPECT_EQ(map.capacity, 10);
+  EXPECT_EQ(map.capacity, 40);
   EXPECT_EQ(map.size, 0);
   EXPECT_EQ(map.hash_func, Hash);
   EXPECT_EQ(map.key_eq_func, KeyCmp);
@@ -156,20 +156,20 @@ TEST(MapInitTest, InitWithExplicitValues) {
 
 TEST(MapInitTest, InitANullMap) {
   Map* map = nullptr;
-  MapInit(map, 10, Hash, KeyCmp);
+  MapInit(map, 40, Hash, KeyCmp);
   EXPECT_EQ(map, nullptr);
 }
 
 TEST(MapInitTest, InitNullHashFunc) {
   Map map;
-  MapInit(&map, 10, nullptr, KeyCmp);
+  MapInit(&map, 40, nullptr, KeyCmp);
   EXPECT_EQ(map.hash_func, nullptr);
   MapFree(&map);
 }
 
 TEST(MapInitTest, InitNullKeyEqFunc) {
   Map map;
-  MapInit(&map, 10, Hash, nullptr);
+  MapInit(&map, 40, Hash, nullptr);
   EXPECT_EQ(map.key_eq_func, nullptr);
   MapFree(&map);
 }
@@ -189,7 +189,7 @@ void* MapThreadFunc(void* arg) {
 
 TEST(MapMutexTest, ThreadSafety) {
   Map map;
-  MapInit(&map, 10, Hash, KeyCmp);
+  MapInit(&map, 40, Hash, KeyCmp);
 
   const char* keys[] = {"key1", "key2", "key3", "key4", "key5"};
   const char* values[] = {"value1", "value2", "value3", "value4", "value5"};

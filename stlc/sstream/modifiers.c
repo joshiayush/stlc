@@ -29,6 +29,7 @@
 
 #include "sstream/modifiers.h"
 
+#include <pthread.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,6 +42,7 @@
 void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   va_list args;
   va_start(args, format);
+  pthread_mutex_lock(&(sstream->mutex));
   size_t avail = _GET_STRING_STREAM_AVAILABLE_SPACE(*sstream);
   size_t format_size = vsnprintf(sstream->data + sstream->length,
                                  avail * sizeof(char), format, args);
@@ -59,6 +61,7 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
   }
   sstream->length += format_size;
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+  pthread_mutex_unlock(&(sstream->mutex));
 }
 
 // Concatenates data of known length onto the existing `data` instance of
@@ -70,17 +73,20 @@ void StringStreamConcat(StringStream* const sstream, const char* format, ...) {
 void StringStreamRead(StringStream* const sstream, const void* data,
                       const size_t length) {
   (void)StringStreamRealloc(sstream, sstream->length + length);
+  pthread_mutex_lock(&(sstream->mutex));
   memcpy(sstream->data + sstream->length, data, length);
   sstream->length += length;
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+  pthread_mutex_lock(&(sstream->mutex));
 }
 
 // Impedes the position of the terminate character `\0` by `length`, or if the
 // length is greater than the data length of `StringStream` instance, places the
 // terminator `\0` at beginning.
 void StringStreamRetreat(StringStream* const sstream, const size_t length) {
-  if ((sstream != NULL) && (!sstream->length || !sstream->capacity))
-    return;
+  if ((sstream != NULL) && (!sstream->length || !sstream->capacity)) return;
+  pthread_mutex_lock(&(sstream->mutex));
   sstream->length = length >= sstream->length ? 0 : sstream->length - length;
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+  pthread_mutex_unlock(&(sstream->mutex));
 }

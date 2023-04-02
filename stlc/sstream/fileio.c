@@ -29,6 +29,7 @@
 
 #include "sstream/fileio.h"
 
+#include <pthread.h>
 #include <stdio.h>
 #include <sys/types.h>
 
@@ -42,8 +43,8 @@
 // function will read the entire file.
 void StringStreamReadFile(StringStream* const sstream, FILE* const file,
                           size_t length) {
-  if (sstream == NULL || file == NULL)
-    return;
+  if (sstream == NULL || file == NULL) return;
+  pthread_mutex_lock(&(sstream->mutex));
   if (length == 0) {
     size_t orig_cur_pos = ftell(file);
     fseek(file, 0L, SEEK_END);
@@ -54,20 +55,17 @@ void StringStreamReadFile(StringStream* const sstream, FILE* const file,
   fread(sstream->data + sstream->length, sizeof(char), length, file);
   sstream->length += length;
   _TERMINATE_STRING_STREAM_BUFFER(*sstream);
+  pthread_mutex_unlock(&(sstream->mutex));
 }
 
 // Writes `StringStream` data from position `begin` to `end` in the given file.
 void StringStreamWriteFile(StringStream* const sstream, FILE* const file,
                            size_t begin, size_t end) {
-  if (sstream == NULL || file == NULL)
+  if ((sstream == NULL || file == NULL) || (begin >= sstream->length) || !end ||
+      (end < begin))
     return;
-  if (begin >= sstream->length)
-    return;
-  if (!end)
-    end = sstream->length;
-  if (end < begin)
-    return;
-  if (end > sstream->length)
-    end = sstream->length;
+  if (end > sstream->length) end = sstream->length;
+  pthread_mutex_lock(&(sstream->mutex));
   fwrite(sstream->data + begin, sizeof(char), end - begin, file);
+  pthread_mutex_unlock(&(sstream->mutex));
 }

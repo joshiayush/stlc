@@ -30,6 +30,7 @@
 #include "map/map.h"
 
 #include <assert.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -149,10 +150,15 @@ void MapInit(Map* const map, const size_t capacity, hash_f hash_func,
             capacity);
     return;
   }
-  if (pthread_mutex_init(&map->mutex, NULL) != 0) {
+
+  pthread_mutexattr_t mutex_attr;
+  pthread_mutexattr_init(&mutex_attr);
+  pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_RECURSIVE);
+  if (pthread_mutex_init(&map->mutex, &mutex_attr) != 0) {
     fprintf(stderr, "MapInit: failed to initialize mutex\n");
     free(map->buckets);
   }
+  pthread_mutexattr_destroy(&mutex_attr);
 }
 
 // Re-allocates a `Map` instance with the specified capacity inside the default
