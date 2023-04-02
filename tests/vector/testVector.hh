@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -27,8 +27,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_TESTS_VECTOR_TESTVECTOR_HH_
-#define CJSON_TESTS_VECTOR_TESTVECTOR_HH_
+#ifndef STLC_TESTS_VECTOR_TESTVECTOR_HH_
+#define STLC_TESTS_VECTOR_TESTVECTOR_HH_
 
 #include <gtest/gtest.h>
 
@@ -56,7 +56,7 @@ TEST_F(VectorInitTest, WhenAllocatedWithDefaultSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   ASSERT_EQ(vector.capacity, capacity);
 }
@@ -66,7 +66,7 @@ TEST_F(VectorInitTest, WhenAllocatedWithAllocAndZeroAsSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(vector.capacity, capacity);
 }
@@ -76,7 +76,7 @@ TEST_F(VectorInitTest, WhenAllocatedWithAllocAndAArbitrarySize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       _ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
   ASSERT_EQ(vector.capacity, capacity);
 }
@@ -88,7 +88,7 @@ TEST_F(VectorResizeTest, WhenZeroIsUsedAsSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(vector.capacity, capacity);
   // A size of zero still results in a capacity of 3 so `VectorResize()` must
@@ -101,7 +101,7 @@ TEST_F(VectorResizeTest, WhenAArbitraryNumberIsUsedAsSizeForVectorResize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       _ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
   ASSERT_EQ(vector.capacity, capacity);
   // In this test we test if `VectorResize()` returns
@@ -117,7 +117,7 @@ TEST_F(VectorResizeTest,
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       _ARBITRARY_VECTOR_TESTING_LENGTH, capacity);
   ASSERT_EQ(vector.capacity, capacity);
   ASSERT_EQ(VectorResize(&vector, _ARBITRARY_VECTOR_TESTING_LENGTH * 2),
@@ -131,14 +131,14 @@ TEST_F(VectorCopyTest, WhenZeroIsUsedAsSrcSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(vector.capacity, capacity);
   Vector dest;
   VectorInit(&dest, 0);
   ASSERT_NE(dest.data, nullptr);
   ASSERT_EQ(dest.size, 0);
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(0, capacity);
   // Even a size of zero should result in a capacity equals to 3.
   ASSERT_EQ(dest.capacity, capacity);
   ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
@@ -151,7 +151,7 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
@@ -161,12 +161,12 @@ TEST_F(VectorCopyTest, WhenArbitraryNumbersAreUsedAsElementsToSrcVector) {
   VectorInit(&dest, -1);
   ASSERT_NE(dest.data, nullptr);
   ASSERT_EQ(dest.size, 0);
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   ASSERT_EQ(dest.capacity, capacity);
   ASSERT_EQ(VectorCopy(&dest, &vector), VECTOR_COPY_SUCCESS);
   ASSERT_EQ(dest.size, vector.size);
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(dest.size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(dest.size,
                                                              capacity);
   ASSERT_EQ(dest.capacity, capacity);
   for (size_t i = 0; i < dest.size; ++i)
@@ -183,7 +183,7 @@ TEST_F(VectorClearTest, WhenElementsAreNotStoredInTheFreeStore) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t array[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -191,7 +191,7 @@ TEST_F(VectorClearTest, WhenElementsAreNotStoredInTheFreeStore) {
   VectorClear(&vector);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector.size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(vector.size,
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
 
@@ -206,7 +206,7 @@ TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   size_t* array = (size_t*)std::malloc(sizeof(size_t) * vector_size);
@@ -215,7 +215,7 @@ TEST_F(VectorClearTest, WhenElementsAreStoredInTheFreeStore) {
   VectorClear(&vector);
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector.size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(vector.size,
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
 
@@ -232,7 +232,7 @@ TEST_F(VectorFreeTest, WhenVectorIsAllocatedUsingDefaultSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   ASSERT_EQ(vector.capacity, capacity);
   VectorFree(&vector);
@@ -249,7 +249,7 @@ TEST_F(VectorFreeDeepTest, WhenVectorIsCopiedFromADynamicallyAllocatedArray) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(vector_size,
                                                              capacity);
   ASSERT_EQ(vector.capacity, capacity);
   for (size_t i = 0; i < vector_size; ++i) {
@@ -263,4 +263,4 @@ TEST_F(VectorFreeDeepTest, WhenVectorIsCopiedFromADynamicallyAllocatedArray) {
   ASSERT_EQ(vector.capacity, 0);
 }
 
-#endif  // CJSON_TESTS_VECTOR_TESTVECTOR_HH_
+#endif  // STLC_TESTS_VECTOR_TESTVECTOR_HH_

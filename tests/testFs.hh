@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -34,7 +34,7 @@
 #include "stlc-fs.h"
 
 TEST(IsAbsPathTest, TestForBothWindowsAndNixStylePaths) {
-#ifdef CJSON_OS_WINDOWS
+#ifdef STLC_OS_WINDOWS
   EXPECT_TRUE(IsAbsPath("C:\\"));
   EXPECT_TRUE(IsAbsPath("C:\\foo\\bar\\buzz"));
 #else
@@ -125,15 +125,15 @@ class JoinFunctionTest : public ::testing::Test {
 };
 
 TEST_F(JoinFunctionTest, WhenMultipleAbsPathsAreGiven) {
-  const char* joined_path = Join(sizeof(buffer), buffer, 2, "/C", "/cjson");
-  EXPECT_EQ(std::strcmp(buffer, "/cjson"), 0) << "buffer: " << buffer << '\n';
+  const char* joined_path = Join(sizeof(buffer), buffer, 2, "/C", "/stlc");
+  EXPECT_EQ(std::strcmp(buffer, "/stlc"), 0) << "buffer: " << buffer << '\n';
 }
 
 TEST_F(JoinFunctionTest, WhenOneFilePathIsUsedAfterAAbsPath) {
   const char* joined_path =
-      Join(sizeof(buffer), buffer, 4, "C", "cjson", "/cjson", "CMakeLists.txt");
+      Join(sizeof(buffer), buffer, 4, "C", "stlc", "/stlc", "CMakeLists.txt");
 
-  EXPECT_EQ(std::strcmp(buffer, "/cjson/CMakeLists.txt"), 0)
+  EXPECT_EQ(std::strcmp(buffer, "/stlc/CMakeLists.txt"), 0)
       << "buffer: " << buffer << '\n';
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2021, The cjson authors.
+# Copyright 2021, The stlc authors.
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 # copyright notice, this list of conditions and the following disclaimer
 # in the documentation and/or other materials provided with the
 # distribution.
-#     * Neither the name of The cjson authors. nor the names of its
+#     * Neither the name of The stlc authors. nor the names of its
 # contributors may be used to endorse or promote products derived from
 # this software without specific prior written permission.
 #
@@ -30,7 +30,7 @@
 cmake_minimum_required(VERSION 3.16.3)
 project(stlc
 		VERSION 1.0.0
-		HOMEPAGE_URL https://github.com/joshiayush/cjson
+		HOMEPAGE_URL https://github.com/joshiayush/stlc
 		LANGUAGES C CXX)
 
 include_directories(include)

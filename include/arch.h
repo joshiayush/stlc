@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -27,18 +27,18 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_INCLUDE_INTERNAL_ARCH_H_
-#define CJSON_INCLUDE_INTERNAL_ARCH_H_
+#ifndef STLC_INCLUDE_INTERNAL_ARCH_H_
+#define STLC_INCLUDE_INTERNAL_ARCH_H_
 
 #if defined(__MINGW__) || defined(__MINGW32__) || defined(__MINGW64__)
-#define CJSON_OS_WINDOWS_MINGW 1
-#define CJSON_OS_WINDOWS 1
+#define STLC_OS_WINDOWS_MINGW 1
+#define STLC_OS_WINDOWS 1
 #elif defined(_WIN32) || defined(_WIN64) || defined(__CYGWIN__)
-#define CJSON_OS_WINDOWS 1
+#define STLC_OS_WINDOWS 1
 #elif defined(__APPLE__)
-#define CJSON_OS_MAC 1
+#define STLC_OS_MAC 1
 #elif defined(__linux__)
-#define CJSON_OS_LINUX 1
+#define STLC_OS_LINUX 1
 #endif
 
-#endif  // CJSON_INCLUDE_INTERNAL_ARCH_H_
+#endif  // STLC_INCLUDE_INTERNAL_ARCH_H_

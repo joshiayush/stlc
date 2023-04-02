@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -39,7 +39,7 @@
 #include "stlc-fs.h"
 #include "stlc-string.h"
 
-#ifdef CJSON_OS_WINDOWS
+#ifdef STLC_OS_WINDOWS
 static const char kPathSeparator = '\\';
 #else
 static const char kPathSeparator = '/';
@@ -50,7 +50,7 @@ static const char kPathSeparator = '/';
 // determines whether a path is absolute by checking if the first element of the
 // path is `/`. This function does support "Windows-specific" paths too.
 bool_t IsAbsPath(const char* const path) {
-#ifdef CJSON_OS_WINDOWS
+#ifdef STLC_OS_WINDOWS
   if ((*path >= 0x41 && *path <= 0x5A) || (*path >= 0x61 && *path <= 0x7A))
     return *(path + 1) == ':' && *(path + 2) == kPathSeparator;
 #else
@@ -135,7 +135,7 @@ char* Join(const size_t bufsize, char* const buffer, const size_t paths, ...) {
   va_list args;
   va_start(args, paths);
   for (size_t i = 0; i < paths; ++i) {
-#ifdef CJSON_OS_WINDOWS
+#ifdef STLC_OS_WINDOWS
     strcat(buffer, "\\");
 #else
     strcat(buffer, "/");
@@ -169,7 +169,7 @@ char* Normalize(char* path) {
   const char* empty = "";
   const char* dot = ".";
   const char* dotdot = "..";
-#ifdef CJSON_OS_WINDOWS
+#ifdef STLC_OS_WINDOWS
   const char* sep = "\\";
 #else
   const char* sep = "/";
@@ -181,7 +181,7 @@ char* Normalize(char* path) {
     return path;
   }
 
-#ifdef CJSON_OS_WINDOWS
+#ifdef STLC_OS_WINDOWS
   char** comps = SplitStr(path, "\\");
 #else
   char** comps = SplitStr(path, "/");

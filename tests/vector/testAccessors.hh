@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -27,8 +27,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
-#define CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
+#ifndef STLC_TESTS_VECTOR_TESTACCESSORS_HH_
+#define STLC_TESTS_VECTOR_TESTACCESSORS_HH_
 
 #include <gtest/gtest.h>
 
@@ -63,7 +63,7 @@ TEST_F(VectorSetTest, WhenElementIndexIsGreaterThanVectorSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
   *element = 10;
@@ -77,7 +77,7 @@ TEST_F(VectorSetTest, WhenIndexIsInBounds) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
   *element = 10;
@@ -100,7 +100,7 @@ TEST_F(VectorGetTest, WhenElementIndexIsGreaterThanVectorSize) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
   *element = 10;
@@ -115,7 +115,7 @@ TEST_F(VectorGetTest, WhenIndexIsInBounds) {
   ASSERT_NE(vector.data, nullptr);
   ASSERT_EQ(vector.size, 0);
   size_t capacity = 0;
-  cjson::testing::vector::utils::ComputeVectorBufferCapacity(
+  stlc::testing::vector::utils::ComputeVectorBufferCapacity(
       VECTOR_DEFAULT_SIZE, capacity);
   size_t* element = (size_t*)std::malloc(sizeof(size_t) * 1);
   *element = 10;
@@ -124,4 +124,4 @@ TEST_F(VectorGetTest, WhenIndexIsInBounds) {
   std::free(element);
 }
 
-#endif  // CJSON_TESTS_VECTOR_TESTACCESSORS_HH_
+#endif  // STLC_TESTS_VECTOR_TESTACCESSORS_HH_

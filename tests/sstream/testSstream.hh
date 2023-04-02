@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -27,8 +27,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
-#define CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
+#ifndef STLC_TESTS_SSTREAM_TESTSSTREAM_HH_
+#define STLC_TESTS_SSTREAM_TESTSSTREAM_HH_
 
 #include <gtest/gtest.h>
 #include <stdio.h>
@@ -56,7 +56,7 @@ TEST_F(StringStreamTest, StringStreamAllocTest) {
   ASSERT_EQ(*sstream.data, '\0');
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -67,7 +67,7 @@ TEST_F(StringStreamTest, StringStreamNAllocTest) {
   ASSERT_EQ(*sstream.data, '\0');
   ASSERT_EQ(sstream.length, 0);
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -79,7 +79,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocTest) {
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -91,7 +91,7 @@ TEST_F(StringStreamTest, StringStreamStrAllocTestWithEmbededNullBytes) {
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, std::strlen(teststr));
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -104,7 +104,7 @@ TEST_F(StringStreamTest, StringStreamStrNAllocTestWithEmbededNullBytes) {
   ASSERT_EQ(std::strncmp(sstream.data, teststr, strlen_), 0);
   ASSERT_EQ(sstream.length, strlen_);
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -115,7 +115,7 @@ TEST_F(StringStreamTest, StringStreamReallocTest) {
   ASSERT_EQ(sstream.length, 0);
 
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -135,7 +135,7 @@ TEST_F(StringStreamTest, StringStreamReallocTest) {
 
   // Make sure to assert the capacity at the end as extending the length of the
   // stream also changes the capacity.
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH * 2, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 }
@@ -146,7 +146,7 @@ TEST_F(StringStreamTest, StringStreamFreeTest) {
   ASSERT_EQ(sstream.length, 0);
 
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -159,7 +159,7 @@ TEST_F(StringStreamTest, StringStreamFreeTest) {
   ASSERT_NE(sstream.data, nullptr);
   ASSERT_EQ(sstream.length, 0);
 
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       _ARBITRARY_SSTREAM_TESTING_LENGTH, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -175,7 +175,7 @@ TEST_F(StringStreamTest, StringStreamFreeTest) {
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, strlen_);
 
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -194,7 +194,7 @@ TEST_F(StringStreamTest, StringStreamFreeTestWhenAllocatedEmbededNullBytes) {
   ASSERT_EQ(sstream.length, std::strlen(teststr));
 
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -208,7 +208,7 @@ TEST_F(StringStreamTest, StringStreamFreeTestWhenAllocatedEmbededNullBytes) {
   ASSERT_STREQ(sstream.data, teststr);
   ASSERT_EQ(sstream.length, strlen_);
 
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -218,4 +218,4 @@ TEST_F(StringStreamTest, StringStreamFreeTestWhenAllocatedEmbededNullBytes) {
   ASSERT_EQ(sstream.capacity, 0);
 }
 
-#endif  // CJSON_TESTS_SSTREAM_TESTSSTREAM_HH_
+#endif  // STLC_TESTS_SSTREAM_TESTSSTREAM_HH_

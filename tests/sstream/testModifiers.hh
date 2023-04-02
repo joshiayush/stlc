@@ -1,4 +1,4 @@
-// Copyright 2021, The cjson authors.
+// Copyright 2021, The stlc authors.
 // All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
@@ -11,7 +11,7 @@
 // copyright notice, this list of conditions and the following disclaimer
 // in the documentation and/or other materials provided with the
 // distribution.
-//     * Neither the name of The cjson authors. nor the names of its
+//     * Neither the name of The stlc authors. nor the names of its
 // contributors may be used to endorse or promote products derived from
 // this software without specific prior written permission.
 //
@@ -27,8 +27,8 @@
 // (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#ifndef CJSON_TESTS_SSTREAM_TESTMODIFIERS_HH_
-#define CJSON_TESTS_SSTREAM_TESTMODIFIERS_HH_
+#ifndef STLC_TESTS_SSTREAM_TESTMODIFIERS_HH_
+#define STLC_TESTS_SSTREAM_TESTMODIFIERS_HH_
 
 #include <gtest/gtest.h>
 
@@ -55,14 +55,14 @@ TEST_F(StringStreamConcatTest, StringStreamConcatTest) {
   EXPECT_EQ(std::strlen(sstream.data), 0);
   EXPECT_EQ(sstream.length, 0);
   size_t capacity;
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       SSTREAM_DEFAULT_SIZE, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
   StringStreamConcat(&sstream, "Hello, %s!", "world");
   EXPECT_STREQ(sstream.data, "Hello, world!");
   EXPECT_EQ(sstream.length, std::strlen("Hello, world!"));
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   ASSERT_EQ(sstream.capacity, capacity);
 
@@ -80,7 +80,7 @@ TEST_F(StringStreamConcatTest, StringStreamConcatTest) {
                             "definitely exceed the size of the buffer "
                             "and cause a reallocation to occur. "
                             "This is a test string, so don't worry."));
-  cjson::testing::sstream::utils::ComputeStringStreamBufferCapacity(
+  stlc::testing::sstream::utils::ComputeStringStreamBufferCapacity(
       sstream.length, capacity);
   EXPECT_EQ(sstream.capacity, capacity);
 }
@@ -126,4 +126,4 @@ TEST_F(StringStreamRetreatTest, StringStreamRetreatTest) {
   EXPECT_EQ(sstream.data[sstream.length], '\0');
 }
 
-#endif  // CJSON_TESTS_SSTREAM_TESTMODIFIERS_HH_
+#endif  // STLC_TESTS_SSTREAM_TESTMODIFIERS_HH_

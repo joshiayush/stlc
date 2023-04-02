@@ -1,8 +1,8 @@
-# Developing cjson
+# Developing stlc
 
 ## Git Commit Guidelines
 
-cjson follows [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/). This leads to **more readable messages**
+stlc follows [conventional commits](https://www.conventionalcommits.org/en/v1.0.0-beta.2/). This leads to **more readable messages**
 that are easy to follow when looking through the **project history**. Also, these git commit messages are used to **generate the [changelog](changelog)**.
 
 ### Commit Message Format
