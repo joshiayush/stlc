@@ -58,6 +58,10 @@
 void MapInsert(Map *const map, const void *const key, const size_t key_size,
                const void *const value, const size_t value_size) {
   if (map == NULL || key == NULL || value == NULL) return;
+  if (map->size >= map->capacity) {
+    MapRealloc(map, ((map->size >> 0x03) + (map->size < 0x09 ? 0x03 : 0x06)) +
+                        map->size);
+  }
 
   const hash_t hash = map->hash_func(key);
   const size_t bucket_index = hash % map->capacity;
